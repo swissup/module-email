@@ -1,0 +1,6 @@
+<?xml version="1.0"?>
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:framework:ObjectManager/etc/config.xsd">
+    <!-- <preference for="\TM\Email\Api\Data\TransportInterface" type="\Magento\Framework\Mail\TransportInterface"/> -->
+    <preference for="TM\Email\Api\Data\ServiceInterface" type="Swissup\Email\Model\Service" />
+    <preference for="\Magento\Framework\Mail\Transport" type="Swissup\Email\Model\Transport"/>
+</config>
