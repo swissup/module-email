@@ -1,0 +1,24 @@
+<?xml version="1.0"?>
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:framework:Acl/etc/acl.xsd">
+    <acl>
+        <resources>
+            <resource id="Magento_Backend::admin">
+                <resource id="Magento_Backend::content">
+                    <resource id="Swissup_Email::master" title="Swissup" sortOrder="10" >
+                        <resource id="Swissup_Email::service" title="Swissup Service" sortOrder="40">
+                            <resource id="Swissup_Email::service_save" title="Save Service" sortOrder="10" />
+                            <resource id="Swissup_Email::service_delete" title="Delete Service" sortOrder="20" />
+                        </resource>
+                    </resource>
+                </resource>
+            </resource>
+            <resource id="Magento_Adminhtml::stores">
+                <resource id="Magento_Adminhtml::stores_settings">
+                    <resource id="Magento_Adminhtml::config">
+                        <resource id="Swissup_Email::config_service" title="Email"/>
+                    </resource>
+                </resource>
+            </resource>
+        </resources>
+    </acl>
+</config>
