@@ -26,7 +26,7 @@ class InstallSchema implements InstallSchemaInterface
                 'nullable'  => false,
                 'primary'   => true,
             ], 'Id')
-            ->addColumn('name', \Magento\Framework\DB\Ddl\Table::TYPE_VARCHAR, 45, [
+            ->addColumn('name', \Magento\Framework\DB\Ddl\Table::TYPE_TEXT, 45, [
                 'nullable'  => true,
                 'default'   => null,
             ], 'Name')
@@ -38,15 +38,15 @@ class InstallSchema implements InstallSchemaInterface
                 'nullable'  => false,
                 'default'   => 1,
             ], 'Type')
-            ->addColumn('host', \Magento\Framework\DB\Ddl\Table::TYPE_VARCHAR, 128, [
+            ->addColumn('host', \Magento\Framework\DB\Ddl\Table::TYPE_TEXT, 128, [
                 'nullable'  => false,
                 'default'   => '',
             ], 'Host')
-            ->addColumn('user', \Magento\Framework\DB\Ddl\Table::TYPE_VARCHAR, 45, [
+            ->addColumn('user', \Magento\Framework\DB\Ddl\Table::TYPE_TEXT, 45, [
                 'nullable'  => false,
                 'default'   => '',
             ], 'User')
-            ->addColumn('password', \Magento\Framework\DB\Ddl\Table::TYPE_VARCHAR, 45, [
+            ->addColumn('password', \Magento\Framework\DB\Ddl\Table::TYPE_TEXT, 45, [
                 'nullable'  => false,
                 'default'  => '',
             ], 'Password')
@@ -60,9 +60,9 @@ class InstallSchema implements InstallSchemaInterface
                 'nullable'  => false,
                 'default'   => 0,
             ], 'Secure')
-            ->addColumn('auth', \Magento\Framework\DB\Ddl\Table::TYPE_VARCHAR, 7, [
+            ->addColumn('auth', \Magento\Framework\DB\Ddl\Table::TYPE_TEXT, 7, [
                 'nullable'  => false,
-                'default'   => login,
+                'default'   => '',
             ], 'Auth')
             ->addColumn('key', \Magento\Framework\DB\Ddl\Table::TYPE_TEXT, null, [
                 'nullable'  => false,
