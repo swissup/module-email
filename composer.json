@@ -6,7 +6,6 @@
     "license": "OSL-3.0",
     "require": {
         "php": "~5.5.0|~5.6.0",
-        "magento/magento-composer-installer": "*",
         "slm/mail": "~1.5"
     },
     "autoload": {
