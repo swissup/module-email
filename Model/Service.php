@@ -6,7 +6,7 @@ use Magento\Framework\App\Config\ScopeConfigInterface;
 use Magento\Store\Model\ScopeInterface;
 
 use Swissup\Email\Api\Data\ServiceInterface;
-use Magento\Framework\Object\IdentityInterface;
+use Magento\Framework\DataObject\IdentityInterface;
 
 class Service extends \Magento\Framework\Model\AbstractModel implements ServiceInterface, IdentityInterface
 {
@@ -34,7 +34,7 @@ class Service extends \Magento\Framework\Model\AbstractModel implements ServiceI
      */
     protected function _construct()
     {
-        $this->_init('Swissup\Email\Model\Resource\Service');
+        $this->_init('Swissup\Email\Model\ResourceModel\Service');
     }
 
     /**
@@ -318,5 +318,55 @@ class Service extends \Magento\Framework\Model\AbstractModel implements ServiceI
     public function setRemove($remove)
     {
         return $this->setData(self::REMOVE, $remove);
+    }
+
+    /**
+     *
+     * @return array
+     */
+    public function getStatuses()
+    {
+        return [
+            self::ENABLED  => __('Enabled'),
+            self::DISABLED => __('Disabled')
+        ];
+    }
+
+    /**
+     *
+     * @return array
+     */
+    public function getTypes()
+    {
+        return [
+            self::TYPE_SMTP     => __('SMTP'),
+            self::TYPE_SENDMAIL => __('Sendmail')
+        ];
+    }
+
+    /**
+     *
+     * @return array
+     */
+    public function getSecures()
+    {
+        return [
+            self::SECURE_NONE => __('None'),
+            self::SECURE_SSL  => __('SSL'),
+            self::SECURE_TLS  => __('TLS')
+        ];
+    }
+
+    /**
+     *
+     * @return array
+     */
+    public function getAuthTypes()
+    {
+        return [
+            self::AUTH_TYPE_LOGIN   => __('Login'),
+            self::AUTH_TYPE_PLAIN   => __('Plain'),
+            self::AUTH_TYPE_CRAMMD5 => __('Crammd5')
+        ];
     }
 }

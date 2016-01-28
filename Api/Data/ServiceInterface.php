@@ -19,6 +19,20 @@ interface ServiceInterface
     const KEY      = 'key';
     const REMOVE   = 'remove';
 
+    const ENABLED  = 1;
+    const DISABLED = 0;
+
+    const TYPE_SMTP     = 0;
+    const TYPE_SENDMAIL = 1;
+
+    const SECURE_NONE = 0;//false;
+    const SECURE_SSL  = 1;//'SSL';
+    const SECURE_TLS  = 2;//'TLS';
+
+    const AUTH_TYPE_LOGIN   = 'login';
+    const AUTH_TYPE_PLAIN   = 'plain';
+    const AUTH_TYPE_CRAMMD5 = 'crammd5';
+
     /**
      * Get id
      *

@@ -15,5 +15,4 @@ class Service extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
     {
         $this->_init('swissup_email_service', 'id');
     }
-
 }
