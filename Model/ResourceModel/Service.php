@@ -1,10 +1,10 @@
 <?php
-namespace Swissup\Email\Model\Resource;
+namespace Swissup\Email\Model\ResourceModel;
 
 /**
  * Email Service mysql resource
  */
-class Service extends \Magento\Framework\Model\Resource\Db\AbstractDb
+class Service extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
 {
     /**
      * Initialize resource model

@@ -3,7 +3,7 @@
     <update handle="styles"/>
     <body>
         <referenceContainer name="content">
-            <!-- <uiComponent name="email_service_listing"/> -->
+            <uiComponent name="email_service_listing"/>
         </referenceContainer>
     </body>
 </page>

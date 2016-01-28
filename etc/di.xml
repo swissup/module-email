@@ -2,4 +2,19 @@
 <config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:framework:ObjectManager/etc/config.xsd">
     <preference for="TM\Email\Api\Data\ServiceInterface" type="Swissup\Email\Model\Service" />
     <preference for="\Magento\Framework\Mail\Transport" type="Swissup\Email\Model\Transport"/>
+
+    <type name="Swissup\Email\Model\ResourceModel\Service\Grid\Collection">
+        <arguments>
+            <argument name="mainTable" xsi:type="string">swissup_email_service</argument>
+            <argument name="resourceModel" xsi:type="string">Swissup\Email\Model\ResourceModel\Service</argument>
+        </arguments>
+    </type>
+
+    <type name="Magento\Framework\View\Element\UiComponent\DataProvider\CollectionFactory">
+        <arguments>
+            <argument name="collections" xsi:type="array">
+                <item name="email_service_listing_data_source" xsi:type="string">Swissup\Email\Model\ResourceModel\Service\Grid\Collection</item>
+            </argument>
+        </arguments>
+    </type>
 </config>
