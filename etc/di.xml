@@ -1,6 +1,9 @@
 <?xml version="1.0"?>
 <config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:framework:ObjectManager/etc/config.xsd">
-    <preference for="TM\Email\Api\Data\ServiceInterface" type="Swissup\Email\Model\Service" />
+    <preference for="Swissup\Email\Api\Data\ServiceSearchResultsInterface"
+                type="Magento\Framework\Api\SearchResults" />
+    <preference for="Swissup\Email\Api\Data\ServiceInterface" type="Swissup\Email\Model\Service" />
+    <preference for="Swissup\Email\Api\ServiceRepositoryInterface" type="Swissup\Email\Model\ServiceRepository" />
     <preference for="\Magento\Framework\Mail\Transport" type="Swissup\Email\Model\Transport"/>
 
     <type name="Swissup\Email\Model\ResourceModel\Service\Grid\Collection">
