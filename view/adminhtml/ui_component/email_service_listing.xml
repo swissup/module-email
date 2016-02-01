@@ -189,7 +189,7 @@
                     </item>
                 </argument>
             </action> -->
-            <!-- <action name="edit">
+            <action name="edit">
                 <argument name="data" xsi:type="array">
                     <item name="config" xsi:type="array">
                         <item name="type" xsi:type="string">edit</item>
@@ -200,7 +200,7 @@
                         </item>
                     </item>
                 </argument>
-            </action> -->
+            </action>
         </massaction>
         <!-- <paging name="listing_paging">
             <argument name="data" xsi:type="array">
@@ -226,7 +226,7 @@
                     <item name="enabled" xsi:type="boolean">true</item>
                     <item name="indexField" xsi:type="string">id</item>
                     <item name="clientConfig" xsi:type="array">
-                        <item name="saveUrl" xsi:type="url" path="cms/page/inlineEdit"/>
+                        <item name="saveUrl" xsi:type="url" path="admin/email_service/inlineEdit"/>
                         <item name="validateBeforeSave" xsi:type="boolean">false</item>
                     </item>
                 </item>
@@ -359,6 +359,16 @@
                 </item>
             </argument>
         </column>
+
+        <actionsColumn name="actions" class="Swissup\Email\Ui\Component\Listing\Column\ItemActions">
+            <argument name="data" xsi:type="array">
+                <item name="config" xsi:type="array">
+                    <item name="resizeEnabled" xsi:type="boolean">false</item>
+                    <item name="resizeDefaultWidth" xsi:type="string">107</item>
+                    <item name="indexField" xsi:type="string">id</item>
+                </item>
+            </argument>
+        </actionsColumn>
 
     </columns>
     <container name="sticky">

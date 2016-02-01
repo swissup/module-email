@@ -64,14 +64,14 @@ class InstallSchema implements InstallSchemaInterface
                 'nullable'  => false,
                 'default'   => '',
             ], 'Auth')
-            ->addColumn('key', \Magento\Framework\DB\Ddl\Table::TYPE_TEXT, null, [
-                'nullable'  => false,
-                'default'   => ''
-            ], 'Key')
-            ->addColumn('remove', \Magento\Framework\DB\Ddl\Table::TYPE_SMALLINT, 6, [
-                'nullable'  => false,
-                'default'  => 0,
-            ], 'Remove')
+            // ->addColumn('key', \Magento\Framework\DB\Ddl\Table::TYPE_TEXT, null, [
+            //     'nullable'  => false,
+            //     'default'   => ''
+            // ], 'Key')
+            // ->addColumn('remove', \Magento\Framework\DB\Ddl\Table::TYPE_SMALLINT, 6, [
+            //     'nullable'  => false,
+            //     'default'  => 0,
+            // ], 'Remove')
 
         ;
         $installer->getConnection()->createTable($table);
