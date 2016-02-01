@@ -102,7 +102,7 @@ class Form extends \Magento\Backend\Block\Widget\Form\Generic
             [
                 'label'    => __('Type'),
                 'title'    => __('Type'),
-                'name'     => 'status',
+                'name'     => 'type',
                 'required' => true,
                 'options'  => $model->getTypes(),
                 'disabled' => $isElementDisabled
