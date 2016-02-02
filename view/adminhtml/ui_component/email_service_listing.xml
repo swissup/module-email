@@ -60,7 +60,8 @@
                 </item>
             </argument>
         </component>
-        <!-- <filterSearch name="fulltext">
+        <!--
+        <filterSearch name="fulltext">
             <argument name="data" xsi:type="array">
                 <item name="config" xsi:type="array">
                     <item name="provider" xsi:type="string">email_service_listing.email_service_listing_data_source</item>
@@ -99,20 +100,6 @@
                     <item name="column" xsi:type="string">column</item>
                 </item>
             </argument>
-            <!--
-            <filterSelect name="store_id">
-                <argument name="optionsProvider" xsi:type="configurableObject">
-                    <argument name="class" xsi:type="string">Magento\Cms\Ui\Component\Listing\Column\Cms\Options</argument>
-                </argument>
-                <argument name="data" xsi:type="array">
-                    <item name="config" xsi:type="array">
-                        <item name="dataScope" xsi:type="string">store_id</item>
-                        <item name="label" xsi:type="string" translate="true">Store View</item>
-                        <item name="captionValue" xsi:type="string">0</item>
-                    </item>
-                </argument>
-            </filterSelect>
-            -->
         </filters>
         <massaction name="listing_massaction">
             <argument name="data" xsi:type="array">
@@ -122,7 +109,7 @@
                     <item name="indexField" xsi:type="string">id</item>
                 </item>
             </argument>
-            <!-- <action name="delete">
+            <action name="delete">
                 <argument name="data" xsi:type="array">
                     <item name="config" xsi:type="array">
                         <item name="type" xsi:type="string">delete</item>
@@ -134,7 +121,7 @@
                         </item>
                     </item>
                 </argument>
-            </action> -->
+            </action>
             <!-- <action name="disable">
                 <argument name="data" xsi:type="array">
                     <item name="config" xsi:type="array">
@@ -153,44 +140,7 @@
                     </item>
                 </argument>
             </action> -->
-            <!-- <action name="status">
-                <argument name="data" xsi:type="array">
-                    <item name="config" xsi:type="array">
-                        <item name="type" xsi:type="string">status</item>
-                        <item name="label" xsi:type="string" translate="true">Change status</item>
-                    </item>
-                </argument>
-                <argument name="actions" xsi:type="array">
-                    <item name="0" xsi:type="array">
-                        <item name="type" xsi:type="string">pending</item>
-                        <item name="label" xsi:type="string" translate="true">Pending</item>
-                        <item name="url" xsi:type="url" path="askit/item/massStatus">
-                            <param name="status">1</param>
-                        </item>
-                    </item>
-                    <item name="1" xsi:type="array">
-                        <item name="type" xsi:type="string">approved</item>
-                        <item name="label" xsi:type="string" translate="true">Approved</item>
-                        <item name="url" xsi:type="url" path="askit/item/massStatus">
-                            <param name="status">2</param>
-                        </item>
-                    </item>
-                    <item name="2" xsi:type="array">
-                        <item name="type" xsi:type="string">disapproved</item>
-                        <item name="label" xsi:type="string" translate="true">Disapproved</item>
-                        <item name="url" xsi:type="url" path="askit/item/massStatus">
-                            <param name="status">3</param>
-                        </item>
-                    </item>
-                    <item name="3" xsi:type="array">
-                        <item name="type" xsi:type="string">close</item>
-                        <item name="label" xsi:type="string" translate="true">Close</item>
-                        <item name="url" xsi:type="url" path="askit/item/massStatus">
-                            <param name="status">4</param>
-                        </item>
-                    </item>
-                </argument>
-            </action> -->
+
             <action name="edit">
                 <argument name="data" xsi:type="array">
                     <item name="config" xsi:type="array">
@@ -276,6 +226,13 @@
                     <item name="filter" xsi:type="string">textRange</item>
                     <item name="sorting" xsi:type="string">asc</item>
                     <item name="label" xsi:type="string" translate="true">Name</item>
+                    <item name="editor" xsi:type="array">
+                        <item name="editorType" xsi:type="string">text</item>
+                        <item name="validation" xsi:type="array">
+                            <!-- <item name="validate-xml-identifier" xsi:type="boolean">true</item> -->
+                            <item name="required-entry" xsi:type="boolean">true</item>
+                        </item>
+                    </item>
                 </item>
             </argument>
         </column>
@@ -312,6 +269,13 @@
                     <item name="filter" xsi:type="string">textRange</item>
                     <item name="sorting" xsi:type="string">asc</item>
                     <item name="label" xsi:type="string" translate="true">Host</item>
+                    <item name="editor" xsi:type="array">
+                        <item name="editorType" xsi:type="string">text</item>
+                        <item name="validation" xsi:type="array">
+                            <!-- <item name="validate-xml-identifier" xsi:type="boolean">true</item> -->
+                            <item name="required-entry" xsi:type="boolean">true</item>
+                        </item>
+                    </item>
                 </item>
             </argument>
         </column>
@@ -322,9 +286,32 @@
                     <item name="filter" xsi:type="string">textRange</item>
                     <item name="sorting" xsi:type="string">asc</item>
                     <item name="label" xsi:type="string" translate="true">User</item>
+                    <item name="editor" xsi:type="array">
+                        <item name="editorType" xsi:type="string">text</item>
+                        <item name="validation" xsi:type="array">
+                            <!-- <item name="validate-xml-identifier" xsi:type="boolean">true</item> -->
+                            <item name="required-entry" xsi:type="boolean">true</item>
+                        </item>
+                    </item>
                 </item>
             </argument>
         </column>
+
+        <!-- <column name="password">
+            <argument name="data" xsi:type="array">
+                <item name="config" xsi:type="array">
+                    <item name="sorting" xsi:type="string">asc</item>
+                    <item name="label" xsi:type="string" translate="true">Password</item>
+                    <item name="dataType" xsi:type="string">password</item>
+                    <item name="editor" xsi:type="array">
+                        <item name="editorType" xsi:type="string">password</item>
+                        <item name="validation" xsi:type="array">
+                            <item name="required-entry" xsi:type="boolean">true</item>
+                        </item>
+                    </item>
+                </item>
+            </argument>
+        </column> -->
 
         <column name="port">
             <argument name="data" xsi:type="array">
@@ -332,6 +319,13 @@
                     <item name="filter" xsi:type="string">textRange</item>
                     <item name="sorting" xsi:type="string">asc</item>
                     <item name="label" xsi:type="string" translate="true">Port</item>
+                    <item name="editor" xsi:type="array">
+                        <item name="editorType" xsi:type="string">text</item>
+                        <item name="validation" xsi:type="array">
+                            <!-- <item name="validate-xml-identifier" xsi:type="boolean">true</item> -->
+                            <item name="required-entry" xsi:type="boolean">true</item>
+                        </item>
+                    </item>
                 </item>
             </argument>
         </column>
