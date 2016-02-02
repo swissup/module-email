@@ -109,6 +109,24 @@
                     <item name="indexField" xsi:type="string">id</item>
                 </item>
             </argument>
+            <action name="enable">
+                <argument name="data" xsi:type="array">
+                    <item name="config" xsi:type="array">
+                        <item name="type" xsi:type="string">enable</item>
+                        <item name="label" xsi:type="string" translate="true">Enable</item>
+                        <item name="url" xsi:type="url" path="adminhtml/email_service/massEnable"/>
+                    </item>
+                </argument>
+            </action>
+            <action name="disable">
+                <argument name="data" xsi:type="array">
+                    <item name="config" xsi:type="array">
+                        <item name="type" xsi:type="string">disable</item>
+                        <item name="label" xsi:type="string" translate="true">Disable</item>
+                        <item name="url" xsi:type="url" path="adminhtml/email_service/massDisable"/>
+                    </item>
+                </argument>
+            </action>
             <action name="delete">
                 <argument name="data" xsi:type="array">
                     <item name="config" xsi:type="array">
@@ -122,24 +140,46 @@
                     </item>
                 </argument>
             </action>
-            <!-- <action name="disable">
+            <!--
+            <action name="status">
                 <argument name="data" xsi:type="array">
                     <item name="config" xsi:type="array">
-                        <item name="type" xsi:type="string">disable</item>
-                        <item name="label" xsi:type="string" translate="true">Disable</item>
-                        <item name="url" xsi:type="url" path="askit/question/massDisable"/>
+                        <item name="type" xsi:type="string">status</item>
+                        <item name="label" xsi:type="string" translate="true">Change status</item>
+                    </item>
+                </argument>
+                <argument name="actions" xsi:type="array">
+                    <item name="0" xsi:type="array">
+                        <item name="type" xsi:type="string">pending</item>
+                        <item name="label" xsi:type="string" translate="true">Pending</item>
+                        <item name="url" xsi:type="url" path="askit/item/massStatus">
+                            <param name="status">1</param>
+                        </item>
+                    </item>
+                    <item name="1" xsi:type="array">
+                        <item name="type" xsi:type="string">approved</item>
+                        <item name="label" xsi:type="string" translate="true">Approved</item>
+                        <item name="url" xsi:type="url" path="askit/item/massStatus">
+                            <param name="status">2</param>
+                        </item>
+                    </item>
+                    <item name="2" xsi:type="array">
+                        <item name="type" xsi:type="string">disapproved</item>
+                        <item name="label" xsi:type="string" translate="true">Disapproved</item>
+                        <item name="url" xsi:type="url" path="askit/item/massStatus">
+                            <param name="status">3</param>
+                        </item>
+                    </item>
+                    <item name="3" xsi:type="array">
+                        <item name="type" xsi:type="string">close</item>
+                        <item name="label" xsi:type="string" translate="true">Close</item>
+                        <item name="url" xsi:type="url" path="askit/item/massStatus">
+                            <param name="status">4</param>
+                        </item>
                     </item>
                 </argument>
             </action>
-            <action name="enable">
-                <argument name="data" xsi:type="array">
-                    <item name="config" xsi:type="array">
-                        <item name="type" xsi:type="string">enable</item>
-                        <item name="label" xsi:type="string" translate="true">Enable</item>
-                        <item name="url" xsi:type="url" path="askit/question/massEnable"/>
-                    </item>
-                </argument>
-            </action> -->
+            -->
 
             <action name="edit">
                 <argument name="data" xsi:type="array">
