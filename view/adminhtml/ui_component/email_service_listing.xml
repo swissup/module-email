@@ -17,7 +17,7 @@
     </argument>
     <dataSource name="email_service_listing_data_source">
         <argument name="dataProvider" xsi:type="configurableObject">
-            <argument name="class" xsi:type="string">AskitQuestionGridDataProvider</argument>
+            <argument name="class" xsi:type="string">SwissupEmailServiceGridDataProvider</argument>
             <argument name="name" xsi:type="string">email_service_listing_data_source</argument>
             <argument name="primaryFieldName" xsi:type="string">id</argument>
             <argument name="requestFieldName" xsi:type="string">id</argument>
@@ -49,7 +49,7 @@
                 </item>
             </argument>
         </bookmark>
-        <!-- <component name="columns_controls">
+        <component name="columns_controls">
             <argument name="data" xsi:type="array">
                 <item name="config" xsi:type="array">
                     <item name="columnsData" xsi:type="array">
@@ -59,7 +59,7 @@
                     <item name="displayArea" xsi:type="string">dataGridActions</item>
                 </item>
             </argument>
-        </component> -->
+        </component>
         <!-- <filterSearch name="fulltext">
             <argument name="data" xsi:type="array">
                 <item name="config" xsi:type="array">
@@ -72,7 +72,7 @@
                 </item>
             </argument>
         </filterSearch> -->
-       <!-- <filters name="listing_filters">
+       <filters name="listing_filters">
             <argument name="data" xsi:type="array">
                 <item name="config" xsi:type="array">
                     <item name="columnsProvider" xsi:type="string">email_service_listing.email_service_listing.email_service_columns</item>
@@ -99,6 +99,7 @@
                     <item name="column" xsi:type="string">column</item>
                 </item>
             </argument>
+            <!--
             <filterSelect name="store_id">
                 <argument name="optionsProvider" xsi:type="configurableObject">
                     <argument name="class" xsi:type="string">Magento\Cms\Ui\Component\Listing\Column\Cms\Options</argument>
@@ -111,7 +112,8 @@
                     </item>
                 </argument>
             </filterSelect>
-        </filters> -->
+            -->
+        </filters>
         <massaction name="listing_massaction">
             <argument name="data" xsi:type="array">
                 <item name="config" xsi:type="array">
@@ -125,7 +127,7 @@
                     <item name="config" xsi:type="array">
                         <item name="type" xsi:type="string">delete</item>
                         <item name="label" xsi:type="string" translate="true">Delete</item>
-                        <item name="url" xsi:type="url" path="askit/item/massDelete"/>
+                        <item name="url" xsi:type="url" path="adminhtml/email_service/massDelete"/>
                         <item name="confirm" xsi:type="array">
                             <item name="title" xsi:type="string" translate="true">Delete items</item>
                             <item name="message" xsi:type="string" translate="true">Are you sure you wan't to delete selected items?</item>
@@ -202,7 +204,7 @@
                 </argument>
             </action>
         </massaction>
-        <!-- <paging name="listing_paging">
+        <paging name="listing_paging">
             <argument name="data" xsi:type="array">
                 <item name="config" xsi:type="array">
                     <item name="storageConfig" xsi:type="array">
@@ -212,7 +214,7 @@
                     <item name="selectProvider" xsi:type="string">email_service_listing.email_service_listing.email_service_columns.ids</item>
                 </item>
             </argument>
-        </paging> -->
+        </paging>
     </container>
     <columns name="email_service_columns">
         <argument name="data" xsi:type="array">
