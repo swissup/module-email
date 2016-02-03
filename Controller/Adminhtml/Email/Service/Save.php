@@ -33,8 +33,7 @@ class Save extends Action
     {
         $request = $this->getRequest();
         $data = $request->getPostValue();
-        \Zend_Debug::dump($data);
-        die;
+
         /** @var \Magento\Backend\Model\View\Result\Redirect $resultRedirect */
         $resultRedirect = $this->resultRedirectFactory->create();
 

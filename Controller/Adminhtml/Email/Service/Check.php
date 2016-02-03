@@ -3,16 +3,26 @@ namespace Swissup\Email\Controller\Adminhtml\Email\Service;
 
 use Magento\Backend\App\Action;
 use Magento\TestFramework\ErrorLog\Logger;
+use Swissup\Email\Api\Data\ServiceInterface;
+use Swissup\Email\Model\Transport\Factory;
 
 class Check extends Action
 {
     /**
+     * @var Factory
+     */
+    protected $transportFactory;
+
+    /**
      * @param Action\Context $context
+     * @param Factory $transportFactory
      */
     public function __construct(
-        Action\Context $context
+        Action\Context $context,
+        Factory $transportFactory
     ) {
         parent::__construct($context);
+        $this->transportFactory = $transportFactory;
     }
 
     /**
@@ -24,7 +34,7 @@ class Check extends Action
     }
 
     /**
-     * save Email item
+     * Check Email transport service
      *
      * @return \Magento\Backend\Model\View\Result\Page|\Magento\Backend\Model\View\Result\Redirect
      * @SuppressWarnings(PHPMD.NPathComplexity)
@@ -36,16 +46,48 @@ class Check extends Action
         $uenc = base64_decode($uenc, true);
         $data = [];
         parse_str($uenc, $data);
-        // \Zend_Debug::dump($data);
-        // die;
         /** @var \Magento\Backend\Model\View\Result\Redirect $resultRedirect */
         $resultRedirect = $this->resultRedirectFactory->create();
 
         if ($data) {
             $id = $data['id'];
 
+            $email = $data['user'];
+            $mailMessage = new \Magento\Framework\Mail\Message();
+            $mailMessage->setBodyText('This is test transport mail.');
+            $mailMessage->setFrom($email, 'test');
+            $mailMessage->addTo($email, 'test');
+            $mailMessage->setSubject('Test Email Transport ()');
+
             try {
-                $this->messageManager->addSuccess(__('You checked.'));
+                switch ($data['type']) {
+                    case ServiceInterface::TYPE_SMTP:
+                        $type = 'Smtp';
+                        $args = [
+                            'message' => $mailMessage,
+                            'config' => $data
+                        ];
+                        $transport = $this->transportFactory->create($type, $args);
+
+                        break;
+
+                    case ServiceInterface::TYPE_SENDMAIL:
+                    default:
+                        $type = 'Sendmail';
+                        $args = [
+                            'message' => $mailMessage,
+                            // 'config' => $data
+                        ];
+                        $transport = $this->transportFactory->create($type, $args);
+                        break;
+                }
+
+                $transport->sendMessage();
+                $successMessage = __(
+                    'Connection with mail server was succesfully established.'
+                    . ' Please check your inbox to verify this final.'
+                );
+                $this->messageManager->addSuccess($successMessage);
                 $this->_objectManager->get('Magento\Backend\Model\Session')->setFormData(false);
                 if ($this->getRequest()->getParam('back')) {
                     return $resultRedirect->setPath(
@@ -62,6 +104,7 @@ class Check extends Action
                 $this->messageManager->addException(
                     $e,
                     __('Something went wrong while checking the service.')
+                    . $e->getMessage()
                 );
             }
 

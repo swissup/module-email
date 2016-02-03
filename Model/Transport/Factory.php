@@ -1,5 +1,5 @@
 <?php
-namespace Swissup\Email\Model\Service;
+namespace Swissup\Email\Model\Transport;
 
 class Factory
 {
@@ -18,10 +18,11 @@ class Factory
 
     /**
      *
-     * @return \Swissup\Email\Model\Service
+     * @return \Swissup\Email\Model\Transport
      */
-    public function create()
+    public function create($type = 'Smtp', $config = [])
     {
-        return $this->objectManager->create('Swissup\Email\Model\Service');
+        $class = "Swissup\Email\Model\Transport\\$type";
+        return $this->objectManager->create($class, $config);
     }
 }
