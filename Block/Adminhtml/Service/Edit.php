@@ -8,7 +8,7 @@ class Edit extends \Magento\Backend\Block\Widget\Form\Container
      *
      * @var \Magento\Framework\Registry
      */
-    protected $_coreRegistry = null;
+    protected $coreRegistry = null;
 
     /**
      * @param \Magento\Backend\Block\Widget\Context $context
@@ -20,7 +20,7 @@ class Edit extends \Magento\Backend\Block\Widget\Form\Container
         \Magento\Framework\Registry $registry,
         array $data = []
     ) {
-        $this->_coreRegistry = $registry;
+        $this->coreRegistry = $registry;
         parent::__construct($context, $data);
     }
 
@@ -52,6 +52,19 @@ class Edit extends \Magento\Backend\Block\Widget\Form\Container
                 ],
                 -100
             );
+
+            $onClick = "var params = jQuery('#edit_form').serialize(); "
+                . "uenc = Base64.encode(params); "
+                . 'return setLocation(\'' . $this->getCheckUrl() . '\'.replace(\'ruenc\', uenc))';
+            $this->buttonList->add(
+                'check',
+                [
+                    'label' => __('Check service'),
+                    'onclick' => $onClick,
+                    'class' => 'save',
+                ],
+                -90
+            );
         } else {
             $this->buttonList->remove('save');
         }
@@ -63,9 +76,9 @@ class Edit extends \Magento\Backend\Block\Widget\Form\Container
         }
     }
 
-    protected function _getModel()
+    protected function getModel()
     {
-        return $this->_coreRegistry->registry('email_service');
+        return $this->coreRegistry->registry('email_service');
     }
 
     /**
@@ -75,7 +88,7 @@ class Edit extends \Magento\Backend\Block\Widget\Form\Container
      */
     public function getHeaderText()
     {
-        $model = $this->_getModel();
+        $model = $this->getModel();
         if ($model->getId()) {
             return __("Edit '%1'", $this->escapeHtml($model->getText()));
         } else {
@@ -103,5 +116,13 @@ class Edit extends \Magento\Backend\Block\Widget\Form\Container
     protected function _getSaveAndContinueUrl()
     {
         return $this->getUrl('*/*/save', ['_current' => true, 'back' => 'edit', 'active_tab' => '']);
+    }
+
+    public function getCheckUrl()
+    {
+        return $this->getUrl(
+            '*/*/check',
+            ['_current' => true, 'back' => 'edit', 'active_tab' => '', 'uenc' => 'ruenc']
+        );
     }
 }
