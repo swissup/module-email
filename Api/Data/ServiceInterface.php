@@ -24,6 +24,7 @@ interface ServiceInterface
 
     const TYPE_SMTP     = 0;
     const TYPE_SENDMAIL = 1;
+    const TYPE_SES = 2;
 
     const SECURE_NONE = 0;//false;
     const SECURE_SSL  = 1;//'SSL';

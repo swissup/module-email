@@ -340,7 +340,8 @@ class Service extends \Magento\Framework\Model\AbstractModel implements ServiceI
     {
         return [
             self::TYPE_SMTP     => __('SMTP'),
-            self::TYPE_SENDMAIL => __('Sendmail')
+            self::TYPE_SENDMAIL => __('Sendmail'),
+            self::TYPE_SES => __('Amazon SES')
         ];
     }
 

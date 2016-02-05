@@ -52,7 +52,7 @@ class Check extends Action
         if ($data) {
             $id = $data['id'];
 
-            $email = $data['user'];
+            $email = 'alex@templates-master.com';//$data['user']; //$data['email'] @todo add email column to db table for test
             $mailMessage = new \Magento\Framework\Mail\Message();
             $mailMessage->setBodyText('This is test transport mail.');
             $mailMessage->setFrom($email, 'test');
@@ -68,16 +68,19 @@ class Check extends Action
                             'config' => $data
                         ];
                         $transport = $this->transportFactory->create($type, $args);
-
                         break;
-
+                    case ServiceInterface::TYPE_SES:
+                        $type = 'Ses';
+                        $args = [
+                            'message' => $mailMessage,
+                            'config' => $data
+                        ];
+                        $transport = $this->transportFactory->create($type, $args);
+                        break;
                     case ServiceInterface::TYPE_SENDMAIL:
                     default:
                         $type = 'Sendmail';
-                        $args = [
-                            'message' => $mailMessage,
-                            // 'config' => $data
-                        ];
+                        $args = ['message' => $mailMessage];
                         $transport = $this->transportFactory->create($type, $args);
                         break;
                 }
