@@ -111,24 +111,12 @@ class Form extends \Magento\Backend\Block\Widget\Form\Generic
         );
 
         $fieldset->addField(
-            'host',
-            'text',
-            [
-                'name'     => 'host',
-                'label'    => __('Host'),
-                'title'    => __('Host'),
-                // 'required' => true,
-                'disabled' => $isElementDisabled
-            ]
-        );
-
-        $fieldset->addField(
             'user',
             'text',
             [
                 'name'     => 'user',
-                'label'    => __('User'),
-                'title'    => __('User'),
+                'label'    => __('User (key)'),
+                'title'    => __('User (key)'),
                 'required' => true,
                 'disabled' => $isElementDisabled
             ]
@@ -139,9 +127,32 @@ class Form extends \Magento\Backend\Block\Widget\Form\Generic
             'password',
             [
                 'name'     => 'password',
-                'label'    => __('Password'),
-                'title'    => __('Password'),
+                'label'    => __('Password (secure key)'),
+                'title'    => __('Password (secure key)'),
                 'required' => true,
+                'disabled' => $isElementDisabled
+            ]
+        );
+
+        $fieldset->addField(
+            'email',
+            'text',
+            [
+                'name'     => 'email',
+                'label'    => __('Email (from)'),
+                'title'    => __('Email'),
+                'disabled' => $isElementDisabled
+            ]
+        );
+
+        $fieldset->addField(
+            'host',
+            'text',
+            [
+                'name'     => 'host',
+                'label'    => __('Host'),
+                'title'    => __('Host'),
+                // 'required' => true,
                 'disabled' => $isElementDisabled
             ]
         );
@@ -165,7 +176,7 @@ class Form extends \Magento\Backend\Block\Widget\Form\Generic
                 'label'    => __('Secure'),
                 'title'    => __('Secure'),
                 'name'     => 'secure',
-                'required' => true,
+                // 'required' => true,
                 'options'  => $model->getSecures(),
                 'disabled' => $isElementDisabled
             ]
@@ -178,7 +189,7 @@ class Form extends \Magento\Backend\Block\Widget\Form\Generic
                 'label'    => __('Auth Type'),
                 'title'    => __('Auth Type'),
                 'name'     => 'auth',
-                'required' => true,
+                // 'required' => true,
                 'options'  => $model->getAuthTypes(),
                 'disabled' => $isElementDisabled
             ]
@@ -191,7 +202,7 @@ class Form extends \Magento\Backend\Block\Widget\Form\Generic
                 'label'    => __('Status'),
                 'title'    => __('Status'),
                 'name'     => 'status',
-                'required' => true,
+                // 'required' => true,
                 'options'  => $model->getStatuses(),
                 'disabled' => $isElementDisabled
             ]

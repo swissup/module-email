@@ -38,10 +38,10 @@ class InstallSchema implements InstallSchemaInterface
                 'nullable'  => false,
                 'default'   => 1,
             ], 'Type')
-            ->addColumn('host', \Magento\Framework\DB\Ddl\Table::TYPE_TEXT, 128, [
+            ->addColumn('email', \Magento\Framework\DB\Ddl\Table::TYPE_TEXT, 45, [
                 'nullable'  => false,
                 'default'   => '',
-            ], 'Host')
+            ], 'email from')
             ->addColumn('user', \Magento\Framework\DB\Ddl\Table::TYPE_TEXT, 45, [
                 'nullable'  => false,
                 'default'   => '',
@@ -50,6 +50,10 @@ class InstallSchema implements InstallSchemaInterface
                 'nullable'  => false,
                 'default'  => '',
             ], 'Password')
+            ->addColumn('host', \Magento\Framework\DB\Ddl\Table::TYPE_TEXT, 128, [
+                'nullable'  => false,
+                'default'   => '',
+            ], 'Host')
             ->addColumn('port', \Magento\Framework\DB\Ddl\Table::TYPE_SMALLINT, 5, [
                 'unsigned'  => true,
                 'nullable'  => false,

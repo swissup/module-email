@@ -52,7 +52,7 @@ class Check extends Action
         if ($data) {
             $id = $data['id'];
 
-            $email = 'alex@templates-master.com';//$data['user']; //$data['email'] @todo add email column to db table for test
+            $email = $data['email'];
             $mailMessage = new \Magento\Framework\Mail\Message();
             $mailMessage->setBodyText('This is test transport mail.');
             $mailMessage->setFrom($email, 'test');

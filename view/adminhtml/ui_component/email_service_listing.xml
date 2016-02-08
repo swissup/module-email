@@ -277,19 +277,6 @@
             </argument>
         </column>
 
-        <column name="status">
-            <argument name="data" xsi:type="array">
-                <item name="options" xsi:type="object">Swissup\Email\Model\Service\Source\Status</item>
-                <item name="config" xsi:type="array">
-                    <item name="filter" xsi:type="string">select</item>
-                    <item name="component" xsi:type="string">Magento_Ui/js/grid/columns/select</item>
-                    <item name="editor" xsi:type="string">select</item>
-                    <item name="dataType" xsi:type="string">select</item>
-                    <item name="label" xsi:type="string" translate="true">Status</item>
-                </item>
-            </argument>
-        </column>
-
         <column name="type">
             <argument name="data" xsi:type="array">
                 <item name="options" xsi:type="object">Swissup\Email\Model\Service\Source\Type</item>
@@ -303,7 +290,7 @@
             </argument>
         </column>
 
-        <column name="host">
+        <!-- <column name="host">
             <argument name="data" xsi:type="array">
                 <item name="config" xsi:type="array">
                     <item name="filter" xsi:type="string">textRange</item>
@@ -312,13 +299,12 @@
                     <item name="editor" xsi:type="array">
                         <item name="editorType" xsi:type="string">text</item>
                         <item name="validation" xsi:type="array">
-                            <!-- <item name="validate-xml-identifier" xsi:type="boolean">true</item> -->
                             <item name="required-entry" xsi:type="boolean">true</item>
                         </item>
                     </item>
                 </item>
             </argument>
-        </column>
+        </column> -->
 
         <column name="user">
             <argument name="data" xsi:type="array">
@@ -333,6 +319,19 @@
                             <item name="required-entry" xsi:type="boolean">true</item>
                         </item>
                     </item>
+                </item>
+            </argument>
+        </column>
+
+        <column name="status">
+            <argument name="data" xsi:type="array">
+                <item name="options" xsi:type="object">Swissup\Email\Model\Service\Source\Status</item>
+                <item name="config" xsi:type="array">
+                    <item name="filter" xsi:type="string">select</item>
+                    <item name="component" xsi:type="string">Magento_Ui/js/grid/columns/select</item>
+                    <item name="editor" xsi:type="string">select</item>
+                    <item name="dataType" xsi:type="string">select</item>
+                    <item name="label" xsi:type="string" translate="true">Status</item>
                 </item>
             </argument>
         </column>
@@ -353,7 +352,7 @@
             </argument>
         </column> -->
 
-        <column name="port">
+        <!-- <column name="port">
             <argument name="data" xsi:type="array">
                 <item name="config" xsi:type="array">
                     <item name="filter" xsi:type="string">textRange</item>
@@ -362,7 +361,6 @@
                     <item name="editor" xsi:type="array">
                         <item name="editorType" xsi:type="string">text</item>
                         <item name="validation" xsi:type="array">
-                            <!-- <item name="validate-xml-identifier" xsi:type="boolean">true</item> -->
                             <item name="required-entry" xsi:type="boolean">true</item>
                         </item>
                     </item>
@@ -394,7 +392,7 @@
                     <item name="label" xsi:type="string" translate="true">Auth Type</item>
                 </item>
             </argument>
-        </column>
+        </column> -->
 
         <actionsColumn name="actions" class="Swissup\Email\Ui\Component\Listing\Column\ItemActions">
             <argument name="data" xsi:type="array">
