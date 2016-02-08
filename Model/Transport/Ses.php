@@ -40,24 +40,7 @@ class Ses implements TransportInterface
             throw new \InvalidArgumentException('The message should be an instance of \Zend_Mail');
         }
 
-        //convert zend_mail1 to zend\mail\message
-        \Zend_Debug::dump($message->getFrom());
-        // \Zend_Debug::dump($message->getTo());
-        // \Zend_Debug::dump($message->getHeaders());
-        // $headers = new \Zend\Mail\Headers();
-        // \Zend_Debug::dump($headers);
-        // $headers->addHeaders($message->getHeaders());
-        // \Zend_Debug::dump($headers);
-        $_message = new \Zend\Mail\Message();
-        $_message->addFrom("alex@templates-master.com", "alex")
-            ->addTo("alex@templates-master.com")
-            ->setSubject("Sending an email from Zend\Mail! aws ");
-        $_message->setBody("This is the message body.");
-        // $_message->setHeaders($headers);
-        // $_message->addFrom()
-        // die;
-
-        $this->message = $_message;
+        $this->message = $this->convertMail($message);
 
         $credentials = new Credentials($config['user'], $config['password']);
         $client = SesClient::factory(array(
@@ -76,6 +59,77 @@ class Ses implements TransportInterface
         $this->transport = new HttpTransport($service);
     }
 
+    protected function convertMail($mail)
+    {
+        //convert zend_mail1 to zend\mail\message
+        // \Zend_Debug::dump($mail->getFrom());
+        // \Zend_Debug::dump(get_class_methods($mail));
+        // \Zend_Debug::dump($mail->getHeader('To'));
+        // \Zend_Debug::dump($mail->getHeaders());
+
+        $headers = new \Zend\Mail\Headers();
+
+        $_headers = [];
+        foreach ($mail->getHeaders() as $headerName => $values) {
+            foreach ($values as $key => $value) {
+                if ($key !== 'append') {
+                    $_headers[$headerName][$key] = $value;
+                }
+            }
+        }
+        $headers->addHeaders($_headers);
+
+        $headersEncoding = $mail->getHeaderEncoding();
+        $headers->setEncoding($headersEncoding);
+
+        $_message = new \Zend\Mail\Message();
+
+        $_message->setHeaders($headers);
+
+        $body = new \Zend\Mime\Message();
+        $charset = $mail->getCharset();
+
+        $text = $mail->getBodyText();
+
+        if (!empty($text)) {
+            if ($text instanceof \Zend_Mime_Part) {
+                $part = new \Zend\Mime\Part($text->getContent());
+                $part->encoding = $text->encoding;
+                $part->type = $text->type;
+                $part->charset = $text->charset;
+            } elseif (is_string($text)) {
+                $part = new \Zend\Mime\Part($text);
+                $part->encoding = \Zend\Mime\Mime::ENCODING_QUOTEDPRINTABLE;
+                $part->type = \Zend\Mime\Mime::TYPE_TEXT;
+                $part->charset = $charset;
+            }
+            $body->addPart($part);
+        }
+
+        $html = $mail->getBodyHtml();
+        if (!empty($html)) {
+            if ($html instanceof \Zend_Mime_Part) {
+                $part = new \Zend\Mime\Part($html->getContent());
+                $part->encoding = $html->encoding;
+                $part->type = $html->type;
+                $part->charset = $html->charset;
+            } elseif (is_string($html)) {
+                $part = new \Zend\Mime\Part($html);
+                $part->encoding = \Zend\Mime\Mime::ENCODING_QUOTEDPRINTABLE;
+                $part->type = \Zend\Mime\Mime::TYPE_TEXT;
+                $part->charset = $charset;
+            }
+
+            $body->addPart($part);
+        }
+        //@todo $mail->getParts() copy attachments
+
+        $_message->setBody($body);
+        // \Zend_Debug::dump($_message);
+        // die;
+        return $_message;
+    }
+
     /**
      * Send a mail using this transport
      *
@@ -89,6 +143,7 @@ class Ses implements TransportInterface
             // \Zend_Debug::dump($this->message->getHeaders());
             // die;
             $this->transport->send($this->message);
+            // \Zend_Debug::dump(__LINE__);
             // die;
         } catch (\Exception $e) {
             $phrase = new \Magento\Framework\Phrase($e->getMessage());
