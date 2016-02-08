@@ -53,6 +53,9 @@ class Check extends Action
             $id = $data['id'];
 
             $email = $data['email'];
+            if (empty($email)) {
+                $email = $data['user'];
+            }
             $mailMessage = new \Magento\Framework\Mail\Message();
             $mailMessage->setBodyText('This is test transport mail.');
             $mailMessage->setFrom($email, 'test');
@@ -61,6 +64,14 @@ class Check extends Action
 
             try {
                 switch ($data['type']) {
+                    case ServiceInterface::TYPE_GMAIL:
+                        $type = 'Gmail';
+                        $args = [
+                            'message' => $mailMessage,
+                            'config' => $data
+                        ];
+                        $transport = $this->transportFactory->create($type, $args);
+                        break;
                     case ServiceInterface::TYPE_SMTP:
                         $type = 'Smtp';
                         $args = [

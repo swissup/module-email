@@ -339,6 +339,7 @@ class Service extends \Magento\Framework\Model\AbstractModel implements ServiceI
     public function getTypes()
     {
         return [
+            self::TYPE_GMAIL    => __('Gmail'),
             self::TYPE_SMTP     => __('SMTP'),
             self::TYPE_SES      => __('Amazon SES'),
             self::TYPE_MANDRILL => __('Mandrill'),

@@ -24,6 +24,7 @@ interface ServiceInterface
 
     const TYPE_SENDMAIL = 0;
     const TYPE_SMTP     = 10;
+    const TYPE_GMAIL    = 15;
     const TYPE_SES      = 20;
     const TYPE_MANDRILL = 30;
 
