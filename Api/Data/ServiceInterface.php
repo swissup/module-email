@@ -22,9 +22,10 @@ interface ServiceInterface
     const ENABLED  = 1;
     const DISABLED = 0;
 
-    const TYPE_SMTP     = 0;
-    const TYPE_SENDMAIL = 1;
-    const TYPE_SES = 2;
+    const TYPE_SENDMAIL = 0;
+    const TYPE_SMTP     = 10;
+    const TYPE_SES      = 20;
+    const TYPE_MANDRILL = 30;
 
     const SECURE_NONE = 0;//false;
     const SECURE_SSL  = 1;//'SSL';

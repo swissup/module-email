@@ -129,7 +129,7 @@ class Form extends \Magento\Backend\Block\Widget\Form\Generic
                 'name'     => 'password',
                 'label'    => __('Password (secure key)'),
                 'title'    => __('Password (secure key)'),
-                'required' => true,
+                // 'required' => true,
                 'disabled' => $isElementDisabled
             ]
         );

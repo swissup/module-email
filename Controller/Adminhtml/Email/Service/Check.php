@@ -77,6 +77,14 @@ class Check extends Action
                         ];
                         $transport = $this->transportFactory->create($type, $args);
                         break;
+                    case ServiceInterface::TYPE_MANDRILL:
+                        $type = 'Mandrill';
+                        $args = [
+                            'message' => $mailMessage,
+                            'config' => $data
+                        ];
+                        $transport = $this->transportFactory->create($type, $args);
+                        break;
                     case ServiceInterface::TYPE_SENDMAIL:
                     default:
                         $type = 'Sendmail';
