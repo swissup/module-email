@@ -117,7 +117,6 @@ class Form extends \Magento\Backend\Block\Widget\Form\Generic
                 'name'     => 'user',
                 'label'    => __('User (key)'),
                 'title'    => __('User (key)'),
-                'required' => true,
                 'disabled' => $isElementDisabled
             ]
         );
@@ -164,7 +163,6 @@ class Form extends \Magento\Backend\Block\Widget\Form\Generic
                 'name'     => 'port',
                 'label'    => __('Port'),
                 'title'    => __('Port'),
-                // 'required' => true,
                 'disabled' => $isElementDisabled
             ]
         );
@@ -176,7 +174,6 @@ class Form extends \Magento\Backend\Block\Widget\Form\Generic
                 'label'    => __('Secure'),
                 'title'    => __('Secure'),
                 'name'     => 'secure',
-                // 'required' => true,
                 'options'  => $model->getSecures(),
                 'disabled' => $isElementDisabled
             ]
@@ -189,9 +186,8 @@ class Form extends \Magento\Backend\Block\Widget\Form\Generic
                 'label'    => __('Auth Type'),
                 'title'    => __('Auth Type'),
                 'name'     => 'auth',
-                // 'required' => true,
                 'options'  => $model->getAuthTypes(),
-                'disabled' => $isElementDisabled
+                'disabled' => $isElementDisabled,
             ]
         );
 
@@ -202,15 +198,15 @@ class Form extends \Magento\Backend\Block\Widget\Form\Generic
                 'label'    => __('Status'),
                 'title'    => __('Status'),
                 'name'     => 'status',
-                // 'required' => true,
                 'options'  => $model->getStatuses(),
-                'disabled' => $isElementDisabled
+                'disabled' => $isElementDisabled,
             ]
         );
 
+        $this->setForm($form);
         $form->setValues($model->getData());
         $form->setUseContainer(true);
-        $this->setForm($form);
+
 
         return parent::_prepareForm();
     }
