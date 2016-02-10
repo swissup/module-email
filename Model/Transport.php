@@ -84,7 +84,7 @@ class Transport implements \Magento\Framework\Mail\TransportInterface
                 'config'  => $service->getData(),
                 'parameters' => $this->parameters
             ];
-            $type = $service->getShortClassByType();
+            $type = $service->getTransportNameByType();
 
             $this->transportFactory
                 ->create($type, $args)

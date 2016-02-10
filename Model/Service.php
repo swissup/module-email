@@ -352,7 +352,7 @@ class Service extends \Magento\Framework\Model\AbstractModel implements ServiceI
      * @param  int $type
      * @return string
      */
-    public function getShortClassByType($type = null)
+    public function getTransportNameByType($type = null)
     {
         if (null == $type) {
             $type = $this->getData(self::TYPE);
@@ -365,7 +365,7 @@ class Service extends \Magento\Framework\Model\AbstractModel implements ServiceI
             self::TYPE_SENDMAIL => 'Sendmail',
         ];
 
-        return isset($classes[$type]) ? $classes[$type] : $classes;
+        return isset($classes[$type]) ? $classes[$type] : 'Sendmail';
     }
 
     /**
