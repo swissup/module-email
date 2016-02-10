@@ -9,7 +9,7 @@ interface ServiceInterface
     const NAME     = 'name';
     const STATUS   = 'status';
     const TYPE     = 'type';
-    // const EMAIL = 'email';
+    const EMAIL    = 'email';
     const HOST     = 'host';
     const USER     = 'user';
     const PASSWORD = 'password';
@@ -79,6 +79,13 @@ interface ServiceInterface
     public function getUser();
 
     /**
+     * Get email
+     *
+     * return string
+     */
+    public function getEmail();
+
+    /**
      * Get password
      *
      * return string
@@ -135,6 +142,14 @@ interface ServiceInterface
      * return \Swissup\Email\Api\Data\ServiceInterface
      */
     public function setName($name);
+
+     /**
+     * Set email
+     *
+     * @param string $email
+     * return \Swissup\Email\Api\Data\ServiceInterface
+     */
+    public function setEmail($email);
 
     /**
      * Set status
@@ -215,5 +230,4 @@ interface ServiceInterface
      * return \Swissup\Email\Api\Data\ServiceInterface
      */
     public function setRemove($remove);
-
 }

@@ -88,16 +88,6 @@ class Service extends \Magento\Framework\Model\AbstractModel implements ServiceI
     }
 
     /**
-     * Get email
-     *
-     * return string
-     */
-    public function getEmail()
-    {
-        return $this->getData(self::USER);
-    }
-
-    /**
      * Get host
      *
      * return string
@@ -115,6 +105,16 @@ class Service extends \Magento\Framework\Model\AbstractModel implements ServiceI
     public function getUser()
     {
         return $this->getData(self::USER);
+    }
+
+    /**
+     * Get email
+     *
+     * return string
+     */
+    public function getEmail()
+    {
+        return $this->getData(self::EMAIL);
     }
 
     /**
@@ -222,17 +222,6 @@ class Service extends \Magento\Framework\Model\AbstractModel implements ServiceI
     }
 
     /**
-     * Set email
-     *
-     * @param string $email
-     * return \Swissup\Email\Api\Data\ServiceInterface
-     */
-    public function setEmail($email)
-    {
-        return $this->setData(self::USER, $email);
-    }
-
-    /**
      * Set host
      *
      * @param string $host
@@ -252,6 +241,17 @@ class Service extends \Magento\Framework\Model\AbstractModel implements ServiceI
     public function setUser($user)
     {
         return $this->setData(self::USER, $user);
+    }
+
+    /**
+     * Set email
+     *
+     * @param string $email
+     * return \Swissup\Email\Api\Data\ServiceInterface
+     */
+    public function setEmail($email)
+    {
+        return $this->setData(self::EMAIL, $email);
     }
 
     /**
