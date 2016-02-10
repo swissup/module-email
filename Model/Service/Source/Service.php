@@ -28,8 +28,10 @@ class Service implements \Magento\Framework\Data\OptionSourceInterface
     public function toOptionArray()
     {
         $options[] = ['label' => 'Magento built-in service', 'value' => ''];
-        $serviceCollection = $this->serviceCollectionFactory->create();//->load()->getItems();
 
+        $serviceCollection = $this->serviceCollectionFactory->create()
+            ->addStatusFilter()
+        ;
         foreach ($serviceCollection as $service) {
             $options[] = [
                 'label' => $service->getName(),

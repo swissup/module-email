@@ -17,4 +17,12 @@ class Collection extends \Magento\Framework\Model\ResourceModel\Db\Collection\Ab
     {
         $this->_init('Swissup\Email\Model\Service', 'Swissup\Email\Model\ResourceModel\Service');
     }
+
+    public function addStatusFilter($status = ServiceInterface::ENABLED)
+    {
+        $this->getSelect()
+            ->where('main_table.status = ?', $status)
+        ;
+        return $this;
+    }
 }

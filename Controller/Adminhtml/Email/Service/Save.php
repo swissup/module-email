@@ -24,7 +24,7 @@ class Save extends Action
     }
 
     /**
-     * save Email item
+     * save Email service
      *
      * @return \Magento\Backend\Model\View\Result\Page|\Magento\Backend\Model\View\Result\Redirect
      * @SuppressWarnings(PHPMD.NPathComplexity)
@@ -56,7 +56,7 @@ class Save extends Action
 
             try {
                 $model->save();
-                $this->messageManager->addSuccess(__('You saved.'));
+                $this->messageManager->addSuccess(__('Service succesfully saved.'));
                 $this->_objectManager->get('Magento\Backend\Model\Session')->setFormData(false);
                 if ($this->getRequest()->getParam('back')) {
                     return $resultRedirect->setPath(
