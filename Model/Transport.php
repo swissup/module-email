@@ -4,11 +4,14 @@ namespace Swissup\Email\Model;
 use Magento\Framework\Mail\MessageInterface;
 use Magento\Framework\App\Config\ScopeConfigInterface;
 use Magento\Store\Model\ScopeInterface;
-use Swissup\Email\Model\Service\Factory;
 
-class Transport implements \Magento\Framework\Mail\TransportInterface //extends \Zend_Mail_Transport_Smtp
+use Swissup\Email\Api\Data\ServiceInterface;
+use Swissup\Email\Model\Service\Factory as ServiceFactory;
+use Swissup\Email\Model\Transport\Factory as TransportFactory;
+
+class Transport implements \Magento\Framework\Mail\TransportInterface
 {
-    const SMTP_SERVICE_CONFIG = 'system/smtp/service';
+    const SERVICE_CONFIG = 'email/default/service';
 
     /**
      * @var MessageInterface
@@ -21,38 +24,46 @@ class Transport implements \Magento\Framework\Mail\TransportInterface //extends 
     protected $scopeConfig;
 
     /**
-     * @var Factory
+     * @var ServiceFactory
      */
     protected $serviceFactory;
+
+    /**
+     * @var TransportFactory
+     */
+    protected $transportFactory;
+
+    /**
+     * Config options for sendmail parameters
+     *
+     * @var null
+     */
+    protected $parameters;
 
     /**
      *
      * @param MessageInterface $message
      * @param ScopeConfigInterface $scopeConfig
-     * @param Factory $serviceFactory
+     * @param ServiceFactory $serviceFactory
+     * @param TransportFactory $transportFactory
+     * @param null $parameters
      * @throws \InvalidArgumentException
      */
     public function __construct(
         MessageInterface $message,
         ScopeConfigInterface $scopeConfig,
-        Factory $serviceFactory
+        ServiceFactory $serviceFactory,
+        TransportFactory $transportFactory,
+        $parameters = null
     ) {
         if (!$message instanceof \Zend_Mail) {
             throw new \InvalidArgumentException('The message should be an instance of \Zend_Mail');
         }
-        $this->scopeConfig = $scopeConfig;
-        // $scope = ScopeInterface::SCOPE_STORE;
-        // $host = $scopeConfig->getValue(self::SMTP_HOST_CONFIG, $scope);
-        // $config = array(
-        //    'auth'     => $scopeConfig->getValue(self::SMTP_AUTH_CONFIG, $scope),
-        //    'ssl'      => $scopeConfig->getValue(self::SMTP_SSL_CONFIG, $scope),
-        //    'username' => $scopeConfig->getValue(self::SMTP_USER_CONFIG, $scope),
-        //    'password' => $scopeConfig->getValue(self::SMTP_PASS_CONFIG, $scope)
-        // );
-
-        // parent::__construct($host, $config);
         $this->message = $message;
+        $this->scopeConfig = $scopeConfig;
         $this->serviceFactory = $serviceFactory;
+        $this->transportFactory = $transportFactory;
+        $this->parameters =$parameters;
     }
 
     /**
@@ -64,7 +75,21 @@ class Transport implements \Magento\Framework\Mail\TransportInterface //extends 
     public function sendMessage()
     {
         try {
-            // parent::send($this->message);
+            $id = $this->scopeConfig->getValue(self::SERVICE_CONFIG, ScopeInterface::SCOPE_STORE);
+
+            $service = $this->serviceFactory->create()->load($id);
+
+            $args = [
+                'message' => $this->message,
+                'config'  => $service->getData(),
+                'parameters' => $this->parameters
+            ];
+            $type = $service->getShortClassByType();
+
+            $this->transportFactory
+                ->create($type, $args)
+                ->sendMessage()
+            ;
         } catch (\Exception $e) {
             $phrase = new \Magento\Framework\Phrase($e->getMessage());
             throw new \Magento\Framework\Exception\MailException($phrase, $e);

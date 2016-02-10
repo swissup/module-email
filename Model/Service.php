@@ -349,6 +349,27 @@ class Service extends \Magento\Framework\Model\AbstractModel implements ServiceI
 
     /**
      *
+     * @param  int $type
+     * @return string
+     */
+    public function getShortClassByType($type = null)
+    {
+        if (null == $type) {
+            $type = $this->getData(self::TYPE);
+        }
+        $classes = [
+            self::TYPE_GMAIL    => 'Gmail',
+            self::TYPE_SMTP     => 'Smtp',
+            self::TYPE_SES      => 'Ses',
+            self::TYPE_MANDRILL => 'Mandrill',
+            self::TYPE_SENDMAIL => 'Sendmail',
+        ];
+
+        return isset($classes[$type]) ? $classes[$type] : $classes;
+    }
+
+    /**
+     *
      * @return array
      */
     public function getSecures()
