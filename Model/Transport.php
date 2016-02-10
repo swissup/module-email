@@ -75,9 +75,11 @@ class Transport implements \Magento\Framework\Mail\TransportInterface
     public function sendMessage()
     {
         try {
-            $id = $this->scopeConfig->getValue(self::SERVICE_CONFIG, ScopeInterface::SCOPE_STORE);
-
-            $service = $this->serviceFactory->create()->load($id);
+            $service = $this->serviceFactory->create();
+            $id = (int) $this->scopeConfig->getValue(self::SERVICE_CONFIG, ScopeInterface::SCOPE_STORE);
+            if ($id) {
+                $service->load($id);
+            }
 
             $args = [
                 'message' => $this->message,
