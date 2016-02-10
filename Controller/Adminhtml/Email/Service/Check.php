@@ -63,46 +63,29 @@ class Check extends Action
             $mailMessage->setSubject('Test Email Transport ()');
 
             try {
+                $args = [
+                    'message' => $mailMessage,
+                    'config' => $data
+                ];
                 switch ($data['type']) {
                     case ServiceInterface::TYPE_GMAIL:
                         $type = 'Gmail';
-                        $args = [
-                            'message' => $mailMessage,
-                            'config' => $data
-                        ];
-                        $transport = $this->transportFactory->create($type, $args);
                         break;
                     case ServiceInterface::TYPE_SMTP:
                         $type = 'Smtp';
-                        $args = [
-                            'message' => $mailMessage,
-                            'config' => $data
-                        ];
-                        $transport = $this->transportFactory->create($type, $args);
                         break;
                     case ServiceInterface::TYPE_SES:
                         $type = 'Ses';
-                        $args = [
-                            'message' => $mailMessage,
-                            'config' => $data
-                        ];
-                        $transport = $this->transportFactory->create($type, $args);
                         break;
                     case ServiceInterface::TYPE_MANDRILL:
                         $type = 'Mandrill';
-                        $args = [
-                            'message' => $mailMessage,
-                            'config' => $data
-                        ];
-                        $transport = $this->transportFactory->create($type, $args);
                         break;
                     case ServiceInterface::TYPE_SENDMAIL:
                     default:
                         $type = 'Sendmail';
-                        $args = ['message' => $mailMessage];
-                        $transport = $this->transportFactory->create($type, $args);
                         break;
                 }
+                $transport = $this->transportFactory->create($type, $args);
 
                 $transport->sendMessage();
                 $successMessage = __(
