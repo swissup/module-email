@@ -1,6 +1,6 @@
 # Email
 
-Magento2 for email providers integrations (smtp, mandrill, amazon ses)
+Magento2 module for email providers integrations (smtp, mandrill, amazon ses)
 
 ### Installation
 
