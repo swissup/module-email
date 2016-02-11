@@ -8,18 +8,71 @@
             <resource>Swissup_Email::config_service</resource>
             <group id="default" translate="label" type="text" sortOrder="10" showInDefault="1" showInWebsite="1" showInStore="1">
                 <label>Default</label>
-                <!--
-                <field id="enable" translate="label" type="select" sortOrder="10" showInDefault="1" showInWebsite="1" showInStore="1">
-                    <label>Enable</label>
-                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
-                </field>
-                -->
-
                 <field id="service" translate="label" type="select" sortOrder="20" showInDefault="1" showInWebsite="1" showInStore="1">
                     <label>Default Transport Email Service</label>
                     <source_model>Swissup\Email\Model\Service\Source\Service</source_model>
                     <config_path>email/default/service</config_path>
+                    <comment>Select email service</comment>
                 </field>
+                <field id="addService" translate="label comment" type="button" sortOrder="21" showInDefault="1" showInWebsite="0" showInStore="0">
+                    <frontend_model>Swissup\Email\Block\System\Config\Form\Field\Button\Add</frontend_model>
+                    <comment>Use button in order to create new email service.</comment>
+                </field>
+                <!-- <group id="serviceConfiguration" translate="label" showInDefault="1" showInWebsite="0" showInStore="0" sortOrder="22">
+                    <label>Configuration</label>
+                    <field id="type" type="select" translate="label" sortOrder="15" showInDefault="1" showInWebsite="0" showInStore="0">
+                        <label>Type</label>
+                        <source_model>Swissup\Email\Model\Service\Source\Type</source_model>
+                    </field>
+                    <field id="user" type="text" translate="label" sortOrder="25" showInDefault="1" showInWebsite="0" showInStore="0">
+                        <label>User</label>
+                        <depends>
+                            <field id="type" separator=",">10,15,20,30</field>
+                        </depends>
+
+                    </field>
+                    <field id="password" type="password" translate="label" sortOrder="35" showInDefault="1" showInWebsite="0" showInStore="0">
+                        <label>Password</label>
+                        <depends>
+                            <field id="type" separator=",">10,15,20,30</field>
+                        </depends>
+                    </field>
+                    <field id="email" type="text" translate="label" sortOrder="45" showInDefault="1" showInWebsite="0" showInStore="0">
+                        <label>Email</label>
+                        <depends>
+                            <field id="type" separator=",">10,20</field>
+                        </depends>
+                    </field>
+                    <field id="host" type="text" translate="label" sortOrder="55" showInDefault="1" showInWebsite="0" showInStore="0">
+                        <label>Host</label>
+                        <depends>
+                            <field id="type" separator=",">10</field>
+                        </depends>
+                    </field>
+                    <field id="port" type="text" translate="label" sortOrder="65" showInDefault="1" showInWebsite="0" showInStore="0">
+                        <label>Port</label>
+                        <depends>
+                            <field id="type" separator=",">10</field>
+                        </depends>
+                    </field>
+                    <field id="secure" type="select" translate="label" sortOrder="75" showInDefault="1" showInWebsite="0" showInStore="0">
+                        <label>Secure</label>
+                        <source_model>Swissup\Email\Model\Service\Source\Secure</source_model>
+                        <depends>
+                            <field id="type" separator=",">10</field>
+                        </depends>
+                    </field>
+                    <field id="auth" type="select" translate="label" sortOrder="85" showInDefault="1" showInWebsite="0" showInStore="0">
+                        <label>Auth</label>
+                        <source_model>Swissup\Email\Model\Service\Source\AuthType</source_model>
+                        <depends>
+                            <field id="type" separator=",">10</field>
+                        </depends>
+                    </field>
+                    <depends>
+                        <field id="service" negative="1" separator=",">0,</field>
+                    </depends>
+                </group> -->
             </group>
         </section>
 
@@ -29,6 +82,11 @@
                     <label>Default Transport Email Service</label>
                     <source_model>Swissup\Email\Model\Service\Source\Service</source_model>
                     <config_path>email/default/service</config_path>
+                    <comment>Select email service</comment>
+                </field>
+                <field id="addService" translate="label comment" type="button" sortOrder="16" showInDefault="1" showInWebsite="0" showInStore="0">
+                    <frontend_model>Swissup\Email\Block\System\Config\Form\Field\Button\Add</frontend_model>
+                    <comment>Use button in order to create new email service.</comment>
                 </field>
             </group>
         </section>
