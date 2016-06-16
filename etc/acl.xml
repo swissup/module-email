@@ -11,11 +11,11 @@
                         </resource>
                     </resource>
                 </resource>
-            </resource>
-            <resource id="Magento_Backend::stores">
-                <resource id="Magento_Backend::stores_settings">
-                    <resource id="Magento_Config::config">
-                        <resource id="Swissup_Email::config_service" title="Email"/>
+                <resource id="Magento_Backend::stores">
+                    <resource id="Magento_Backend::stores_settings">
+                        <resource id="Magento_Config::config">
+                            <resource id="Swissup_Email::config_service" title="Email"/>
+                        </resource>
                     </resource>
                 </resource>
             </resource>
