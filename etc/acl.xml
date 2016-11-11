@@ -3,11 +3,13 @@
     <acl>
         <resources>
             <resource id="Magento_Backend::admin">
-                <resource id="Magento_Backend::content">
-                    <resource id="Swissup_Email::master" title="Swissup" sortOrder="10" >
-                        <resource id="Swissup_Email::service" title="Swissup Service" sortOrder="40">
-                            <resource id="Swissup_Email::service_save" title="Save Service" sortOrder="10" />
-                            <resource id="Swissup_Email::service_delete" title="Delete Service" sortOrder="20" />
+                <resource id="Magento_Backend::marketing">
+                    <resource id="Magento_Backend::marketing_communications">
+                        <resource id="Swissup_Email::master" title="Swissup Email" sortOrder="10" >
+                            <resource id="Swissup_Email::service" title="Mail Service" sortOrder="40">
+                                <resource id="Swissup_Email::service_save" title="Save Service" sortOrder="10" />
+                                <resource id="Swissup_Email::service_delete" title="Delete Service" sortOrder="20" />
+                            </resource>
                         </resource>
                     </resource>
                 </resource>
