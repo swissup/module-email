@@ -6,6 +6,7 @@
             <item name="deps" xsi:type="string">email_service_listing.email_service_listing_data_source</item>
         </item>
         <item name="spinner" xsi:type="string">email_service_columns</item>
+        <item name="acl" xsi:type="string">Swissup_Email::service</item>
         <item name="buttons" xsi:type="array">
             <item name="add" xsi:type="array">
                 <item name="name" xsi:type="string">add</item>
