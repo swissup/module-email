@@ -63,7 +63,7 @@ class Transport implements \Magento\Framework\Mail\TransportInterface
         $this->scopeConfig = $scopeConfig;
         $this->serviceFactory = $serviceFactory;
         $this->transportFactory = $transportFactory;
-        $this->parameters =$parameters;
+        $this->parameters = $parameters;
     }
 
     /**
@@ -96,5 +96,13 @@ class Transport implements \Magento\Framework\Mail\TransportInterface
             $phrase = new \Magento\Framework\Phrase($e->getMessage());
             throw new \Magento\Framework\Exception\MailException($phrase, $e);
         }
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function getMessage()
+    {
+        return $this->message;
     }
 }

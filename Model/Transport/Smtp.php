@@ -70,4 +70,12 @@ class Smtp extends \Zend_Mail_Transport_Smtp implements TransportInterface
         }
         return true;
     }
+
+    /**
+     * @inheritdoc
+     */
+    public function getMessage()
+    {
+        return $this->message;
+    }
 }

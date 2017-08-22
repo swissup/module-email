@@ -76,4 +76,12 @@ class Ses extends SlmAbstract implements TransportInterface
         }
         return true;
     }
+
+    /**
+     * @inheritdoc
+     */
+    public function getMessage()
+    {
+        return $this->message;
+    }
 }
