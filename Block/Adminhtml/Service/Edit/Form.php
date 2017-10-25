@@ -6,31 +6,6 @@ namespace Swissup\Email\Block\Adminhtml\Service\Edit;
  */
 class Form extends \Magento\Backend\Block\Widget\Form\Generic
 {
-
-    /**
-     * @var \Magento\Store\Model\System\Store
-     */
-    protected $_systemStore;
-
-    /**
-     * @param \Magento\Backend\Block\Template\Context $context
-     * @param \Magento\Framework\Registry $registry
-     * @param \Magento\Framework\Data\FormFactory $formFactory
-     * @param \Magento\Cms\Model\Wysiwyg\Config $wysiwygConfig
-     * @param \Magento\Store\Model\System\Store $systemStore
-     * @param array $data
-     */
-    public function __construct(
-        \Magento\Backend\Block\Template\Context $context,
-        \Magento\Framework\Registry $registry,
-        \Magento\Framework\Data\FormFactory $formFactory,
-        \Magento\Store\Model\System\Store $systemStore,
-        array $data = []
-    ) {
-        $this->_systemStore = $systemStore;
-        parent::__construct($context, $registry, $formFactory, $data);
-    }
-
     /**
      * Init form
      *
@@ -97,6 +72,25 @@ class Form extends \Magento\Backend\Block\Widget\Form\Generic
             ]
         );
 
+        $isNew = $model->getId() == null;
+        if ($isNew) {
+            $smtpSettings = [];
+            foreach ($model->getPreDefinedSmtpProviderSettings() as $settings) {
+                $smtpSettings[] = [
+                    'label' => $settings['name'],
+                    'value' => \Swissup\Email\Model\Service::TYPE_SMTP,
+                    'title' => json_encode(json_encode($settings))
+                ];
+            }
+        }
+        $values = array();
+        foreach ($model->getTypes() as $value => $label) {
+            if ($isNew && \Swissup\Email\Model\Service::TYPE_SMTP === $value) {
+                $values[$value] = ['label' => $label, 'value' => $smtpSettings];
+            } else {
+                $values[$value] = ['label' => $label, 'value' => $value];
+            }
+        }
         $fieldset->addField(
             'type',
             'select',
@@ -105,41 +99,8 @@ class Form extends \Magento\Backend\Block\Widget\Form\Generic
                 'title'    => __('Type'),
                 'name'     => 'type',
                 'required' => true,
-                'options'  => $model->getTypes(),
-                'disabled' => $isElementDisabled
-            ]
-        );
-
-        $fieldset->addField(
-            'user',
-            'text',
-            [
-                'name'     => 'user',
-                'label'    => __('User (key)'),
-                'title'    => __('User (key)'),
-                'disabled' => $isElementDisabled
-            ]
-        );
-
-        $fieldset->addField(
-            'password',
-            'password',
-            [
-                'name'     => 'password',
-                'label'    => __('Password (secure key)'),
-                'title'    => __('Password (secure key)'),
-                // 'required' => true,
-                'disabled' => $isElementDisabled
-            ]
-        );
-
-        $fieldset->addField(
-            'email',
-            'text',
-            [
-                'name'     => 'email',
-                'label'    => __('Email (from)'),
-                'title'    => __('Email'),
+                // 'options'  => $model->getTypes(),
+                'values' => $values,
                 'disabled' => $isElementDisabled
             ]
         );
@@ -168,6 +129,42 @@ class Form extends \Magento\Backend\Block\Widget\Form\Generic
         );
 
         $fieldset->addField(
+            'auth',
+            'select',
+            [
+                'label'    => __('Auth Type'),
+                'title'    => __('Auth Type'),
+                'name'     => 'auth',
+                'options'  => $model->getAuthTypes(),
+                'disabled' => $isElementDisabled,
+            ]
+        );
+
+        $fieldset->addField(
+            'user',
+            'text',
+            [
+                'name'     => 'user',
+                'label'    => __('User (key)'),
+                'title'    => __('User (key)'),
+                'disabled' => $isElementDisabled
+            ]
+        );
+
+        $fieldset->addField(
+            'password',
+            'password',
+            [
+                'name'     => 'password',
+                'label'    => __('Password (secure key)'),
+                'title'    => __('Password (secure key)'),
+                // 'required' => true,
+                'disabled' => $isElementDisabled
+            ]
+        );
+
+
+        $fieldset->addField(
             'secure',
             'select',
             [
@@ -180,14 +177,13 @@ class Form extends \Magento\Backend\Block\Widget\Form\Generic
         );
 
         $fieldset->addField(
-            'auth',
-            'select',
+            'email',
+            'text',
             [
-                'label'    => __('Auth Type'),
-                'title'    => __('Auth Type'),
-                'name'     => 'auth',
-                'options'  => $model->getAuthTypes(),
-                'disabled' => $isElementDisabled,
+                'name'     => 'email',
+                'label'    => __('Email (from)'),
+                'title'    => __('Email'),
+                'disabled' => $isElementDisabled
             ]
         );
 

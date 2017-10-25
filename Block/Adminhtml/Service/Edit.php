@@ -128,42 +128,7 @@ class Edit extends \Magento\Backend\Block\Widget\Form\Container
 
     protected function _prepareLayout()
     {
-        $this->_formScripts[] = "
-        require([
-            'jquery',
-            'mage/backend/form'
-        ], function($) {
-            var
-            depends = {
-                0:  '0000000',//sendmail
-                10: '1111111',//smtp
-                15: '1100000',//gmail
-                20: '1110000',//ses
-                30: '1100000' //mandrill
-            };
-
-            function toggleDepends(depend)
-            {
-                var prefix = 'service_',
-                elements = ['user', 'password', 'email', 'host', 'port', 'secure', 'auth'];
-                elements.each(function(id, index) {
-                    id = '#' + prefix + id;
-                    var el = $(id).parents('.field');
-                    if (depend[index] == 1) {
-                        el.show();
-                    } else {
-                        el.hide();
-                    }
-                });
-            }
-
-            $('#service_type').change(function() {
-                toggleDepends(depends[this.value]);
-            });
-            toggleDepends(depends[$('#service_type').val()]);
-            console.log('Initialize');
-        });
-        ";
+        $this->_formScripts[] = "require(['Swissup_Email/service-settings']);";
         return parent::_prepareLayout();
     }
 }

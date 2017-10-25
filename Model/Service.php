@@ -336,6 +336,157 @@ class Service extends \Magento\Framework\Model\AbstractModel implements ServiceI
      *
      * @return array
      */
+    public function getPreDefinedSmtpProviderSettings()
+    {
+        return [
+          [
+            'name' => 'Mailgun',
+            'host' => 'smtp.mailgun.org',
+            'port' => 587,
+            'secure' => self::SECURE_TLS,
+          ], [
+            'name' => 'Mandrill',
+            'host' => 'smtp.mandrillapp.com',
+            'port' => 587,
+            'secure' => self::SECURE_TLS,
+          ], [
+            'name' => 'Sendinblue',
+            'host' => 'smtp-relay.sendinblue.com',
+            'port' => 587,
+            'secure' => self::SECURE_TLS,
+          ], [
+            'name' => 'Sendgrid',
+            'host' => 'smtp.sendgrid.net',
+            'port' => 587,
+            'secure' => self::SECURE_TLS,
+          ], [
+            'name' => 'Elastic Email',
+            'host' => 'smtp.elasticemail.com',
+            'port' => 2525,
+            'secure' => self::SECURE_NONE,
+          ], [
+            'name' => 'SparkPost',
+            'host' => 'smtp.sparkpostmail.com',
+            'port' => 587,
+            'secure' => self::SECURE_TLS,
+          ], [
+            'name' => 'Mailjet',
+            'host' => 'in-v3.mailjet.com',
+            'port' => 587,
+            'secure' => self::SECURE_TLS,
+          ], [
+            'name' => 'Postmark',
+            'host' => 'smtp.postmarkapp.com',
+            'port' => 587,
+            'secure' => self::SECURE_TLS,
+          ], [
+            'name' => 'AOL Mail',
+            'host' => 'smtp.aol.com',
+            'port' => 587,
+            'secure' => self::SECURE_NONE,
+          ], [
+            'name' => 'Comcast',
+            'host' => 'smtp.comcast.net',
+            'port' => 587,
+            'secure' => self::SECURE_NONE,
+          ], [
+            'name' => 'GMX',
+            'host' => 'mail.gmx.net',
+            'port' => 587,
+            'secure' => self::SECURE_TLS,
+          ], [
+            'name' => 'Gmail',
+            'host' => 'smtp.gmail.com',
+            'port' => 465,
+            'secure' => self::SECURE_SSL,
+          ], [
+            'name' => 'Hotmail',
+            'host' => 'smtp-mail.outlook.com',
+            'port' => 587,
+            'secure' => self::SECURE_TLS,
+          ], [
+            'name' => 'Mail.com',
+            'host' => 'smtp.mail.com',
+            'port' => 587,
+            'secure' => self::SECURE_NONE,
+          ], [
+            'name' => 'O2 Mail',
+            'host' => 'smtp.o2.ie',
+            'port' => 25,
+            'secure' => self::SECURE_NONE,
+          ], [
+            'name' => 'Office365',
+            'host' => 'smtp.office365.com',
+            'port' => 587,
+            'secure' => self::SECURE_NONE,
+          ], [
+            'name' => 'Orange',
+            'host' => 'smtp.orange.net',
+            'port' => 25,
+            'secure' => self::SECURE_NONE,
+          ], [
+            'name' => 'Outlook',
+            'host' => 'smtp-mail.outlook.com',
+            'port' => 587,
+            'secure' => self::SECURE_TLS,
+          ], [
+            'name' => 'Yahoo Mail',
+            'host' => 'smtp.mail.yahoo.com',
+            'port' => 465,
+            'secure' => self::SECURE_SSL,
+          ], [
+            'name' => 'Yahoo Mail Plus',
+            'host' => 'plus.smtp.mail.yahoo.com',
+            'port' => 465,
+            'secure' => self::SECURE_SSL,
+          ], [
+            'name' => 'Yahoo AU/NZ',
+            'host' => 'smtp.mail.yahoo.com.au',
+            'port' => 465,
+            'secure' => self::SECURE_SSL,
+          ], [
+            'name' => 'AT&T',
+            'host' => 'smtp.att.yahoo.com',
+            'port' => 465,
+            'secure' => self::SECURE_SSL,
+          ], [
+            'name' => 'NTL @ntlworld.com',
+            'host' => 'smtp.ntlworld.com',
+            'port' => 465,
+            'secure' => self::SECURE_SSL,
+          ], [
+            'name' => 'BT Connect',
+            'host' => 'pop3.btconnect.com',
+            'port' => 25,
+            'secure' => self::SECURE_NONE,
+          ], [
+            'name' => 'Zoho Mail',
+            'host' => 'smtp.zoho.com',
+            'port' => 465,
+            'secure' => self::SECURE_SSL,
+          ], [
+            'name' => 'Verizon',
+            'host' => 'outgoing.verizon.net',
+            'port' => 465,
+            'secure' => self::SECURE_SSL,
+          ], [
+            'name' => 'BT Openworld',
+            'host' => 'mail.btopenworld.com',
+            'port' => 25,
+            'secure' => self::SECURE_NONE,
+          ], [
+            'name' => 'O2 Online Deutschland',
+            'host' => 'mail.o2online.de',
+            'port' => 25,
+            'secure' => self::SECURE_NONE,
+          ]
+        ];
+    }
+
+    /**
+     *
+     * @return array
+     */
     public function getTypes()
     {
         return [
