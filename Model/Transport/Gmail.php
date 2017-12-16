@@ -43,7 +43,7 @@ class Gmail extends \Zend_Mail_Transport_Smtp implements TransportInterface
     /**
      * Send a mail using this transport
      *
-     * @return void
+     * @return boolean
      * @throws \Magento\Framework\Exception\MailException
      */
     public function sendMessage()
