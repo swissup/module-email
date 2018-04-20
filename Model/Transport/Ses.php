@@ -4,8 +4,6 @@ namespace Swissup\Email\Model\Transport;
 use Magento\Framework\Mail\MessageInterface;
 use Magento\Framework\Mail\TransportInterface;
 
-use Swissup\Email\Api\Data\ServiceInterface;
-
 use SlmMail\Mail\Transport\HttpTransport;
 use SlmMail\Service\SesService;
 
@@ -28,8 +26,6 @@ class Ses extends SlmAbstract implements TransportInterface
      *
      * @param MessageInterface $message
      * @param array $config
-     * @ param \Magento\Framework\ObjectManagerInterface $objectManager
-     * @param SesClient $client
      * @throws \InvalidArgumentException
      */
     public function __construct(
@@ -58,7 +54,7 @@ class Ses extends SlmAbstract implements TransportInterface
     /**
      * Send a mail using this transport
      *
-     * @return void
+     * @return boolean
      * @throws \Magento\Framework\Exception\MailException
      */
     public function sendMessage()
