@@ -35,8 +35,8 @@ require([
             depend = depends[key];
         }
         $(elements).each(function(id, index) {
-            var el = getField(id).parents('.field');
-            if (depend[index] == 1) {
+            var el = getField(index).closest('.field');
+            if (depend[id] == 1) {
                 el.show();
             } else {
                 el.hide();
