@@ -4,7 +4,8 @@
                 type="Magento\Framework\Api\SearchResults" />
     <preference for="Swissup\Email\Api\Data\ServiceInterface" type="Swissup\Email\Model\Service" />
     <preference for="Swissup\Email\Api\ServiceRepositoryInterface" type="Swissup\Email\Model\ServiceRepository" />
-    <preference for="\Magento\Framework\Mail\Transport" type="Swissup\Email\Model\Transport"/>
+    <preference for="Magento\Framework\Mail\Transport" type="Swissup\Email\Model\Transport"/>
+    <preference for="Magento\Framework\Mail\TransportInterface" type="Swissup\Email\Model\Transport"/>
 
     <type name="Swissup\Email\Model\ResourceModel\Service\Grid\Collection">
         <arguments>
