@@ -21,6 +21,7 @@ cd <magento_root>
 composer require swissup/email
 bin/magento module:enable Swissup_Email
 bin/magento setup:upgrade
+bin/magento setup:di:compile
 ```
 
 ### Usage
