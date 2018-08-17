@@ -14,15 +14,22 @@ class Check extends Action
     protected $transportFactory;
 
     /**
+     * @var Random
+     */
+    private $random;
+
+    /**
      * @param Action\Context $context
      * @param Factory $transportFactory
      */
     public function __construct(
         Action\Context $context,
-        Factory $transportFactory
+        Factory $transportFactory,
+        \Magento\Framework\Math\Random $random
     ) {
         parent::__construct($context);
         $this->transportFactory = $transportFactory;
+        $this->random = $random;
     }
 
     /**
@@ -60,6 +67,10 @@ class Check extends Action
             $mailMessage->setBodyText('This is test transport mail.');
             $mailMessage->setFrom($email, 'test');
             $mailMessage->addTo($email, 'test');
+
+            $webTesterEmail = str_replace('xxxxx', $this->random->getRandomString(5), 'web-xxxxx@mail-tester.com');
+            $mailMessage->addTo($webTesterEmail, 'web mail tester');
+
             $mailMessage->setSubject('Test Email Transport ()');
 
             try {
@@ -90,7 +101,8 @@ class Check extends Action
                 $transport->sendMessage();
                 $successMessage = __(
                     'Connection with mail server was succesfully established.'
-                    . ' Please check your inbox to verify this final.'
+                    . ' Please check your inbox ' . $email . ' to verify.'
+                    . ' Or click <a href="https://www.mail-tester.com/' . $webTesterEmail . '">here</a>.'
                 );
                 $this->messageManager->addSuccess($successMessage);
                 $this->_objectManager->get('Magento\Backend\Model\Session')->setFormData(false);
