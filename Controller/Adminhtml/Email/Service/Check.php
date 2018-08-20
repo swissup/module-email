@@ -65,6 +65,7 @@ class Check extends Action
             }
             $mailMessage = new \Magento\Framework\Mail\Message();
             $mailMessage->setBodyText('This is test transport mail.');
+            $mailMessage->setBodyHtml('<p>This is test transport mail.</p>');
             $mailMessage->setFrom($email, 'test');
             $mailMessage->addTo($email, 'test');
 
