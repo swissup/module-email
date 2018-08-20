@@ -22,7 +22,7 @@ class Factory
      */
     public function create($type = 'Smtp', $config = [])
     {
-        $class = "Swissup\Email\Model\Transport\\$type";
+        $class = "\Swissup\Email\Model\Transport\\$type";
         return $this->objectManager->create($class, $config);
     }
 }
