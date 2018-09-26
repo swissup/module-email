@@ -1,5 +1,5 @@
 {
-    "name": "swissup/email",
+    "name": "swissup/module-email",
     "description": "Magento2 email providers integration (smtp, mandrill, amazon ses)",
     "keywords": [
         "email",
@@ -10,7 +10,7 @@
         "sendmail"
     ],
     "type": "magento2-module",
-    "version": "0.1.6",
+    "version": "0.2.0",
     "license": "OSL-3.0",
     "require": {
         "slm/mail": "~1.5",
