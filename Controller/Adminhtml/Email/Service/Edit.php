@@ -64,7 +64,6 @@ class Edit extends Action
      */
     public function execute()
     {
-        // \Zend_Debug::dump($this->getRequest()->getFullActionName());
         $_modelKey = 'Swissup\Email\Model\Service';
         $id = $this->getRequest()->getParam('id');
         $model = $this->_objectManager->create($_modelKey);

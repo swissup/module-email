@@ -48,7 +48,6 @@ class Save extends Action
             }
 
             $model->setData($data);
-            // \Zend_Debug::dump($model->getData());
             // $this->_eventManager->dispatch(
             //     'swissup_email_service_prepare_save',
             //     ['item' => $model, 'request' => $request]

@@ -33,9 +33,6 @@ class Index extends Action
      */
     public function execute()
     {
-        // \Zend_Debug::dump($this->getRequest()->getFullActionName());
-        // \Zend_Debug::dump(__METHOD__);
-        // die;
         /** @var \Magento\Backend\Model\View\Result\Page $resultPage */
         $resultPage = $this->resultPageFactory->create();
         $resultPage->setActiveMenu('Swissup_Email::service');

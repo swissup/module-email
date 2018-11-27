@@ -6,7 +6,7 @@ use Magento\Framework\App\Config\ScopeConfigInterface;
 use Magento\Store\Model\ScopeInterface;
 
 use Swissup\Email\Api\Data\ServiceInterface;
-use Swissup\Email\Model\Service\Factory as ServiceFactory;
+use Swissup\Email\Model\ServiceFactory;
 use Swissup\Email\Model\Transport\Factory as TransportFactory;
 
 class Transport implements \Magento\Framework\Mail\TransportInterface

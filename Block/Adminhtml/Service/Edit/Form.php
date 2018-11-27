@@ -52,12 +52,6 @@ class Form extends \Magento\Backend\Block\Widget\Form\Generic
             ['legend' => __('Service Information'), 'class' => 'fieldset-wide']
         );
 
-        // $fieldset = $form->addFieldset(
-        //     'base_fieldset',
-        //     ['legend' => __('Information'), 'class' => 'fieldset-wide']
-        // );
-        // \Zend_Debug::dump(get_class_methods($this));
-        // \Zend_Debug::dump(get_class_methods($fieldset));
         $fieldset->addField('id', 'hidden', ['name' => 'id']);
 
         $fieldset->addField(
