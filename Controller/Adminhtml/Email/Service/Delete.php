@@ -6,11 +6,22 @@ use Magento\TestFramework\ErrorLog\Logger;
 
 class Delete extends \Magento\Backend\App\Action
 {
+    /**
+     *
+     * @var \Swissup\Email\Model\ServiceFactory
+     */
+    protected $serviceFactory;
 
     /**
      * @param Action\Context $context
+     * @param \Swissup\Email\Model\ServiceFactory $serviceFactory
      */
-    public function __construct(Action\Context $context) {
+    public function __construct(
+        Action\Context $context,
+        \Swissup\Email\Model\ServiceFactory $serviceFactory
+    ) {
+        $this->serviceFactory = $serviceFactory;
+
         parent::__construct($context);
     }
 
@@ -36,7 +47,7 @@ class Delete extends \Magento\Backend\App\Action
         if ($id) {
             try {
                 // init model and delete
-                $model = $this->_objectManager->create('Swissup\Email\Model\Service');
+                $model = $this->serviceFactory->create();
                 $model->load($id);
 
                 $model->delete();

@@ -7,11 +7,30 @@ use Magento\TestFramework\ErrorLog\Logger;
 class Save extends Action
 {
     /**
+     *
+     * @var \Swissup\Email\Model\ServiceFactory
+     */
+    protected $serviceFactory;
+
+    /**
+     *
+     * @var \Magento\Backend\Model\Session
+     */
+    private $session;
+
+    /**
      * @param Action\Context $context
+     * @param \Swissup\Email\Model\ServiceFactory $serviceFactory
+     * @param \Magento\Backend\Model\Session $session
      */
     public function __construct(
-        Action\Context $context
+        Action\Context $context,
+        \Swissup\Email\Model\ServiceFactory $serviceFactory,
+        \Magento\Backend\Model\Session $session
     ) {
+        $this->serviceFactory = $serviceFactory;
+        $this->session = $session;
+
         parent::__construct($context);
     }
 
@@ -38,7 +57,7 @@ class Save extends Action
         $resultRedirect = $this->resultRedirectFactory->create();
 
         if ($data) {
-            $model = $this->_objectManager->create('Swissup\Email\Model\Service');
+            $model = $this->serviceFactory->create();
 
             $id = (int) $request->getParam('id');
             if ($id) {
@@ -56,7 +75,7 @@ class Save extends Action
             try {
                 $model->save();
                 $this->messageManager->addSuccess(__('Service succesfully saved.'));
-                $this->_objectManager->get('Magento\Backend\Model\Session')->setFormData(false);
+                $this->session->setFormData(false);
                 if ($this->getRequest()->getParam('back')) {
                     return $resultRedirect->setPath(
                         '*/*/edit',

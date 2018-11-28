@@ -6,11 +6,23 @@ use Magento\Backend\App\Action;
 class Edit extends Action
 {
     /**
+     *
+     * @var \Swissup\Email\Model\ServiceFactory
+     */
+    protected $serviceFactory;
+
+    /**
      * Core registry
      *
      * @var \Magento\Framework\Registry
      */
     protected $coreRegistry = null;
+
+    /**
+     *
+     * @var \Magento\Backend\Model\Session
+     */
+    private $session;
 
     /**
      * @var \Magento\Framework\View\Result\PageFactory
@@ -20,15 +32,22 @@ class Edit extends Action
     /**
      * @param Action\Context $context
      * @param \Magento\Framework\View\Result\PageFactory $resultPageFactory
+     * @param \Swissup\Email\Model\ServiceFactory $serviceFactory
      * @param \Magento\Framework\Registry $registry
+     * @param \Magento\Backend\Model\Session $session
      */
     public function __construct(
         Action\Context $context,
         \Magento\Framework\View\Result\PageFactory $resultPageFactory,
-        \Magento\Framework\Registry $registry
+        \Swissup\Email\Model\ServiceFactory $serviceFactory,
+        \Magento\Framework\Registry $registry,
+        \Magento\Backend\Model\Session $session
     ) {
         $this->resultPageFactory = $resultPageFactory;
+        $this->serviceFactory = $serviceFactory;
         $this->coreRegistry = $registry;
+        $this->session = $session;
+
         parent::__construct($context);
     }
 
@@ -64,9 +83,8 @@ class Edit extends Action
      */
     public function execute()
     {
-        $_modelKey = 'Swissup\Email\Model\Service';
         $id = $this->getRequest()->getParam('id');
-        $model = $this->_objectManager->create($_modelKey);
+        $model = $this->serviceFactory->create();
 
         if ($id) {
             $model->load($id);
@@ -79,7 +97,7 @@ class Edit extends Action
             }
         }
 
-        $data = $this->_objectManager->get('Magento\Backend\Model\Session')->getFormData(true);
+        $data = $this->session->getFormData(true);
         if (!empty($data)) {
             $model->setData($data);
         }

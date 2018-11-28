@@ -13,6 +13,7 @@ use Swissup\Email\Model\Transport\Factory as TransportFactory;
 class Transport implements \Magento\Framework\Mail\TransportInterface
 {
     const SERVICE_CONFIG = 'email/default/service';
+    const LOG_CONFIG = 'email/default/log';
 
     /**
      * @var MessageInterface
@@ -101,9 +102,12 @@ class Transport implements \Magento\Framework\Mail\TransportInterface
             $transport = $this->transportFactory->create($type, $args);
             $transport->sendMessage();
 
-            $historyEntry = $this->historyFactory->create();
-            $historyEntry->setServiceId($service->getId())
-                ->saveMessage($message);
+            $isLoggingEnabled = $this->scopeConfig->isSetFlag(self::LOG_CONFIG, ScopeInterface::SCOPE_STORE);
+            if ($isLoggingEnabled) {
+                $historyEntry = $this->historyFactory->create();
+                $historyEntry->setServiceId($service->getId())
+                    ->saveMessage($message);
+            }
         } catch (\Exception $e) {
             $phrase = new \Magento\Framework\Phrase($e->getMessage());
             throw new \Magento\Framework\Exception\MailException($phrase, $e);

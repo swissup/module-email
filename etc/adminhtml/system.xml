@@ -14,6 +14,11 @@
                     <frontend_model>Swissup\Email\Block\System\Config\Form\Field\Button\Add</frontend_model>
                     <comment>Use button in order to create new email service.</comment>
                 </field>
+                <field id="log" translate="label" type="select" sortOrder="17" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Logging Enable</label>
+                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                    <config_path>email/default/log</config_path>
+                </field>
             </group>
         </section>
     </system>

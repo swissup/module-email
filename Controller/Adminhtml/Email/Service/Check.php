@@ -14,22 +14,33 @@ class Check extends Action
     protected $transportFactory;
 
     /**
-     * @var Random
+     * @var \Magento\Framework\Math\Random
      */
     private $random;
 
     /**
+     *
+     * @var \Magento\Backend\Model\Session
+     */
+    private $session;
+
+    /**
      * @param Action\Context $context
      * @param Factory $transportFactory
+     * @param \Magento\Framework\Math\Random $random
+     * @param \Magento\Backend\Model\Session $session
      */
     public function __construct(
         Action\Context $context,
         Factory $transportFactory,
-        \Magento\Framework\Math\Random $random
+        \Magento\Framework\Math\Random $random,
+        \Magento\Backend\Model\Session $session
     ) {
         parent::__construct($context);
+
         $this->transportFactory = $transportFactory;
         $this->random = $random;
+        $this->session = $session;
     }
 
     /**
@@ -106,7 +117,7 @@ class Check extends Action
                     . ' Or click <a href="https://www.mail-tester.com/' . $webTesterEmail . '">here</a>.'
                 );
                 $this->messageManager->addSuccess($successMessage);
-                $this->_objectManager->get('Magento\Backend\Model\Session')->setFormData(false);
+                $this->session->setFormData(false);
                 if ($this->getRequest()->getParam('back')) {
                     return $resultRedirect->setPath(
                         '*/*/edit',
