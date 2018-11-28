@@ -40,3 +40,9 @@ bin/magento setup:di:compile
  5. Select new service in the "Default Transport Email Service" drop-down
  ![config](https://user-images.githubusercontent.com/412612/40239232-2b0aaf5e-5abe-11e8-94c5-b96862d7ccc9.png)
  6. Save
+
+### Logging
+
+ 1. Navigate "Stores → Configurations → Advanced → System → Mail Sending Settings"
+ 2. "Logging Enable" set Yes
+ 3. Navigate to "Marketing → Communications → Email Logs"
