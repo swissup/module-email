@@ -10,6 +10,10 @@
                                 <resource id="Swissup_Email::service_save" title="Save Service" sortOrder="10" />
                                 <resource id="Swissup_Email::service_delete" title="Delete Service" sortOrder="20" />
                             </resource>
+                            <resource id="Swissup_Email::history" title="Mail Logs" sortOrder="50">
+                                <resource id="Swissup_Email::history_save" title="Save Log" sortOrder="10" />
+                                <resource id="Swissup_Email::history_delete" title="Delete Log" sortOrder="20" />
+                            </resource>
                         </resource>
                     </resource>
                 </resource>

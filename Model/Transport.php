@@ -7,6 +7,7 @@ use Magento\Store\Model\ScopeInterface;
 
 use Swissup\Email\Api\Data\ServiceInterface;
 use Swissup\Email\Model\ServiceFactory;
+use Swissup\Email\Model\HistoryFactory;
 use Swissup\Email\Model\Transport\Factory as TransportFactory;
 
 class Transport implements \Magento\Framework\Mail\TransportInterface
@@ -42,10 +43,17 @@ class Transport implements \Magento\Framework\Mail\TransportInterface
 
     /**
      *
+     * @var HistoryFactory
+     */
+    protected $historyFactory;
+
+    /**
+     *
      * @param MessageInterface $message
      * @param ScopeConfigInterface $scopeConfig
      * @param ServiceFactory $serviceFactory
      * @param TransportFactory $transportFactory
+     * @param HistoryFactory $historyFactory
      * @param null $parameters
      * @throws \InvalidArgumentException
      */
@@ -54,6 +62,7 @@ class Transport implements \Magento\Framework\Mail\TransportInterface
         ScopeConfigInterface $scopeConfig,
         ServiceFactory $serviceFactory,
         TransportFactory $transportFactory,
+        HistoryFactory $historyFactory,
         $parameters = null
     ) {
         if (!$message instanceof \Zend_Mail) {
@@ -63,6 +72,7 @@ class Transport implements \Magento\Framework\Mail\TransportInterface
         $this->scopeConfig = $scopeConfig;
         $this->serviceFactory = $serviceFactory;
         $this->transportFactory = $transportFactory;
+        $this->historyFactory = $historyFactory;
         $this->parameters = $parameters;
     }
 
@@ -81,17 +91,19 @@ class Transport implements \Magento\Framework\Mail\TransportInterface
                 $service->load($id);
             }
 
+            $message = $this->message;
             $args = [
-                'message' => $this->message,
+                'message' => $message,
                 'config'  => $service->getData(),
                 'parameters' => $this->parameters
             ];
             $type = $service->getTransportNameByType();
+            $transport = $this->transportFactory->create($type, $args);
+            $transport->sendMessage();
 
-            $this->transportFactory
-                ->create($type, $args)
-                ->sendMessage()
-            ;
+            $historyEntry = $this->historyFactory->create();
+            $historyEntry->setServiceId($service->getId())
+                ->saveMessage($message);
         } catch (\Exception $e) {
             $phrase = new \Magento\Framework\Phrase($e->getMessage());
             throw new \Magento\Framework\Exception\MailException($phrase, $e);

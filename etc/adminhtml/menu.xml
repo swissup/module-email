@@ -2,5 +2,6 @@
 <config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Backend:etc/menu.xsd">
     <menu>
         <add id="Swissup_Email::service" title="Email Services" module="Swissup_Email" sortOrder="11" parent="Magento_Backend::marketing_communications" action="adminhtml/email_service" resource="Swissup_Email::service"/>
+        <add id="Swissup_Email::history" title="Email Logs" module="Swissup_Email" sortOrder="12" parent="Magento_Backend::marketing_communications" action="adminhtml/email_history" resource="Swissup_Email::history"/>
     </menu>
 </config>
