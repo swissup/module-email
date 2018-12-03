@@ -34,19 +34,17 @@ class Edit extends Action
      * @param \Magento\Framework\View\Result\PageFactory $resultPageFactory
      * @param \Swissup\Email\Model\ServiceFactory $serviceFactory
      * @param \Magento\Framework\Registry $registry
-     * @param \Magento\Backend\Model\Session $session
      */
     public function __construct(
         Action\Context $context,
         \Magento\Framework\View\Result\PageFactory $resultPageFactory,
         \Swissup\Email\Model\ServiceFactory $serviceFactory,
-        \Magento\Framework\Registry $registry,
-        \Magento\Backend\Model\Session $session
+        \Magento\Framework\Registry $registry
     ) {
         $this->resultPageFactory = $resultPageFactory;
         $this->serviceFactory = $serviceFactory;
         $this->coreRegistry = $registry;
-        $this->session = $session;
+        $this->session = $context->getSession();
 
         parent::__construct($context);
     }

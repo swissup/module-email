@@ -28,19 +28,17 @@ class Check extends Action
      * @param Action\Context $context
      * @param Factory $transportFactory
      * @param \Magento\Framework\Math\Random $random
-     * @param \Magento\Backend\Model\Session $session
      */
     public function __construct(
         Action\Context $context,
         Factory $transportFactory,
-        \Magento\Framework\Math\Random $random,
-        \Magento\Backend\Model\Session $session
+        \Magento\Framework\Math\Random $random
     ) {
         parent::__construct($context);
 
         $this->transportFactory = $transportFactory;
         $this->random = $random;
-        $this->session = $session;
+        $this->session = $context->getSession();
     }
 
     /**

@@ -21,15 +21,13 @@ class Save extends Action
     /**
      * @param Action\Context $context
      * @param \Swissup\Email\Model\ServiceFactory $serviceFactory
-     * @param \Magento\Backend\Model\Session $session
      */
     public function __construct(
         Action\Context $context,
-        \Swissup\Email\Model\ServiceFactory $serviceFactory,
-        \Magento\Backend\Model\Session $session
+        \Swissup\Email\Model\ServiceFactory $serviceFactory
     ) {
         $this->serviceFactory = $serviceFactory;
-        $this->session = $session;
+        $this->session = $context->getSession();
 
         parent::__construct($context);
     }
