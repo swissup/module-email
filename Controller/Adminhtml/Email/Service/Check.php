@@ -72,13 +72,15 @@ class Check extends Action
             if (empty($email)) {
                 $email = $data['user'];
             }
+            $verifyCode = $this->random->getRandomString(5);
             $mailMessage = new \Magento\Framework\Mail\Message();
-            $mailMessage->setBodyText('This is test transport mail.');
-            $mailMessage->setBodyHtml('<p>This is test transport mail.</p>');
+            $messageText = "This is test transport mail. Verification code : {$verifyCode} .";
+            $mailMessage->setBodyText($messageText);
+            $mailMessage->setBodyHtml("<p>{$messageText}</p>");
             $mailMessage->setFrom($email, 'test');
             $mailMessage->addTo($email, 'test');
 
-            $webTesterEmail = str_replace('xxxxx', $this->random->getRandomString(5), 'web-xxxxx@mail-tester.com');
+            $webTesterEmail = str_replace('xxxxx', $verifyCode, 'web-xxxxx@mail-tester.com');
             $mailMessage->addTo($webTesterEmail, 'web mail tester');
 
             $mailMessage->setSubject('Test Email Transport ()');
@@ -112,6 +114,7 @@ class Check extends Action
                 $successMessage = __(
                     'Connection with mail server was succesfully established.'
                     . ' Please check your inbox ' . $email . ' to verify.'
+                    . " Verification code : {$verifyCode}."
                     . ' Or click <a href="https://www.mail-tester.com/' . $webTesterEmail . '">here</a>.'
                 );
                 $this->messageManager->addSuccess($successMessage);
