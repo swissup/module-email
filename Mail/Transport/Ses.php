@@ -9,8 +9,9 @@ use SlmMail\Service\SesService;
 
 use Aws\Ses\SesClient;
 use Aws\Credentials\Credentials;
+use Zend\Mail\Message;
 
-class Ses extends SlmAbstract implements TransportInterface
+class Ses implements TransportInterface
 {
     /**
      * @var MessageInterface
@@ -32,9 +33,6 @@ class Ses extends SlmAbstract implements TransportInterface
         MessageInterface $message,
         array $config
     ) {
-        if ($message instanceof \Zend_Mail) {
-            $message = $this->convertMailMessage($message);
-        }
         $this->message = $message;
 
         $credentials = new Credentials($config['user'], $config['password']);
@@ -63,15 +61,10 @@ class Ses extends SlmAbstract implements TransportInterface
     public function sendMessage()
     {
         try {
-            // \Zend_Debug::dump($this->message);
-            // \Zend_Debug::dump($this->message->getHeaders());
-            // die;
             $message = $this->message;
             $message = Message::fromString($message->getRawMessage());
 
             $this->transport->send($message);
-            // \Zend_Debug::dump(__LINE__);
-            // die;
         } catch (\Exception $e) {
             $phrase = new \Magento\Framework\Phrase($e->getMessage());
             throw new \Magento\Framework\Exception\MailException($phrase, $e);

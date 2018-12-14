@@ -8,8 +8,9 @@ use Swissup\Email\Api\Data\ServiceInterface;
 
 use SlmMail\Mail\Transport\HttpTransport;
 use SlmMail\Service\MandrillService;
+use Zend\Mail\Message;
 
-class Mandrill extends SlmAbstract implements TransportInterface
+class Mandrill implements TransportInterface
 {
     /**
      * @var MessageInterface
@@ -33,10 +34,8 @@ class Mandrill extends SlmAbstract implements TransportInterface
         MessageInterface $message,
         array $config
     ) {
-        if ($message instanceof \Zend_Mail) {
-            $message = $this->convertMailMessage($message);
-        }
         $this->message = $message;
+
         $service = new MandrillService($config['password']);
         // \Zend_Debug::dump($service->pingUser()));
 
