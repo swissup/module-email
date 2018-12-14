@@ -1,5 +1,5 @@
 <?php
-namespace Swissup\Email\Model\Transport;
+namespace Swissup\Email\Mail\Transport;
 
 use Magento\Framework\Mail\MessageInterface;
 use Magento\Framework\Mail\TransportInterface;
@@ -32,7 +32,10 @@ class Ses extends SlmAbstract implements TransportInterface
         MessageInterface $message,
         array $config
     ) {
-        $this->message = $this->convertMailMessage($message);
+        if ($message instanceof \Zend_Mail) {
+            $message = $this->convertMailMessage($message);
+        }
+        $this->message = $message;
 
         $credentials = new Credentials($config['user'], $config['password']);
         $client = SesClient::factory(array(
@@ -63,7 +66,10 @@ class Ses extends SlmAbstract implements TransportInterface
             // \Zend_Debug::dump($this->message);
             // \Zend_Debug::dump($this->message->getHeaders());
             // die;
-            $this->transport->send($this->message);
+            $message = $this->message;
+            $message = Message::fromString($message->getRawMessage());
+
+            $this->transport->send($message);
             // \Zend_Debug::dump(__LINE__);
             // die;
         } catch (\Exception $e) {

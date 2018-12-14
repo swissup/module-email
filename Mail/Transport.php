@@ -1,5 +1,5 @@
 <?php
-namespace Swissup\Email\Model;
+namespace Swissup\Email\Mail;
 
 use Magento\Framework\Mail\MessageInterface;
 use Magento\Framework\App\Config\ScopeConfigInterface;
@@ -8,7 +8,7 @@ use Magento\Store\Model\ScopeInterface;
 use Swissup\Email\Api\Data\ServiceInterface;
 use Swissup\Email\Model\ServiceFactory;
 use Swissup\Email\Model\HistoryFactory;
-use Swissup\Email\Model\Transport\Factory as TransportFactory;
+use Swissup\Email\Mail\Transport\Factory as TransportFactory;
 
 class Transport implements \Magento\Framework\Mail\TransportInterface
 {

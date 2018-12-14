@@ -4,7 +4,7 @@ namespace Swissup\Email\Controller\Adminhtml\Email\Service;
 use Magento\Backend\App\Action;
 use Magento\TestFramework\ErrorLog\Logger;
 use Swissup\Email\Api\Data\ServiceInterface;
-use Swissup\Email\Model\Transport\Factory;
+use Swissup\Email\Mail\Transport\Factory;
 
 class Check extends Action
 {

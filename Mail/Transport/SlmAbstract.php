@@ -1,5 +1,5 @@
 <?php
-namespace Swissup\Email\Model\Transport;
+namespace Swissup\Email\Mail\Transport;
 
 abstract class SlmAbstract
 {
@@ -67,7 +67,7 @@ abstract class SlmAbstract
             } elseif (is_string($html)) {
                 $part = new \Zend\Mime\Part($html);
                 $part->encoding = \Zend\Mime\Mime::ENCODING_QUOTEDPRINTABLE;
-                $part->type = \Zend\Mime\Mime::TYPE_TEXT;
+                $part->type = \Zend\Mime\Mime::TYPE_HTML;
                 $part->charset = $charset;
             }
 

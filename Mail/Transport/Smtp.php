@@ -1,5 +1,5 @@
 <?php
-namespace Swissup\Email\Model\Transport;
+namespace Swissup\Email\Mail\Transport;
 
 use Magento\Framework\Mail\MessageInterface;
 use Magento\Framework\Mail\TransportInterface;

@@ -1,5 +1,5 @@
 <?php
-namespace Swissup\Email\Model\Transport;
+namespace Swissup\Email\Mail\Transport;
 
 use Magento\Framework\Mail\MessageInterface;
 use Magento\Framework\Mail\TransportInterface;
@@ -33,8 +33,10 @@ class Mandrill extends SlmAbstract implements TransportInterface
         MessageInterface $message,
         array $config
     ) {
-        $this->message = $this->convertMailMessage($message);
-
+        if ($message instanceof \Zend_Mail) {
+            $message = $this->convertMailMessage($message);
+        }
+        $this->message = $message;
         $service = new MandrillService($config['password']);
         // \Zend_Debug::dump($service->pingUser()));
 
@@ -50,7 +52,10 @@ class Mandrill extends SlmAbstract implements TransportInterface
     public function sendMessage()
     {
         try {
-            $this->transport->send($this->message);
+            $message = $this->message;
+            $message = Message::fromString($message->getRawMessage());
+
+            $this->transport->send($message);
         } catch (\Exception $e) {
             $phrase = new \Magento\Framework\Phrase($e->getMessage());
             throw new \Magento\Framework\Exception\MailException($phrase, $e);
