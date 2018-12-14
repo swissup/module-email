@@ -5,8 +5,10 @@ use Magento\Framework\Mail\MessageInterface;
 use Magento\Framework\Mail\TransportInterface;
 
 use Swissup\Email\Api\Data\ServiceInterface;
+use Zend\Mail\Transport\SmtpOptions;
+use Zend\Mail\Message;
 
-class Smtp extends \Zend_Mail_Transport_Smtp implements TransportInterface
+class Smtp extends \Zend\Mail\Transport\Smtp implements TransportInterface
 {
     /**
      * @var MessageInterface
@@ -14,35 +16,50 @@ class Smtp extends \Zend_Mail_Transport_Smtp implements TransportInterface
     protected $message;
 
     /**
+     * Constructor.
      *
      * @param MessageInterface $message
      * @param array $config
-     * @throws \InvalidArgumentException
+     * @param  SmtpOptions $options Optional
      */
     public function __construct(
         MessageInterface $message,
-        array $config
+        array $config,
+        SmtpOptions $options = null
     ) {
-        if (!$message instanceof \Zend_Mail) {
-            throw new \InvalidArgumentException('The message should be an instance of \Zend_Mail');
+        if (!$message instanceof MessageInterface) {
+            throw new \InvalidArgumentException('The message should be an instance of \Magento\Framework\Mail\Message');
         }
 
-        $host = $config['host'];
-        $options = [
-           'auth'     => $config['auth'],
-           'username' => $config['user'],
-           'password' => $config['password'],
-           'port'     => $config['port']
-        ];
-        $ssl = $this->getSsl($config['secure']);
-        if ($ssl) {
-            $options['ssl'] = $ssl;
+        if (! $options instanceof SmtpOptions) {
+            $connectionConfig = [
+                'username' => $config['user'],
+                'password' => $config['password'],
+                // 'ssl' => 'ssl'
+            ];
+            $ssl = $this->getSsl($config['secure']);
+            if ($ssl) {
+                $connectionConfig['ssl'] = $ssl;
+            }
+            $options = new SmtpOptions(
+                [
+                    'host' => $config['host'],
+                    'port' => $config['port'],
+                    'connection_class' => $config['auth'],//'login',
+                    'connection_config' => $connectionConfig
+                ]
+            );
         }
+        $this->setOptions($options);
 
-        parent::__construct($host, $options);
         $this->message = $message;
     }
 
+    /**
+     *
+     * @param  int|string $secure
+     * @return bool|string
+     */
     protected function getSsl($secure)
     {
         // $secure = $this->getSecure();
@@ -63,7 +80,10 @@ class Smtp extends \Zend_Mail_Transport_Smtp implements TransportInterface
     public function sendMessage()
     {
         try {
-            parent::send($this->message);
+            $message = $this->message;
+            $message = Message::fromString($message->getRawMessage());
+
+            parent::send($message);
         } catch (\Exception $e) {
             $phrase = new \Magento\Framework\Phrase($e->getMessage());
             throw new \Magento\Framework\Exception\MailException($phrase, $e);

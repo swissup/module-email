@@ -5,8 +5,10 @@ use Magento\Framework\Mail\MessageInterface;
 use Magento\Framework\Mail\TransportInterface;
 
 use Swissup\Email\Api\Data\ServiceInterface;
+use Zend\Mail\Transport\SmtpOptions;
+use Zend\Mail\Message;
 
-class Gmail extends \Zend_Mail_Transport_Smtp implements TransportInterface
+class Gmail extends \Zend\Mail\Transport\Smtp implements TransportInterface
 {
     /**
      * @var MessageInterface
@@ -14,29 +16,41 @@ class Gmail extends \Zend_Mail_Transport_Smtp implements TransportInterface
     protected $message;
 
     /**
+     * Constructor.
      *
      * @param MessageInterface $message
      * @param array $config
-     * @throws \InvalidArgumentException
+     * @param  SmtpOptions $options Optional
      */
     public function __construct(
         MessageInterface $message,
-        array $config
+        array $config,
+        SmtpOptions $options = null
     ) {
-        if (!$message instanceof \Zend_Mail) {
-            throw new \InvalidArgumentException('The message should be an instance of \Zend_Mail');
+        if (!$message instanceof MessageInterface) {
+            throw new \InvalidArgumentException('The message should be an instance of \Magento\Framework\Mail\Message');
         }
 
-        $host = 'smtp.gmail.com';
-        $options = [
-           'username' => $config['user'],
-           'password' => $config['password'],
-           'auth'     => 'login',
-           'port'     => 465,
-           'ssl'      => 'SSL'
-        ];
+        if (! $options instanceof SmtpOptions) {
+            $host = 'smtp.gmail.com';
+            $port = 465;
 
-        parent::__construct($host, $options);
+            $options = new SmtpOptions(
+                [
+                    'host' => $host,
+                    'port' => $port,
+                    'connection_class' => 'login',
+                    'connection_config' =>
+                    [
+                        'username' => $config['user'],
+                        'password' => $config['password'],
+                        'ssl' => 'ssl'
+                    ]
+                ]
+            );
+        }
+        $this->setOptions($options);
+
         $this->message = $message;
     }
 
@@ -49,7 +63,10 @@ class Gmail extends \Zend_Mail_Transport_Smtp implements TransportInterface
     public function sendMessage()
     {
         try {
-            parent::send($this->message);
+            $message = $this->message;
+            $message = Message::fromString($message->getRawMessage());
+
+            parent::send($message);
         } catch (\Exception $e) {
             $phrase = new \Magento\Framework\Phrase($e->getMessage());
             throw new \Magento\Framework\Exception\MailException($phrase, $e);
@@ -58,7 +75,8 @@ class Gmail extends \Zend_Mail_Transport_Smtp implements TransportInterface
     }
 
     /**
-     * @inheritdoc
+     *
+     * @return \Magento\Framework\Mail\Message
      */
     public function getMessage()
     {

@@ -4,7 +4,9 @@ namespace Swissup\Email\Model\Transport;
 use Magento\Framework\Mail\MessageInterface;
 use Magento\Framework\Mail\TransportInterface;
 
-class Sendmail extends \Zend_Mail_Transport_Sendmail implements TransportInterface
+use Zend\Mail\Message;
+
+class Sendmail extends \Zend\Mail\Transport\Sendmail implements TransportInterface
 {
     /**
      * @var MessageInterface
@@ -18,9 +20,10 @@ class Sendmail extends \Zend_Mail_Transport_Sendmail implements TransportInterfa
      */
     public function __construct(MessageInterface $message, $parameters = null)
     {
-        if (!$message instanceof \Zend_Mail) {
-            throw new \InvalidArgumentException('The message should be an instance of \Zend_Mail');
+        if (!$message instanceof MessageInterface) {
+            throw new \InvalidArgumentException('The message should be an instance of \Magento\Framework\Mail\Message');
         }
+
         parent::__construct($parameters);
         $this->message = $message;
     }
@@ -34,7 +37,9 @@ class Sendmail extends \Zend_Mail_Transport_Sendmail implements TransportInterfa
     public function sendMessage()
     {
         try {
-            parent::send($this->message);
+            $message = $this->message;
+            $message = Message::fromString($message->getRawMessage());
+            parent::send($message);
         } catch (\Exception $e) {
             throw new \Magento\Framework\Exception\MailException(new \Magento\Framework\Phrase($e->getMessage()), $e);
         }

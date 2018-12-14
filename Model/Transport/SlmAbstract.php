@@ -39,6 +39,7 @@ abstract class SlmAbstract
         $text = $mail->getBodyText();
 
         if (!empty($text)) {
+            $part = false;
             if ($text instanceof \Zend_Mime_Part) {
                 $part = new \Zend\Mime\Part($text->getContent());
                 $part->encoding = $text->encoding;
@@ -50,11 +51,14 @@ abstract class SlmAbstract
                 $part->type = \Zend\Mime\Mime::TYPE_TEXT;
                 $part->charset = $charset;
             }
-            $body->addPart($part);
+            if ($part) {
+                $body->addPart($part);
+            }
         }
 
         $html = $mail->getBodyHtml();
         if (!empty($html)) {
+            $part = false;
             if ($html instanceof \Zend_Mime_Part) {
                 $part = new \Zend\Mime\Part($html->getContent());
                 $part->encoding = $html->encoding;
@@ -67,7 +71,9 @@ abstract class SlmAbstract
                 $part->charset = $charset;
             }
 
-            $body->addPart($part);
+            if ($part) {
+                $body->addPart($part);
+            }
         }
         //@todo $mail->getParts() copy attachments
 
