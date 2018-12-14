@@ -20,9 +20,9 @@ class Factory
      *
      * @return \Swissup\Email\Model\Transport
      */
-    public function create($type = 'Smtp', $config = [])
+    public function create($type = 'Smtp', $arguments = [])
     {
         $class = "\Swissup\Email\Model\Transport\\$type";
-        return $this->objectManager->create($class, $config);
+        return $this->objectManager->create($class, $arguments);
     }
 }
