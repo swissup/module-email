@@ -21,7 +21,7 @@ require([
     function toggleDepends(key)
     {
         var depends = {
-            0:  '0000000',//sendmail
+            0:  '0010000',//sendmail
             10: '1111111',//smtp
             15: '1100000',//gmail
             20: '1110000',//ses

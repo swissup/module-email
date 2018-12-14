@@ -6,6 +6,7 @@ use Magento\Framework\App\Config\ScopeConfigInterface;
 use Magento\Store\Model\ScopeInterface;
 
 use Swissup\Email\Api\Data\ServiceInterface;
+use Swissup\Email\Model\Service;
 use Swissup\Email\Model\ServiceFactory;
 use Swissup\Email\Model\HistoryFactory;
 use Swissup\Email\Mail\Transport\Factory as TransportFactory;
@@ -50,6 +51,12 @@ class Transport implements \Magento\Framework\Mail\TransportInterface
 
     /**
      *
+     * @var Service
+     */
+    protected $service;
+
+    /**
+     *
      * @param MessageInterface $message
      * @param ScopeConfigInterface $scopeConfig
      * @param ServiceFactory $serviceFactory
@@ -86,11 +93,7 @@ class Transport implements \Magento\Framework\Mail\TransportInterface
     public function sendMessage()
     {
         try {
-            $service = $this->serviceFactory->create();
-            $id = (int) $this->scopeConfig->getValue(self::SERVICE_CONFIG, ScopeInterface::SCOPE_STORE);
-            if ($id) {
-                $service->load($id);
-            }
+            $service = $this->getService();
 
             $message = $this->message;
             $args = [
@@ -112,6 +115,35 @@ class Transport implements \Magento\Framework\Mail\TransportInterface
             $phrase = new \Magento\Framework\Phrase($e->getMessage());
             throw new \Magento\Framework\Exception\MailException($phrase, $e);
         }
+    }
+
+    /**
+     *
+     * @return Service
+     */
+    public function getService()
+    {
+        if ($this->service === null) {
+            $service = $this->serviceFactory->create();
+            $id = (int) $this->scopeConfig->getValue(self::SERVICE_CONFIG, ScopeInterface::SCOPE_STORE);
+            if ($id) {
+                $service->load($id);
+            }
+
+            $this->service = $service;
+        }
+
+        return $this->service;
+    }
+
+    /**
+     *
+     * @param Service $service
+     */
+    public function setService(Service $service)
+    {
+        $this->service = $service;
+        return $this;
     }
 
     /**

@@ -4,12 +4,18 @@ namespace Swissup\Email\Controller\Adminhtml\Email\Service;
 use Magento\Backend\App\Action;
 use Magento\TestFramework\ErrorLog\Logger;
 use Swissup\Email\Api\Data\ServiceInterface;
-use Swissup\Email\Mail\Transport\Factory;
+use Swissup\Email\Mail\TransportFactory;
 
 class Check extends Action
 {
     /**
-     * @var Factory
+     *
+     * @var \Swissup\Email\Model\ServiceFactory
+     */
+    protected $serviceFactory;
+
+    /**
+     * @var TransportFactory
      */
     protected $transportFactory;
 
@@ -26,16 +32,19 @@ class Check extends Action
 
     /**
      * @param Action\Context $context
-     * @param Factory $transportFactory
+     * @param \Swissup\Email\Model\ServiceFactory $serviceFactory
+     * @param TransportFactory $transportFactory
      * @param \Magento\Framework\Math\Random $random
      */
     public function __construct(
         Action\Context $context,
-        Factory $transportFactory,
+        \Swissup\Email\Model\ServiceFactory $serviceFactory,
+        TransportFactory $transportFactory,
         \Magento\Framework\Math\Random $random
     ) {
         parent::__construct($context);
 
+        $this->serviceFactory = $serviceFactory;
         $this->transportFactory = $transportFactory;
         $this->random = $random;
         $this->session = $context->getSession();
@@ -68,6 +77,13 @@ class Check extends Action
         if ($data) {
             $id = $data['id'];
 
+            $service = $this->serviceFactory->create();
+            if ($id) {
+                $service->load($id);
+            }
+
+            $service->addData($data);
+
             $email = $data['email'];
             if (empty($email)) {
                 $email = $data['user'];
@@ -86,29 +102,10 @@ class Check extends Action
             $mailMessage->setSubject('Test Email Transport ()');
 
             try {
-                $args = [
-                    'message' => $mailMessage,
-                    'config' => $data
-                ];
-                switch ($data['type']) {
-                    case ServiceInterface::TYPE_GMAIL:
-                        $type = 'Gmail';
-                        break;
-                    case ServiceInterface::TYPE_SMTP:
-                        $type = 'Smtp';
-                        break;
-                    case ServiceInterface::TYPE_SES:
-                        $type = 'Ses';
-                        break;
-                    case ServiceInterface::TYPE_MANDRILL:
-                        $type = 'Mandrill';
-                        break;
-                    case ServiceInterface::TYPE_SENDMAIL:
-                    default:
-                        $type = 'Sendmail';
-                        break;
-                }
-                $transport = $this->transportFactory->create($type, $args);
+                $transport = $this->transportFactory->create([
+                    'message' => $mailMessage
+                ]);
+                $transport->setService($service);
 
                 $transport->sendMessage();
                 $successMessage = __(
