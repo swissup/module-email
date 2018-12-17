@@ -20,7 +20,7 @@ class Convertor
         } elseif ($message instanceof \Zend\Mail\Message) {
             $message = $message;
         } else {
-            $message = Message::fromString($message->getRawMessage());
+            $message = \Zend\Mail\Message::fromString($message->getRawMessage());
         }
 
         return $message;
