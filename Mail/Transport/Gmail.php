@@ -5,8 +5,9 @@ use Magento\Framework\Mail\MessageInterface;
 use Magento\Framework\Mail\TransportInterface;
 
 use Swissup\Email\Api\Data\ServiceInterface;
+use Swissup\Email\Mail\Message\Convertor;
+
 use Zend\Mail\Transport\SmtpOptions;
-use Zend\Mail\Message;
 
 class Gmail extends \Zend\Mail\Transport\Smtp implements TransportInterface
 {
@@ -64,7 +65,7 @@ class Gmail extends \Zend\Mail\Transport\Smtp implements TransportInterface
     {
         try {
             $message = $this->message;
-            $message = Message::fromString($message->getRawMessage());
+            $message = Convertor::fromMessage($message);
 
             parent::send($message);
         } catch (\Exception $e) {

@@ -4,7 +4,7 @@ namespace Swissup\Email\Mail\Transport;
 use Magento\Framework\Mail\MessageInterface;
 use Magento\Framework\Mail\TransportInterface;
 
-use Zend\Mail\Message;
+use Swissup\Email\Mail\Message\Convertor;
 
 class Sendmail extends \Zend\Mail\Transport\Sendmail implements TransportInterface
 {
@@ -38,7 +38,8 @@ class Sendmail extends \Zend\Mail\Transport\Sendmail implements TransportInterfa
     {
         try {
             $message = $this->message;
-            $message = Message::fromString($message->getRawMessage());
+            $message = Convertor::fromMessage($message);
+
             parent::send($message);
         } catch (\Exception $e) {
             throw new \Magento\Framework\Exception\MailException(new \Magento\Framework\Phrase($e->getMessage()), $e);

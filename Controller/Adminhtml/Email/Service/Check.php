@@ -99,7 +99,7 @@ class Check extends Action
             $webTesterEmail = str_replace('xxxxx', $verifyCode, 'web-xxxxx@mail-tester.com');
             $mailMessage->addTo($webTesterEmail, 'web mail tester');
 
-            $mailMessage->setSubject('Test Email Transport ()');
+            $mailMessage->setSubject("Test Email Transport ({$verifyCode})");
 
             try {
                 $transport = $this->transportFactory->create([
@@ -125,6 +125,7 @@ class Check extends Action
                 return $resultRedirect->setPath('*/*/');
             } catch (\Magento\Framework\Exception\LocalizedException $e) {
                 $this->messageManager->addError($e->getMessage());
+                // $this->messageManager->addError($e->getTraceAsString());
             } catch (\RuntimeException $e) {
                 $this->messageManager->addError($e->getMessage());
             } catch (\Exception $e) {

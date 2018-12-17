@@ -4,11 +4,11 @@ namespace Swissup\Email\Mail\Transport;
 use Magento\Framework\Mail\MessageInterface;
 use Magento\Framework\Mail\TransportInterface;
 
-use Swissup\Email\Api\Data\ServiceInterface;
-
 use SlmMail\Mail\Transport\HttpTransport;
 use SlmMail\Service\MandrillService;
-use Zend\Mail\Message;
+
+use Swissup\Email\Api\Data\ServiceInterface;
+use Swissup\Email\Mail\Message\Convertor;
 
 class Mandrill implements TransportInterface
 {
@@ -52,7 +52,7 @@ class Mandrill implements TransportInterface
     {
         try {
             $message = $this->message;
-            $message = Message::fromString($message->getRawMessage());
+            $message = Convertor::fromMessage($message);
 
             $this->transport->send($message);
         } catch (\Exception $e) {
