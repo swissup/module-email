@@ -232,8 +232,12 @@ class History extends \Magento\Framework\Model\AbstractModel implements HistoryI
         $subject = mb_decode_mimeheader($message->getSubject());
 
         $body = $message->getBody();
-        if (is_object($body)) {
-            $body = $body->getRawContent();
+        if ($body instanceof \Zend\Mime\Message) {
+            if ($body->isMultiPart()) {
+                $body = $body->getPartContent(0);
+            } else {
+                $body = $body->generateMessage();
+            }
         }
 
         $this->addData([
