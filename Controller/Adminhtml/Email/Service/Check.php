@@ -88,7 +88,13 @@ class Check extends Action
             if (empty($email)) {
                 $email = $data['user'];
             }
-            $verifyCode = $this->random->getRandomString(5);
+            // $verifyCode = $this->random->getRandomString(5);
+
+            $verifyCode = $this->random->getRandomNumber(0, 99999) / 100000;
+            $verifyCode = base_convert($verifyCode, 10, 36);
+            $verifyCode .= '1234567';
+            $verifyCode = substr($verifyCode, 0, 5);
+
             $mailMessage = new \Magento\Framework\Mail\Message();
             $messageText = "This is test transport mail. Verification code : {$verifyCode} .";
             $mailMessage->setBodyText($messageText);
@@ -96,7 +102,8 @@ class Check extends Action
             $mailMessage->setFrom($email, 'test');
             $mailMessage->addTo($email, 'test');
 
-            $webTesterEmail = str_replace('xxxxx', $verifyCode, 'web-xxxxx@mail-tester.com');
+            $webTesterPrefix = str_replace('xxxxx', $verifyCode, 'test-xxxxx');
+            $webTesterEmail = $webTesterPrefix . '@mail-tester.com';
             $mailMessage->addTo($webTesterEmail, 'web mail tester');
 
             $mailMessage->setSubject("Test Email Transport ({$verifyCode})");
@@ -112,7 +119,7 @@ class Check extends Action
                     'Connection with mail server was succesfully established.'
                     . ' Please check your inbox ' . $email . ' to verify.'
                     . " Verification code : {$verifyCode}."
-                    . ' Or click <a href="https://www.mail-tester.com/' . $webTesterEmail . '">here</a>.'
+                    . ' Or click <a href="https://www.mail-tester.com/' . $webTesterPrefix . '">here</a>.'
                 );
                 $this->messageManager->addSuccess($successMessage);
                 $this->session->setFormData(false);
