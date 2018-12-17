@@ -4,6 +4,8 @@ namespace Swissup\Email\Model;
 use Swissup\Email\Api\Data\HistoryInterface;
 use Magento\Framework\DataObject\IdentityInterface;
 
+use Swissup\Email\Mail\Message\Convertor;
+
 /* Swissup/Email/Model/History.php */
 
 class History extends \Magento\Framework\Model\AbstractModel implements HistoryInterface, IdentityInterface
@@ -197,15 +199,48 @@ class History extends \Magento\Framework\Model\AbstractModel implements HistoryI
 
     /**
      *
-     * @param  \Magento\Framework\Mail\Message $message [description]
+     * @param  \Magento\Framework\Mail\Message $message
      */
     public function saveMessage(\Magento\Framework\Mail\Message $message)
     {
+        $message = Convertor::fromMessage($message);
+
+        $from = $message->getFrom();
+        $mailAddresses = $from;
+        if ($mailAddresses instanceof \Zend\Mail\AddressList) {
+            $_address = [];
+            foreach ($mailAddresses as $mailAddress) {
+                $_address[] = $mailAddress->toString();
+            }
+            $from = implode(',', $_address);
+        } else {
+            $from = (string) $from;
+        }
+
+        $to = $message->getTo();
+        $mailAddresses = $to;
+        if ($mailAddresses instanceof \Zend\Mail\AddressList) {
+            $_address = [];
+            foreach ($mailAddresses as $mailAddress) {
+                $_address[] = $mailAddress->toString();
+            }
+            $to = implode(',', $_address);
+        } else {
+            $to = implode(',', $message->getRecipients());
+        }
+
+        $subject = mb_decode_mimeheader($message->getSubject());
+
+        $body = $message->getBody();
+        if (is_object($body)) {
+            $body = $body->getRawContent();
+        }
+
         $this->addData([
-            'from' => $message->getFrom(),
-            'to' => implode(',', $message->getRecipients()),
-            'subject' => mb_decode_mimeheader($message->getSubject()),
-            'body' => $message->getBody()->getRawContent(),
+            'from' => $from,
+            'to' => $to,
+            'subject' => $subject,
+            'body' => $body,
             'created_at' => date('c')
         ]);
 
