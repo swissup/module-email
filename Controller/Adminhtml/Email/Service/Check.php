@@ -100,11 +100,11 @@ class Check extends Action
             $mailMessage->setBodyText($messageText);
             $mailMessage->setBodyHtml("<p>{$messageText}</p>");
             $mailMessage->setFrom($email, 'test');
-            $mailMessage->addTo($email, 'test');
 
             $webTesterPrefix = str_replace('xxxxx', $verifyCode, 'test-xxxxx');
             $webTesterEmail = $webTesterPrefix . '@mail-tester.com';
-            $mailMessage->addTo($webTesterEmail, 'web mail tester');
+            $mailMessage->addTo($webTesterEmail, 'webtester');
+            $mailMessage->addTo($email, 'test');
 
             $mailMessage->setSubject("Test Email Transport ({$verifyCode})");
 

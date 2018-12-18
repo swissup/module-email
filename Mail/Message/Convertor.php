@@ -47,13 +47,26 @@ class Convertor
 
         $boundary = $fakeTransport->boundary;
         $mimeMessage = \Zend\Mime\Message::createFromMessage($rawZend1MailMessage, $boundary);
+        $mime = new \Zend\Mime\Mime($boundary);
+        $mimeMessage->setMime($mime);
+
         $zend2MailMessage->setBody($mimeMessage);
 
         $headers = $zend2MailMessage->getHeaders();
         $headersEncoding = $zend1MailMessage->getHeaderEncoding();
         $headers->setEncoding($headersEncoding);
+        if ($mimeMessage->isMultiPart()) {
+            $headerName = 'content-type';
+            if ($headers->has($headerName)) {
+                /** @var ContentType $header */
+                $headers->removeHeader($headerName);
+            }
+        }
+
         $_headers = \Zend\Mail\Headers::fromString($fakeTransport->header);
+        $_headers->setEncoding($headersEncoding);
         $headers->addHeaders($_headers);
+
         $zend2MailMessage->setHeaders($headers);
 
         return $zend2MailMessage;
