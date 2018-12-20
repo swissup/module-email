@@ -40,6 +40,8 @@ class Convertor
         }
 
         $zend2MailMessage = new \Zend\Mail\Message();
+        $charset = $zend1MailMessage->getCharset() ?: 'utf-8';
+        $zend2MailMessage->setEncoding($charset);
 
         $fakeTransport = new Convertor\Zend1FakeTransport();
         $fakeTransport->send($zend1MailMessage);
