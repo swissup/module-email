@@ -199,9 +199,9 @@ class History extends \Magento\Framework\Model\AbstractModel implements HistoryI
 
     /**
      *
-     * @param  \Magento\Framework\Mail\Message $message
+     * @param  \Magento\Framework\Mail\MailMessageInterface $message
      */
-    public function saveMessage(\Magento\Framework\Mail\Message $message)
+    public function saveMessage(\Magento\Framework\Mail\MailMessageInterface $message)
     {
         $message = Convertor::fromMessage($message);
 
