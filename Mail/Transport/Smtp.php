@@ -10,7 +10,6 @@ use Swissup\Email\Model\Service;
 
 use Zend\Mail\Transport\SmtpOptions;
 
-
 class Smtp extends \Zend\Mail\Transport\Smtp implements TransportInterface
 {
     /**
@@ -42,7 +41,6 @@ class Smtp extends \Zend\Mail\Transport\Smtp implements TransportInterface
                     'password' => $config['password']
                 ];
             }
-                
             $ssl = $this->getSsl($config['secure']);
             if ($ssl) {
                 $connectionConfig['ssl'] = $ssl;
