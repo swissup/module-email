@@ -7,7 +7,11 @@
 
     <preference for="Magento\Framework\Mail\Transport" type="Swissup\Email\Mail\Transport"/>
     <preference for="Magento\Framework\Mail\TransportInterface" type="Swissup\Email\Mail\Transport"/>
-
+<!--
+    <type name="Magento\Framework\Mail\TransportInterface">
+        <plugin name="swissup_email_transport" type="Swissup\Email\Mail\TransportPlugin" sortOrder="1" disabled="false"/>
+    </type>
+ -->
     <type name="Swissup\Email\Model\ResourceModel\Service\Grid\Collection">
         <arguments>
             <argument name="mainTable" xsi:type="string">swissup_email_service</argument>
