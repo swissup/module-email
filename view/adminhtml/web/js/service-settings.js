@@ -88,12 +88,11 @@ require([
         }
         toggleAuth($('#service_auth').val());
     });
-    
+
     $('#service_auth').change(function(e) {
         var settings;
         toggleAuth(this.value);
     });
-    
     toggleDepends($('#service_type').val());
     toggleAuth($('#service_auth').val());
 });
