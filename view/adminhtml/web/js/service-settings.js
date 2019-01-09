@@ -44,6 +44,31 @@ require([
         });
     }
 
+    function toggleAuth(key)
+    {
+        var depends = {
+            'none':  '00',//none
+            'login': '11',//login
+            'plain': '11',//plain
+            'crammd5': '11',//crammd5
+        },depend,
+        elements = ['user', 'password'];
+
+        if ('undefined' == typeof depends[key]) {
+            depend = '11';
+        } else {
+            depend = depends[key];
+        }
+        $(elements).each(function(id, index) {
+            var el = getField(index).closest('.field');
+            if (depend[id] == 1) {
+                el.show();
+            } else {
+                el.hide();
+            }
+        });
+    }
+
     function fill(settings) {
 
         $.each(settings, setFieldValue);
@@ -61,6 +86,14 @@ require([
                 fill(settings);
             }
         }
+        toggleAuth($('#service_auth').val());
     });
+    
+    $('#service_auth').change(function(e) {
+        var settings;
+        toggleAuth(this.value);
+    });
+    
     toggleDepends($('#service_type').val());
+    toggleAuth($('#service_auth').val());
 });
