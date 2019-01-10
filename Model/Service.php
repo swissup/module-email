@@ -539,6 +539,7 @@ class Service extends \Magento\Framework\Model\AbstractModel implements ServiceI
     public function getAuthTypes()
     {
         return [
+            self::AUTH_TYPE_NONE   => __('None'),
             self::AUTH_TYPE_LOGIN   => __('Login'),
             self::AUTH_TYPE_PLAIN   => __('Plain'),
             self::AUTH_TYPE_CRAMMD5 => __('Crammd5')

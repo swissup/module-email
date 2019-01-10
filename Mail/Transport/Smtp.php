@@ -6,6 +6,7 @@ use Magento\Framework\Mail\TransportInterface;
 
 use Swissup\Email\Api\Data\ServiceInterface;
 use Swissup\Email\Mail\Message\Convertor;
+use Swissup\Email\Model\Service;
 
 use Zend\Mail\Transport\SmtpOptions;
 
@@ -33,11 +34,13 @@ class Smtp extends \Zend\Mail\Transport\Smtp implements TransportInterface
         }
 
         if (! $options instanceof SmtpOptions) {
-            $connectionConfig = [
-                'username' => $config['user'],
-                'password' => $config['password'],
-                // 'ssl' => 'ssl'
-            ];
+            $connectionConfig = [];
+            if ($config['auth'] != Service::AUTH_TYPE_NONE) {
+                $connectionConfig = [
+                    'username' => $config['user'],
+                    'password' => $config['password']
+                ];
+            }
             $ssl = $this->getSsl($config['secure']);
             if ($ssl) {
                 $connectionConfig['ssl'] = $ssl;
@@ -46,10 +49,12 @@ class Smtp extends \Zend\Mail\Transport\Smtp implements TransportInterface
                 [
                     'host' => $config['host'],
                     'port' => $config['port'],
-                    'connection_class' => $config['auth'],//'login',
                     'connection_config' => $connectionConfig
                 ]
             );
+            if ($config['auth'] != Service::AUTH_TYPE_NONE) {
+                $options->setConnectionClass($config['auth']);
+            }
         }
         $this->setOptions($options);
 

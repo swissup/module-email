@@ -32,6 +32,7 @@ interface ServiceInterface
     const SECURE_SSL  = 1;//'SSL';
     const SECURE_TLS  = 2;//'TLS';
 
+    const AUTH_TYPE_NONE   = 'none';
     const AUTH_TYPE_LOGIN   = 'login';
     const AUTH_TYPE_PLAIN   = 'plain';
     const AUTH_TYPE_CRAMMD5 = 'crammd5';
