@@ -75,7 +75,7 @@ require([
     }
 
     $('#service_type').change(function(e) {
-        var settings;
+        var settings, depend, depends;
         toggleDepends(this.value);
 
         var optionSelected = $('option:selected', this);
@@ -86,13 +86,27 @@ require([
                 fill(settings);
             }
         }
-        toggleAuth($('#service_auth').val());
+
+        depends = {
+            0:  'none',//sendmail
+            10: 'login',//smtp
+            15: 'login',//gmail
+            20: 'login',//ses
+            30: 'login' //mandrill
+        }
+
+        if ('undefined' == typeof depends[this.value]) {
+            depend = $('#service_auth').val();
+        } else {
+            depend = depends[this.value];
+        }
+
+        toggleAuth(depend);
     });
 
     $('#service_auth').change(function(e) {
-        var settings;
         toggleAuth(this.value);
     });
-    toggleDepends($('#service_type').val());
     toggleAuth($('#service_auth').val());
+    toggleDepends($('#service_type').val());
 });
