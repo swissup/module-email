@@ -158,7 +158,7 @@ class Transport implements \Magento\Framework\Mail\TransportInterface
      *
      * @param  \Magento\Framework\Mail\MessageInterface $message
      */
-    public function setMessage(\Magento\Framework\Mail\MessageInterface $message)
+    public function setMessage($message)
     {
         $this->message = $message;
         return $this;
