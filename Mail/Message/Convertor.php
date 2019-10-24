@@ -13,7 +13,7 @@ class Convertor
      * @param  MessageInterface $message
      * @return \Zend\Mail\Message
      */
-    public static function fromMessage(MessageInterface $message)
+    public static function fromMessage($message)
     {
         if ($message instanceof \Zend_Mail) {
             $message = self::fromZendMail1($message);

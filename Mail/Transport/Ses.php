@@ -26,16 +26,12 @@ class Ses implements TransportInterface
 
     /**
      *
-     * @param MessageInterface $message
      * @param array $config
      * @throws \InvalidArgumentException
      */
     public function __construct(
-        MessageInterface $message,
         array $config
     ) {
-        $this->message = $message;
-
         $credentials = new Credentials($config['user'], $config['password']);
         $client = SesClient::factory(array(
             'credentials' => $credentials,
@@ -79,5 +75,18 @@ class Ses implements TransportInterface
     public function getMessage()
     {
         return $this->message;
+    }
+
+    /**
+     *
+     * @param MessageInterface $message
+     */
+    public function setMessage($message)
+    {
+        // if (!$message instanceof MessageInterface) {
+        //     throw new \InvalidArgumentException('The message should be an instance of \Magento\Framework\Mail\Message');
+        // }
+        $this->message = $message;
+        return $this;
     }
 }

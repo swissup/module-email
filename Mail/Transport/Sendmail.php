@@ -14,18 +14,12 @@ class Sendmail extends \Zend\Mail\Transport\Sendmail implements TransportInterfa
     protected $message;
 
     /**
-     * @param MessageInterface $message
      * @param null $parameters
      * @throws \InvalidArgumentException
      */
-    public function __construct(MessageInterface $message, $parameters = null)
+    public function __construct($parameters = null)
     {
-        if (!$message instanceof MessageInterface) {
-            throw new \InvalidArgumentException('The message should be an instance of \Magento\Framework\Mail\Message');
-        }
-
         parent::__construct($parameters);
-        $this->message = $message;
     }
 
     /**
@@ -52,5 +46,18 @@ class Sendmail extends \Zend\Mail\Transport\Sendmail implements TransportInterfa
     public function getMessage()
     {
         return $this->message;
+    }
+
+    /**
+     *
+     * @param MessageInterface $message
+     */
+    public function setMessage($message)
+    {
+        // if (!$message instanceof MessageInterface) {
+        //     throw new \InvalidArgumentException('The message should be an instance of \Magento\Framework\Mail\Message');
+        // }
+        $this->message = $message;
+        return $this;
     }
 }

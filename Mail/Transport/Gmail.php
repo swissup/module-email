@@ -19,19 +19,13 @@ class Gmail extends \Zend\Mail\Transport\Smtp implements TransportInterface
     /**
      * Constructor.
      *
-     * @param MessageInterface $message
      * @param array $config
      * @param  SmtpOptions $options Optional
      */
     public function __construct(
-        MessageInterface $message,
         array $config,
         SmtpOptions $options = null
     ) {
-        if (!$message instanceof MessageInterface) {
-            throw new \InvalidArgumentException('The message should be an instance of \Magento\Framework\Mail\Message');
-        }
-
         if (! $options instanceof SmtpOptions) {
             $host = 'smtp.gmail.com';
             $port = 465;
@@ -51,8 +45,6 @@ class Gmail extends \Zend\Mail\Transport\Smtp implements TransportInterface
             );
         }
         $this->setOptions($options);
-
-        $this->message = $message;
     }
 
     /**
@@ -82,5 +74,18 @@ class Gmail extends \Zend\Mail\Transport\Smtp implements TransportInterface
     public function getMessage()
     {
         return $this->message;
+    }
+
+    /**
+     *
+     * @param MessageInterface $message
+     */
+    public function setMessage($message)
+    {
+        // if (!$message instanceof MessageInterface) {
+        //     throw new \InvalidArgumentException('The message should be an instance of \Magento\Framework\Mail\Message');
+        // }
+        $this->message = $message;
+        return $this;
     }
 }

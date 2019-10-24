@@ -66,16 +66,16 @@ class Transport implements \Magento\Framework\Mail\TransportInterface
      * @throws \InvalidArgumentException
      */
     public function __construct(
-        MessageInterface $message,
+        /*MessageInterface*/ $message, //Magento\Framework\Mail\EmailMessage
         ScopeConfigInterface $scopeConfig,
         ServiceFactory $serviceFactory,
         TransportFactory $transportFactory,
         HistoryFactory $historyFactory,
         $parameters = null
     ) {
-        if (!$message instanceof MessageInterface) {
-            throw new \InvalidArgumentException('The message should be an instance of \Magento\Framework\Mail\MessageInterface');
-        }
+        // if (!$message instanceof MessageInterface) {
+        //     throw new \InvalidArgumentException('The message should be an instance of \Magento\Framework\Mail\MessageInterface');
+        // }
         $this->message = $message;
         $this->scopeConfig = $scopeConfig;
         $this->serviceFactory = $serviceFactory;
@@ -97,12 +97,12 @@ class Transport implements \Magento\Framework\Mail\TransportInterface
 
             $message = $this->message;
             $args = [
-                'message' => $message,
                 'config'  => $service->getData(),
                 'parameters' => $this->parameters
             ];
             $type = $service->getTransportNameByType();
             $transport = $this->transportFactory->create($type, $args);
+            $transport->setMessage($message);
             $transport->sendMessage();
 
             $isLoggingEnabled = $this->scopeConfig->isSetFlag(self::LOG_CONFIG, ScopeInterface::SCOPE_STORE);
