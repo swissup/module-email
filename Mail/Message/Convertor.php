@@ -39,6 +39,12 @@ class Convertor
             throw new \InvalidArgumentException('The message should be an instance of \Zend_Mail');
         }
 
+        if (!$bodyText = $zend1MailMessage->getBodyText()) {
+            $bodyText = $zend1MailMessage->getBodyHtml(true);
+            $bodyText = strip_tags($bodyText);
+            $zend1MailMessage->setBodyText($bodyText);
+        }
+
         $zend2MailMessage = new \Zend\Mail\Message();
         $charset = $zend1MailMessage->getCharset() ?: 'utf-8';
         $zend2MailMessage->setEncoding($charset);
