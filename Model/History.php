@@ -229,7 +229,9 @@ class History extends \Magento\Framework\Model\AbstractModel implements HistoryI
             $to = implode(',', $message->getRecipients());
         }
 
-        $subject = mb_decode_mimeheader($message->getSubject());
+        $subject = $message->getSubject();
+        $subject = $message->getEncoding() === 'utf-8' ?
+            $subject : mb_decode_mimeheader($subject);
 
         $body = $message->getBody();
         if ($body instanceof \Zend\Mime\Message) {
