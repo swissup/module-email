@@ -8,7 +8,7 @@ use Swissup\Email\Mail\Message\Zend1FakeTransport;
 class Convertor
 {
     /**
-     * \Mageno\Mail\Message => \Zend\Mail\Message
+     * \Magento\Mail\Message => \Zend\Mail\Message
      *
      * @param  MessageInterface $message
      * @return \Zend\Mail\Message
@@ -19,11 +19,65 @@ class Convertor
             $message = self::fromZendMail1($message);
         } elseif ($message instanceof \Zend\Mail\Message) {
             $message = $message;
+        // } elseif ($message instanceof \Magento\Framework\Mail\Message) {
+        } elseif ($message instanceof \Magento\Framework\Mail\EmailMessage) {
+            $message = self::fromMagentoEmailMessage($message);
         } else {
             $message = \Zend\Mail\Message::fromString($message->getRawMessage());
         }
 
         return $message;
+    }
+
+    /**
+     *
+     * @param \Magento\Framework\Mail\EmailMessage $magentoEmailMessage
+     * @return \Zend\Mail\Message
+     */
+    private static function fromMagentoEmailMessage($magentoEmailMessage)
+    {
+        $encoding = $magentoEmailMessage->getEncoding() ?: 'utf-8';
+
+        if ($encoding !== 'utf-8') {
+            return \Zend\Mail\Message::fromString($message->getRawMessage());
+        }
+
+        $rawMessage = $magentoEmailMessage->getRawMessage(); //dosn't work properly return Mime::encoded body part
+
+        /** @var \Zend\Mail\Message $zend2MailMessage */
+        $zend2MailMessage = new \Zend\Mail\Message();
+        $zend2MailMessage->setEncoding($encoding);
+
+        // @see \Zend\Mail\Message::fromString($mailString);
+        /** @var \Zend\Mail\Headers $headers */
+        $headers = null;
+        $content = null;
+        \Zend\Mime\Decode::splitMessage($rawMessage, $headers, $content, \Zend\Mail\Headers::EOL);
+        if ($headers->has('mime-version')) {
+            // todo - restore body to mime\message
+        }
+        $headers->setEncoding($encoding);
+        $zend2MailMessage->setHeaders($headers);
+
+        $messageBodyParts = $magentoEmailMessage->getBody()->getParts();
+        $messageBodyPart = reset($messageBodyParts);
+        $content = $messageBodyPart->getRawContent(); // instead of getContent()
+
+        $part = new \Zend\Mime\Part($content);
+        $part->setCharset($messageBodyPart->getCharset());
+
+        $defaultEncoding = \Zend\Mime\Mime::ENCODING_8BIT;
+        $part->setEncoding($defaultEncoding);
+
+        $part->setDisposition($messageBodyPart->getDisposition());
+        $part->setType($messageBodyPart->getType());
+
+        $mimeMessage = new \Zend\Mime\Message();
+        $mimeMessage->addPart($part);
+
+        $zend2MailMessage->setBody($mimeMessage);
+
+        return $zend2MailMessage;
     }
 
     /**
