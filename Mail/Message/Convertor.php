@@ -39,7 +39,9 @@ class Convertor
         $encoding = $magentoEmailMessage->getEncoding() ?: 'utf-8';
 
         if ($encoding !== 'utf-8') {
-            return \Zend\Mail\Message::fromString($message->getRawMessage());
+            return \Zend\Mail\Message::fromString(
+                $magentoEmailMessage->getRawMessage()
+            );
         }
 
         $rawMessage = $magentoEmailMessage->getRawMessage(); //dosn't work properly return Mime::encoded body part
