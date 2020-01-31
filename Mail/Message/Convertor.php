@@ -68,8 +68,8 @@ class Convertor
         $part = new \Zend\Mime\Part($content);
         $part->setCharset($messageBodyPart->getCharset());
 
-        $defaultEncoding = \Zend\Mime\Mime::ENCODING_8BIT;
-        $part->setEncoding($defaultEncoding);
+        $partEncoding = $messageBodyPart->getEncoding() ?: \Zend\Mime\Mime::ENCODING_8BIT;
+        $part->setEncoding($partEncoding);
 
         $part->setDisposition($messageBodyPart->getDisposition());
         $part->setType($messageBodyPart->getType());
