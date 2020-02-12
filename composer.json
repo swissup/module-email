@@ -21,5 +21,16 @@
         "psr-4": {
             "Swissup\\Email\\": ""
         }
+    },
+    "extra": {
+        "marketplace": {
+            "gallery": [
+                "https://docs.swissuplabs.com/images/marketplace/module-email.png"
+            ],
+            "links": {
+                "docs": "https://docs.swissuplabs.com/m2/extensions/email/",
+                "changelog": "https://docs.swissuplabs.com/m2/extensions/email/changelog/"
+            }
+        }
     }
 }
