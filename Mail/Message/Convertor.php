@@ -20,10 +20,10 @@ class Convertor
         } elseif ($message instanceof \Zend\Mail\Message) {
             $message = $message;
         // } elseif ($message instanceof \Magento\Framework\Mail\Message) {
-        } elseif ($message instanceof \Magento\Framework\Mail\EmailMessage) {
+        } elseif ($message instanceof \Magento\Framework\Mail\EmailMessageInterface) {
             $message = self::fromMagentoEmailMessage($message);
         } else {
-            $message = \Zend\Mail\Message::fromString($message->getRawMessage());
+            $message = \Zend\Mail\Message::fromString($message->toString());
         }
 
         return $message;
@@ -40,11 +40,11 @@ class Convertor
 
         if ($encoding !== 'utf-8') {
             return \Zend\Mail\Message::fromString(
-                $magentoEmailMessage->getRawMessage()
+                $magentoEmailMessage->toString()
             );
         }
 
-        $rawMessage = $magentoEmailMessage->getRawMessage(); //dosn't work properly return Mime::encoded body part
+        $rawMessage = $magentoEmailMessage->toString(); //dosn't work properly return Mime::encoded body part
 
         /** @var \Zend\Mail\Message $zend2MailMessage */
         $zend2MailMessage = new \Zend\Mail\Message();
@@ -107,7 +107,7 @@ class Convertor
 
         $fakeTransport = new Convertor\Zend1FakeTransport();
         $fakeTransport->send($zend1MailMessage);
-        $rawZend1MailMessage = $fakeTransport->getRawMessage();
+        $rawZend1MailMessage = $fakeTransport->toString();
 
         $boundary = $fakeTransport->boundary;
         $mimeMessage = \Zend\Mime\Message::createFromMessage($rawZend1MailMessage, $boundary);
