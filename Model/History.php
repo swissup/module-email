@@ -230,7 +230,9 @@ class History extends \Magento\Framework\Model\AbstractModel implements HistoryI
         }
 
         $subject = $message->getSubject();
-        $subject = $message->getEncoding() === 'utf-8' ?
+        $encoding = $message->getEncoding();
+
+        $subject = in_array($encoding, ['utf-8', 'UTF-8', 'ASCII']) ?
             $subject : mb_decode_mimeheader($subject);
 
         $body = $message->getBody();
@@ -239,6 +241,40 @@ class History extends \Magento\Framework\Model\AbstractModel implements HistoryI
                 $body = $body->getPartContent(0);
             } else {
                 $body = $body->generateMessage();
+            }
+        }
+
+        if ($message instanceof \Zend\Mail\Message) {
+            $headers = $message->getHeaders();
+            if ($headers->has('Content-Transfer-Encoding')) {
+                $transferEncoding = $headers->get('Content-Transfer-Encoding');
+                $transferEncoding = $transferEncoding->getFieldValue();
+                // case '7bit':
+                //      break;
+                //  case '8bit':
+                //      $body = quoted_printable_decode(imap_8bit($body));
+                //      break;
+                //  case 'binary':
+                //      $body = imap_base64(imap_binary($body));
+                //      break;
+                //  case 'quoted-printable':
+                //      $body = quoted_printable_decode($body);
+                //      break;
+                //  case 'base64':
+                //      $body = imap_base64($body);
+                //      break;
+                // Convert to UTF-8 if necessary
+                switch ($transferEncoding) {
+                    case 'quoted-printable':
+                        $body = quoted_printable_decode($body);
+                        break;
+                    case 'base64':
+                        $body = base64_decode($body);
+                        break;
+                    default:
+                        $body = $body;
+                        break;
+                }
             }
         }
 
