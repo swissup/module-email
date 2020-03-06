@@ -248,7 +248,6 @@ class History extends \Magento\Framework\Model\AbstractModel implements HistoryI
             $headers = $message->getHeaders();
             if ($headers->has('Content-Transfer-Encoding')) {
                 $transferEncoding = $headers->get('Content-Transfer-Encoding');
-                $transferEncoding = $transferEncoding->getFieldValue();
                 if ($transferEncoding instanceof \ArrayIterator) {
                     $transferEncoding = current($transferEncoding);
                 }
