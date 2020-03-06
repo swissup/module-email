@@ -249,6 +249,12 @@ class History extends \Magento\Framework\Model\AbstractModel implements HistoryI
             if ($headers->has('Content-Transfer-Encoding')) {
                 $transferEncoding = $headers->get('Content-Transfer-Encoding');
                 $transferEncoding = $transferEncoding->getFieldValue();
+                if ($transferEncoding instanceof \ArrayIterator) {
+                    $transferEncoding = current($transferEncoding);
+                }
+                if ($transferEncoding instanceof \Zend\Mail\Header\ContentTransferEncoding) {
+                    $transferEncoding = $transferEncoding->getFieldValue();
+                }
                 // case '7bit':
                 //      break;
                 //  case '8bit':
