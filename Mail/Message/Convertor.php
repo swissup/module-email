@@ -19,9 +19,10 @@ class Convertor
             $message = self::fromZendMail1($message);
         } elseif ($message instanceof \Zend\Mail\Message) {
             $message = $message;
-        // } elseif ($message instanceof \Magento\Framework\Mail\Message) {
         } elseif ($message instanceof \Magento\Framework\Mail\EmailMessageInterface) {
             $message = self::fromMagentoEmailMessage($message);
+        } elseif ($message instanceof \Magento\Framework\Mail\MailMessageInterface) {
+            $message = \Zend\Mail\Message::fromString($message->getRawMessage());
         } else {
             $message = \Zend\Mail\Message::fromString($message->toString());
         }
