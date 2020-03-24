@@ -97,7 +97,7 @@ class Check extends Action
 
             $mailMessage = new \Magento\Framework\Mail\Message();
             $messageText = "This is test transport mail. Verification code : {$verifyCode} .";
-            $mailMessage->setBodyText($messageText);
+            // $mailMessage->setBodyText($messageText);
             $mailMessage->setBodyHtml("<p>{$messageText}</p>");
             $mailMessage->setFrom($email, 'test');
 
