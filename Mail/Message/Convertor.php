@@ -27,6 +27,11 @@ class Convertor
             $message = \Zend\Mail\Message::fromString($message->toString());
         }
 
+        $headers = $message->getHeaders();
+        $uniqueHeaders = new \Zend\Mail\Headers();
+        $uniqueHeaders->addHeaders($headers->toArray());
+        $message->setHeaders($uniqueHeaders);
+
         return $message;
     }
 
