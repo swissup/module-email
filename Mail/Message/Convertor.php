@@ -44,7 +44,7 @@ class Convertor
     {
         $encoding = $magentoEmailMessage->getEncoding() ?: 'utf-8';
 
-        if ($encoding !== 'utf-8') {
+        if (!in_array(strtolower($encoding), ['utf-8', 'ascii'])) {
             return \Zend\Mail\Message::fromString(
                 $magentoEmailMessage->toString()
             );
