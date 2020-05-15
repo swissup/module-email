@@ -90,10 +90,11 @@ class Check extends Action
             }
             // $verifyCode = $this->random->getRandomString(5);
 
-            $verifyCode = $this->random->getRandomNumber(0, 99999) / 100000;
+            // $verifyCode = $this->random->getRandomNumber(0, 99999) / 100000;
+            $verifyCode = (float)rand()/(float)getrandmax();
             $verifyCode = base_convert($verifyCode, 10, 36);
-            $verifyCode .= '1234567';
-            $verifyCode = substr($verifyCode, 0, 5);
+            // $verifyCode .= '1234567';
+            $verifyCode = substr($verifyCode, 2, 11);
 
             $mailMessage = new \Magento\Framework\Mail\Message();
             $messageText = "This is test transport mail. Verification code : {$verifyCode} .";
@@ -101,8 +102,10 @@ class Check extends Action
             $mailMessage->setBodyHtml("<p>{$messageText}</p>");
             $mailMessage->setFrom($email, 'test');
 
-            $webTesterPrefix = str_replace('xxxxx', $verifyCode, 'test-xxxxx');
-            $webTesterEmail = $webTesterPrefix . '@mail-tester.com';
+            $replacePlaceholder = str_repeat('x', 9);
+            $webTesterPrefix = str_replace($replacePlaceholder, $verifyCode, 'test-' . $replacePlaceholder);
+            $webTesterEmail = $webTesterPrefix . '@srv1.mail-tester.com';
+
             $mailMessage->addTo($webTesterEmail, 'webtester');
             $mailMessage->addTo($email, 'test');
 
