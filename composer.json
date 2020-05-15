@@ -13,8 +13,11 @@
     "version": "0.3.6",
     "license": "OSL-3.0",
     "require": {
+        "aws/aws-sdk-php-zf2": ">=1.0.1",
         "slm/mail": "~1.5",
-        "aws/aws-sdk-php-zf2": ">=1.0.1"
+        "magento/framework": "^102.0",
+        "magento/module-email": "^101.0",
+        "zendframework/zend-mail": "^2.9"
     },
     "autoload": {
         "files": [ "registration.php" ],

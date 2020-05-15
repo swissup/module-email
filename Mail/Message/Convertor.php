@@ -27,10 +27,14 @@ class Convertor
             $message = \Zend\Mail\Message::fromString($message->toString());
         }
 
+        //Ignore encoding exceptions in headers
+        // try {
         $headers = $message->getHeaders();
         $uniqueHeaders = new \Zend\Mail\Headers();
         $uniqueHeaders->addHeaders($headers->toArray());
         $message->setHeaders($uniqueHeaders);
+        // } catch (\Exception $e) {
+        // }
 
         return $message;
     }
