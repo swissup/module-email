@@ -16,8 +16,7 @@
         "aws/aws-sdk-php-zf2": ">=1.0.1",
         "slm/mail": "~1.5",
         "magento/framework": "^102.0",
-        "magento/module-email": "^101.0",
-        "zendframework/zend-mail": "^2.9"
+        "magento/module-email": "^101.0"
     },
     "autoload": {
         "files": [ "registration.php" ],
