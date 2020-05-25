@@ -69,6 +69,24 @@ class Convertor
             // todo - restore body to mime\message
         }
         $headers->setEncoding($encoding);
+        //https://github.com/laminas/laminas-mail/issues/22
+        //https://github.com/magento/magento2/issues/26849
+        // $headersArray = $headers->toArray();
+        // $headers->clearHeaders();
+
+        // if (isset($headersArray['Subject'])) {
+        //     $headersArray['Subject'] =
+
+        //     \Zend\Mail\Header\HeaderWrap::mimeEncodeValue(
+        //         iconv("utf-8","ascii//TRANSLIT", $headersArray['Subject']),
+        //         $encoding
+        //     );
+        //     // \Zend\Mime\Mime::encodeBase64Header(
+        //     //     $headersArray['Subject'],
+        //     //     $encoding
+        //     // );
+        // }
+        // $headers->addHeaders($headersArray);
         $zend2MailMessage->setHeaders($headers);
 
         $messageBodyParts = $magentoEmailMessage->getBody()->getParts();
@@ -81,8 +99,17 @@ class Convertor
         $partEncoding = $messageBodyPart->getEncoding() ?: \Zend\Mime\Mime::ENCODING_8BIT;
         $part->setEncoding($partEncoding);
 
-        $part->setDisposition($messageBodyPart->getDisposition());
-        $part->setType($messageBodyPart->getType());
+        //https://github.com/magento/magento2/issues/25076#issuecomment-622501468
+        $desposition = $messageBodyPart->getDisposition();
+        // $desposition = \Magento\Framework\Mail\MimeInterface::DISPOSITION_INLINE;
+        if ($desposition) {
+            $part->setDisposition($desposition);
+        }
+
+        $type = $messageBodyPart->getType();
+        if ($type) {
+            $part->setType($type);
+        }
 
         $mimeMessage = new \Zend\Mime\Message();
         $mimeMessage->addPart($part);
