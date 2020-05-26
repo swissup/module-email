@@ -20,7 +20,9 @@ class Convertor
         } elseif ($message instanceof \Zend\Mail\Message) {
             $message = $message;
         } elseif ($message instanceof \Magento\Framework\Mail\EmailMessageInterface) {
-            $message = self::fromMagentoEmailMessage($message);
+            //fix for desposition https://github.com/magento/magento2/commit/6976aabdfdab91a9d06e412c2ed619538ed034b6
+            $message = \Zend\Mail\Message::fromString($message->toString());
+            // $message = self::fromMagentoEmailMessage($message);
         } elseif ($message instanceof \Magento\Framework\Mail\MailMessageInterface) {
             $message = \Zend\Mail\Message::fromString($message->getRawMessage());
         } else {
