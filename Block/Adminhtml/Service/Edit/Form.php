@@ -7,6 +7,29 @@ namespace Swissup\Email\Block\Adminhtml\Service\Edit;
 class Form extends \Magento\Backend\Block\Widget\Form\Generic
 {
     /**
+     * @var \Magento\Framework\Serialize\Serializer\Json $serializer
+     */
+    private $serializer;
+
+    /**
+     * @param \Magento\Backend\Block\Template\Context $context
+     * @param \Magento\Framework\Registry $registry
+     * @param \Magento\Framework\Data\FormFactory $formFactory
+     * @param \Magento\Framework\Serialize\Serializer\Json $serializer
+     * @param array $data
+     */
+    public function __construct(
+        \Magento\Backend\Block\Template\Context $context,
+        \Magento\Framework\Registry $registry,
+        \Magento\Framework\Data\FormFactory $formFactory,
+        \Magento\Framework\Serialize\Serializer\Json $serializer,
+        array $data = []
+    ) {
+        $this->serializer = $serializer;
+        parent::__construct($context, $registry, $formFactory, $data);
+    }
+
+    /**
      * Init form
      *
      * @return void
@@ -73,7 +96,9 @@ class Form extends \Magento\Backend\Block\Widget\Form\Generic
                 $smtpSettings[] = [
                     'label' => $settings['name'],
                     'value' => \Swissup\Email\Model\Service::TYPE_SMTP,
-                    'title' => json_encode(json_encode($settings))
+                    'title' => $this->serializer->serialize(
+                        $this->serializer->serialize($settings)
+                    )
                 ];
             }
         }
