@@ -20,9 +20,10 @@ class Convertor
             $message = self::fromZendMail1($message);
         } elseif ($message instanceof \Zend\Mail\Message) {
             $message = $message;
+            $isRemoveDublicateHeaders = false;
         } elseif ($message instanceof \Laminas\Mail\Message) {
             $message = $message;
-            // $isRemoveDublicateHeaders = false;
+             $isRemoveDublicateHeaders = false;
         } elseif ($message instanceof \Magento\Framework\Mail\EmailMessageInterface) {
             //fix for desposition https://github.com/magento/magento2/commit/6976aabdfdab91a9d06e412c2ed619538ed034b6
             $message = \Zend\Mail\Message::fromString($message->toString());
