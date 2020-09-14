@@ -10,7 +10,7 @@
         "sendmail"
     ],
     "type": "magento2-module",
-    "version": "0.3.10",
+    "version": "0.3.11",
     "license": "OSL-3.0",
     "require": {
         "aws/aws-sdk-php-zf2": ">=1.0.1",
