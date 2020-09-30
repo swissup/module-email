@@ -23,7 +23,7 @@ class Convertor
             $isRemoveDublicateHeaders = false;
         } elseif ($message instanceof \Laminas\Mail\Message) {
             $message = $message;
-             $isRemoveDublicateHeaders = false;
+            $isRemoveDublicateHeaders = false;
         } elseif ($message instanceof \Magento\Framework\Mail\EmailMessageInterface) {
             //fix for desposition https://github.com/magento/magento2/commit/6976aabdfdab91a9d06e412c2ed619538ed034b6
             $message = \Zend\Mail\Message::fromString($message->toString());
@@ -34,7 +34,7 @@ class Convertor
             $message = \Zend\Mail\Message::fromString($message->toString());
         }
 
-        if ($isRemoveDublicateHeaders) {
+        if ($isRemoveDublicateHeaders && false) {
             //Ignore encoding exceptions in headers
             $ignoreException = false;
             try {
@@ -53,6 +53,8 @@ class Convertor
                     $validHeadersArray[$headerKey] = $headerValue;
                 }
                 $uniqueHeaders = new \Zend\Mail\Headers();
+                $encoding = $magentoEmailMessage->getEncoding() ?: 'utf-8';
+                $uniqueHeaders->setEncoding($encoding);
                 $uniqueHeaders->addHeaders($validHeadersArray);
                 $message->setHeaders($uniqueHeaders);
             } catch (\Exception $e) {
