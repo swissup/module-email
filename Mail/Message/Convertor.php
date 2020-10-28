@@ -34,26 +34,40 @@ class Convertor
             $message = \Zend\Mail\Message::fromString($message->toString());
         }
 
-        if ($isRemoveDublicateHeaders && false) {
+        $hasInvalidHeader = false;
+        array_map(function ($headerName) use ($message, &$hasInvalidHeader) {
+            $header = $message->getHeaders()->get($headerName);
+            if ($header
+                && !\Zend\Mail\Header\HeaderValue::isValid($header->getFieldValue())
+            ) {
+                $hasInvalidHeader = true;
+            }
+        }, ['to', 'reply-to', 'from']);
+
+        if ($isRemoveDublicateHeaders || $hasInvalidHeader) {
             //Ignore encoding exceptions in headers
             $ignoreException = false;
             try {
                 $headers = $message->getHeaders();
                 $headersArray = $headers->toArray();
                 $validHeadersArray = [];
+                $encoding = 'utf-8';
                 foreach ($headersArray as $headerKey => $headerValue) {
+                    $headerValue = \Zend\Mail\Header\HeaderValue::filter(
+                        $headerValue
+                    );
                     if (!\Zend\Mail\Header\HeaderValue::isValid($headerValue)
                         && \Zend\Mail\Header\HeaderWrap::canBeEncoded($headerValue)
                     ) {
                         $headerValue = \Zend\Mail\Header\HeaderWrap::mimeEncodeValue(
                             $headerValue,
-                            'UTF-8'
+                            $encoding
                         );
                     }
+
                     $validHeadersArray[$headerKey] = $headerValue;
                 }
                 $uniqueHeaders = new \Zend\Mail\Headers();
-                $encoding = $magentoEmailMessage->getEncoding() ?: 'utf-8';
                 $uniqueHeaders->setEncoding($encoding);
                 $uniqueHeaders->addHeaders($validHeadersArray);
                 $message->setHeaders($uniqueHeaders);
