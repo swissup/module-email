@@ -8,6 +8,9 @@ use Magento\Store\Model\ScopeInterface;
 use Swissup\Email\Api\Data\ServiceInterface;
 use Magento\Framework\DataObject\IdentityInterface;
 
+/**
+ * Class Service implements service interface
+ */
 class Service extends \Magento\Framework\Model\AbstractModel implements ServiceInterface, IdentityInterface
 {
     /**

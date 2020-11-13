@@ -7,7 +7,7 @@ use Magento\Ui\Component\MassAction\Filter;
 use Swissup\Email\Model\ResourceModel\Service\CollectionFactory;
 
 /**
- * Class MassDelete
+ * Class MassDelete implements mass delete action
  */
 class MassDelete extends \Magento\Backend\App\Action
 {

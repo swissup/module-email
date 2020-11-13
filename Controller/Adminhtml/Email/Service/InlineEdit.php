@@ -52,7 +52,9 @@ class InlineEdit extends \Magento\Backend\App\Action
                     /** @var \Magento\Cms\Model\Block $block */
                     $block = $this->blockRepository->getById($blockId);
                     try {
-                        $block->setData(array_merge($block->getData(), $postItems[$blockId]));
+                        $data = $block->getData();
+                        $data = array_merge($data, $postItems[$blockId]);
+                        $block->setData($data);
                         $this->blockRepository->save($block);
                     } catch (\Exception $e) {
                         $messages[] = $e->getMessage();

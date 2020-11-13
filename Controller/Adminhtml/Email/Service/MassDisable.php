@@ -7,7 +7,7 @@ use Magento\Ui\Component\MassAction\Filter;
 use Swissup\Email\Model\ResourceModel\Service\CollectionFactory;
 
 /**
- * Class MassDisable
+ * Class MassDisable implements mass disable actions
  */
 class MassDisable extends \Magento\Backend\App\Action
 {

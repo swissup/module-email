@@ -8,6 +8,9 @@ use Swissup\Email\Mail\Message\Convertor;
 
 /* Swissup/Email/Model/History.php */
 
+/**
+ * Class History implements history interface
+ */
 class History extends \Magento\Framework\Model\AbstractModel implements HistoryInterface, IdentityInterface
 {
     /**

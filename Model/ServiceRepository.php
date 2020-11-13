@@ -15,7 +15,7 @@ use Swissup\Email\Model\ResourceModel\Service\CollectionFactory as ServiceCollec
 use Magento\Store\Model\StoreManagerInterface;
 
 /**
- * Class ServiceRepository
+ * Class ServiceRepository implements repository for services model
  * @SuppressWarnings(PHPMD.CouplingBetweenObjects)
  */
 class ServiceRepository implements ServiceRepositoryInterface

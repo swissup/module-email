@@ -7,7 +7,7 @@ use Magento\Ui\Component\MassAction\Filter;
 use Swissup\Email\Model\ResourceModel\Service\CollectionFactory;
 
 /**
- * Class MassEnable
+ * Class MassEnable implements mass enable services action
  */
 class MassEnable extends \Magento\Backend\App\Action
 {
