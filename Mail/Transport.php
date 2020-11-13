@@ -74,7 +74,9 @@ class Transport implements \Magento\Framework\Mail\TransportInterface
         $parameters = null
     ) {
         // if (!$message instanceof MessageInterface) {
-        //     throw new \InvalidArgumentException('The message should be an instance of \Magento\Framework\Mail\MessageInterface');
+        //     throw new \InvalidArgumentException(
+        //         'The message should be an instance of \Magento\Framework\Mail\MessageInterface'
+        //     );
         // }
         $this->message = $message;
         $this->scopeConfig = $scopeConfig;

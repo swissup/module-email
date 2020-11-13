@@ -169,11 +169,11 @@ class ServiceRepository implements ServiceRepositoryInterface
             $this->dataObjectHelper->populateWithArray(
                 $serviceData,
                 $serviceModel->getData(),
-                'Swissup\Email\Api\Data\ServiceInterface'
+                \Swissup\Email\Api\Data\ServiceInterface::class
             );
             $services[] = $this->dataObjectProcessor->buildOutputDataArray(
                 $serviceData,
-                'Swissup\Email\Api\Data\ServiceInterface'
+                \Swissup\Email\Api\Data\ServiceInterface::class
             );
         }
         $searchResults->setItems($services);

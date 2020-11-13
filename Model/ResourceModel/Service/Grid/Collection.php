@@ -44,7 +44,7 @@ class Collection extends ServiceCollection implements Api\Search\SearchResultInt
         $mainTable,
         $resourceModel
     ) {
-        $this->_init('Magento\Framework\View\Element\UiComponent\DataProvider\Document', $resourceModel);
+        $this->_init(\Magento\Framework\View\Element\UiComponent\DataProvider\Document::class, $resourceModel);
         $this->setMainTable(true);
         parent::__construct(
             $entityFactory,

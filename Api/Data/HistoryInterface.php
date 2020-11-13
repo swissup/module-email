@@ -61,7 +61,6 @@ interface HistoryInterface
      */
     public function getCreatedAt();
 
-
     /**
      * Set entity_id
      *

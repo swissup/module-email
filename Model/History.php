@@ -34,7 +34,7 @@ class History extends \Magento\Framework\Model\AbstractModel implements HistoryI
      */
     protected function _construct()
     {
-        $this->_init('Swissup\Email\Model\ResourceModel\History');
+        $this->_init(\Swissup\Email\Model\ResourceModel\History::class);
     }
 
     /**
@@ -116,9 +116,6 @@ class History extends \Magento\Framework\Model\AbstractModel implements HistoryI
     {
         return $this->getData(self::CREATED_AT);
     }
-
-
-
 
     /**
      * Set entity_id

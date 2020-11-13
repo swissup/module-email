@@ -14,7 +14,6 @@ class View extends \Magento\Backend\App\Action
      */
     protected $historyFactory;
 
-
     /**
      * @var \Magento\Framework\Filter\Input\MaliciousCode
      */
@@ -64,7 +63,6 @@ class View extends \Magento\Backend\App\Action
             $body = $historyEntry->getBody();
             $body = $this->maliciousCode->filter($body);
         }
-
 
         $this->getResponse()->setHeader('Content-Security-Policy', "script-src 'none'");
         $resultRaw = $this->resultRawFactory->create();

@@ -15,7 +15,7 @@ class Collection extends \Magento\Framework\Model\ResourceModel\Db\Collection\Ab
      */
     protected function _construct()
     {
-        $this->_init('Swissup\Email\Model\Service', 'Swissup\Email\Model\ResourceModel\Service');
+        $this->_init(\Swissup\Email\Model\Service::class, \Swissup\Email\Model\ResourceModel\Service::class);
     }
 
     public function addStatusFilter($status = ServiceInterface::ENABLED)

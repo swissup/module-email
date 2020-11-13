@@ -27,10 +27,12 @@ class HistoryActions extends Column
                         self::ITEM_URL_PATH_VIEW,
                         [$idKey => $item[$idKey]]
                     );
-                    $onclick = 'var popWin=window.open(\'' . $href . '\',\'_blank\',\'width=1000,height=800,resizable=1, scrollbars=1\');popwin.focus();return false;';
+                    $onclick = 'var popWin=window.open(\'' . $href
+                        . '\',\'_blank\',\'width=1000,height=800,resizable=1, scrollbars=1\');'
+                        . 'popwin.focus();return false;';
                     $title = __('View');
 
-                    $item[$name] = '<a href ="#" onclick="' . $onclick . '">' . __('View') . '</a>';
+                    $item[$name] = '<a href ="#" onclick="' . $onclick . '">' . $title . '</a>';
                 }
             }
         }

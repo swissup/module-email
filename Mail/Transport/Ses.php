@@ -84,7 +84,9 @@ class Ses implements TransportInterface
     public function setMessage($message)
     {
         // if (!$message instanceof MessageInterface) {
-        //     throw new \InvalidArgumentException('The message should be an instance of \Magento\Framework\Mail\Message');
+        //     throw new \InvalidArgumentException(
+        //         'The message should be an instance of \Magento\Framework\Mail\Message'
+        //     );
         // }
         $this->message = $message;
         return $this;

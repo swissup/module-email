@@ -107,9 +107,9 @@ class Convertor
         $headers = null;
         $content = null;
         \Zend\Mime\Decode::splitMessage($rawMessage, $headers, $content, \Zend\Mail\Headers::EOL);
-        if ($headers->has('mime-version')) {
-            // todo - restore body to mime\message
-        }
+//        if ($headers->has('mime-version')) {
+//            // todo - restore body to mime\message
+//        }
         $headers->setEncoding($encoding);
         //https://github.com/laminas/laminas-mail/issues/22
         //https://github.com/magento/magento2/issues/26849

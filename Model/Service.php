@@ -34,7 +34,7 @@ class Service extends \Magento\Framework\Model\AbstractModel implements ServiceI
      */
     protected function _construct()
     {
-        $this->_init('Swissup\Email\Model\ResourceModel\Service');
+        $this->_init(\Swissup\Email\Model\ResourceModel\Service::class);
     }
 
     /**

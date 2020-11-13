@@ -41,7 +41,6 @@ class Form extends \Magento\Backend\Block\Widget\Form\Generic
         $this->setTitle(__('Service Information'));
     }
 
-
    /**
     *
     * @return \Swissup\Email\Model\Service
@@ -182,7 +181,6 @@ class Form extends \Magento\Backend\Block\Widget\Form\Generic
             ]
         );
 
-
         $fieldset->addField(
             'secure',
             'select',
@@ -221,7 +219,6 @@ class Form extends \Magento\Backend\Block\Widget\Form\Generic
         $this->setForm($form);
         $form->setValues($model->getData());
         $form->setUseContainer(true);
-
 
         return parent::_prepareForm();
     }
