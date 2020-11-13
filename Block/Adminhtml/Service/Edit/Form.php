@@ -102,7 +102,7 @@ class Form extends \Magento\Backend\Block\Widget\Form\Generic
                 ];
             }
         }
-        $values = array();
+        $values = [];
         foreach ($model->getTypes() as $value => $label) {
             if ($isNew && \Swissup\Email\Model\Service::TYPE_SMTP === $value) {
                 $values[$value] = ['label' => $label, 'value' => $smtpSettings];

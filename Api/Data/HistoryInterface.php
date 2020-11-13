@@ -14,49 +14,49 @@ interface HistoryInterface
 
     /**
      * Get entity_id
-     * 
+     *
      * @return int
      */
     public function getEntityId();
 
     /**
      * Get from
-     * 
+     *
      * @return string
      */
     public function getFrom();
 
     /**
      * Get to
-     * 
+     *
      * @return string
      */
     public function getTo();
 
     /**
      * Get subject
-     * 
+     *
      * @return string
      */
     public function getSubject();
 
     /**
      * Get body
-     * 
+     *
      * @return string
      */
     public function getBody();
 
     /**
      * Get service_id
-     * 
+     *
      * @return int
      */
     public function getServiceId();
 
     /**
      * Get created_at
-     * 
+     *
      * @return string
      */
     public function getCreatedAt();
@@ -64,59 +64,57 @@ interface HistoryInterface
 
     /**
      * Set entity_id
-     * 
-     * @param int $entityId 
+     *
+     * @param int $entityId
      * @return \Swissup\Email\Api\Data\HistoryInterface
      */
     public function setEntityId($entityId);
 
     /**
      * Set from
-     * 
-     * @param string $from 
+     *
+     * @param string $from
      * @return \Swissup\Email\Api\Data\HistoryInterface
      */
     public function setFrom($from);
 
     /**
      * Set to
-     * 
-     * @param string $to 
+     *
+     * @param string $to
      * @return \Swissup\Email\Api\Data\HistoryInterface
      */
     public function setTo($to);
 
     /**
      * Set subject
-     * 
-     * @param string $subject 
+     *
+     * @param string $subject
      * @return \Swissup\Email\Api\Data\HistoryInterface
      */
     public function setSubject($subject);
 
     /**
      * Set body
-     * 
-     * @param string $body 
+     *
+     * @param string $body
      * @return \Swissup\Email\Api\Data\HistoryInterface
      */
     public function setBody($body);
 
     /**
      * Set service_id
-     * 
-     * @param int $serviceId 
+     *
+     * @param int $serviceId
      * @return \Swissup\Email\Api\Data\HistoryInterface
      */
     public function setServiceId($serviceId);
 
     /**
      * Set created_at
-     * 
-     * @param string $createdAt 
+     *
+     * @param string $createdAt
      * @return \Swissup\Email\Api\Data\HistoryInterface
      */
     public function setCreatedAt($createdAt);
-
-
 }

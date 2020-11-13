@@ -33,14 +33,14 @@ class Ses implements TransportInterface
         array $config
     ) {
         $credentials = new Credentials($config['user'], $config['password']);
-        $client = SesClient::factory(array(
+        $client = SesClient::factory([
             'credentials' => $credentials,
             'region'  => 'us-east-1',//'us-west-2'
             'version' => '2010-12-01', //'latest'
             'timeout' => 10,
             // 'debug'   => true
             // 'http_adapter' => 'Zend\Http\Client\Adapter\Proxy'
-        ));
+        ]);
         $service = new SesService($client);
         // \Zend_Debug::dump(get_class_methods($service));
         // \Zend_Debug::dump($service->getSendQuota());

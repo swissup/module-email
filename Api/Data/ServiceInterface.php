@@ -145,11 +145,11 @@ interface ServiceInterface
     public function setName($name);
 
      /**
-     * Set email
-     *
-     * @param string $email
-     * return \Swissup\Email\Api\Data\ServiceInterface
-     */
+      * Set email
+      *
+      * @param string $email
+      * return \Swissup\Email\Api\Data\ServiceInterface
+      */
     public function setEmail($email);
 
     /**

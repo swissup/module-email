@@ -16,5 +16,4 @@ class History extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
     {
         $this->_init('swissup_email_history', 'entity_id');
     }
-
 }

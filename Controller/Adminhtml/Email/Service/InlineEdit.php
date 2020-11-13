@@ -1,10 +1,12 @@
 <?php
 namespace Swissup\Email\Controller\Adminhtml\Email\Service;
+
 // namespace Magento\Cms\Controller\Adminhtml\Block;
 
 use Magento\Backend\App\Action\Context;
 use Swissup\Email\Api\ServiceRepositoryInterface as ServiceRepository;
 use Magento\Framework\Controller\Result\JsonFactory;
+
 // use Magento\Cms\Api\Data\BlockInterface;
 
 class InlineEdit extends \Magento\Backend\App\Action
