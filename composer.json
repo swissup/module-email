@@ -13,14 +13,20 @@
     "version": "0.3.13",
     "license": "OSL-3.0",
     "require": {
-        "aws/aws-sdk-php-zf2": ">=1.0.1",
-        "slm/mail": "~1.5",
         "psr/log": "^1.1",
         "magento/framework": ">=102.0",
         "magento/module-backend": ">=101.0",
         "magento/module-store": ">=101.0",
         "magento/module-ui": ">=101.0",
         "magento/module-email": ">=101.0"
+    },
+    "require-dev": {
+        "slm/mail": "~1.5",
+        "aws/aws-sdk-php-zf2": ">=1.0.1"
+    },
+    "suggest": {
+        "slm/mail": "If you need to use Mandrill or Amazon SES (composer require slm/mail:~1.5)",
+        "aws/aws-sdk-php-zf2": "If you need to use Amazon SES (composer require slm/mail:>=1.0.1)"
     },
     "autoload": {
         "files": [ "registration.php" ],

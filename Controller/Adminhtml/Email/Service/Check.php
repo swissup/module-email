@@ -119,7 +119,7 @@ class Check extends Action
 
                 $transport->sendMessage();
                 $successMessage = __(
-                    'Connection with mail server was succesfully established.'
+                    'Connection with mail server was successfully established.'
                     . ' Please check your inbox ' . $email . ' to verify.'
                     . " Verification code : {$verifyCode}."
                     . ' Or click <a href="https://www.mail-tester.com/' . $webTesterPrefix . '">here</a>.'
