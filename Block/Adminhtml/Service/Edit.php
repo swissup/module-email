@@ -53,18 +53,22 @@ class Edit extends \Magento\Backend\Block\Widget\Form\Container
                 -100
             );
 
-            $onClick = "var params = jQuery('#edit_form').serialize(); "
-                . "uenc = Base64.encode(params); "
-                . 'return setLocation(\'' . $this->getCheckUrl() . '\'.replace(\'ruenc\', uenc))';
-            $this->buttonList->add(
-                'check',
-                [
-                    'label' => __('Check service'),
-                    'onclick' => $onClick,
-                    'class' => 'save',
-                ],
-                -90
-            );
+//            $model = $this->getModel();
+//            if ($model->getId()) {
+                $onClick = "var params = jQuery('#edit_form').serialize(); "
+                    . "if (jQuery('#edit_form').validation('isValid') === false){return false;}"
+                    . "uenc = Base64.encode(params); "
+                    . 'return setLocation(\'' . $this->getCheckUrl() . '\'.replace(\'ruenc\', uenc))';
+                $this->buttonList->add(
+                    'check',
+                    [
+                        'label' => __('Check service'),
+                        'onclick' => $onClick,
+                        'class' => 'save',
+                    ],
+                    -90
+                );
+//            }
         } else {
             $this->buttonList->remove('save');
         }
