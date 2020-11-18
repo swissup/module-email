@@ -114,6 +114,7 @@ class Transport implements \Magento\Framework\Mail\TransportInterface
                     ->saveMessage($message);
             }
         } catch (\Exception $e) {
+//            throw $e;
             $phrase = new \Magento\Framework\Phrase($e->getMessage());
             throw new \Magento\Framework\Exception\MailException($phrase, $e);
         }

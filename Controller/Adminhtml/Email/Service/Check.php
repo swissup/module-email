@@ -88,6 +88,7 @@ class Check extends Action
             if (empty($email)) {
                 $email = $data['user'];
             }
+
             // $verifyCode = $this->random->getRandomString(5);
 
             // $verifyCode = $this->random->getRandomNumber(0, 99999) / 100000;
@@ -107,7 +108,7 @@ class Check extends Action
             $webTesterEmail = $webTesterPrefix . '@srv1.mail-tester.com';
 
             $mailMessage->addTo($webTesterEmail, 'webtester');
-            $mailMessage->addTo($email, 'test');
+//            $mailMessage->addTo($email, 'test');
 
             $mailMessage->setSubject("Test Email Transport ({$verifyCode})");
 
@@ -134,10 +135,16 @@ class Check extends Action
                 }
                 return $resultRedirect->setPath('*/*/');
             } catch (\Magento\Framework\Exception\LocalizedException $e) {
-                $this->messageManager->addError($e->getMessage());
-                // $this->messageManager->addError($e->getTraceAsString());
+                $this->messageManager->addError(
+                    __('Something went wrong while checking the service.')
+                    . $e->getMessage());
+//                 $this->messageManager->addError($e->getTraceAsString());
             } catch (\RuntimeException $e) {
-                $this->messageManager->addError($e->getMessage());
+                $this->messageManager->addError(
+                    __('Something went wrong while checking the service.')
+                    . $e->getMessage()
+                );
+//                $this->messageManager->addError($e->getTraceAsString());
             } catch (\Exception $e) {
                 $this->messageManager->addException(
                     $e,
