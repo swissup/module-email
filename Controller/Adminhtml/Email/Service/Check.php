@@ -100,19 +100,19 @@ class Check extends Action
             $mailMessage = new \Magento\Framework\Mail\Message();
             $messageText = "This is test transport mail. Verification code : {$verifyCode} .";
             // $mailMessage->setBodyText($messageText);
-            $mailMessage->setBodyHtml("<p>{$messageText}</p>");
-            $mailMessage->setFrom($email, 'test');
-
-            $replacePlaceholder = str_repeat('x', 9);
-            $webTesterPrefix = str_replace($replacePlaceholder, $verifyCode, 'test-' . $replacePlaceholder);
-            $webTesterEmail = $webTesterPrefix . '@srv1.mail-tester.com';
-
-            $mailMessage->addTo($webTesterEmail, 'webtester');
-//            $mailMessage->addTo($email, 'test');
-
-            $mailMessage->setSubject("Test Email Transport ({$verifyCode})");
-
             try {
+                $mailMessage->setBodyHtml("<p>{$messageText}</p>");
+                $mailMessage->setFrom($email, 'test');
+
+                $replacePlaceholder = str_repeat('x', 9);
+                $webTesterPrefix = str_replace($replacePlaceholder, $verifyCode, 'test-' . $replacePlaceholder);
+                $webTesterEmail = $webTesterPrefix . '@srv1.mail-tester.com';
+
+                $mailMessage->addTo($webTesterEmail, 'webtester');
+    //            $mailMessage->addTo($email, 'test');
+
+                $mailMessage->setSubject("Test Email Transport ({$verifyCode})");
+
                 $transport = $this->transportFactory->create([
                     'message' => $mailMessage
                 ]);
@@ -137,21 +137,22 @@ class Check extends Action
             } catch (\Magento\Framework\Exception\LocalizedException $e) {
                 $this->messageManager->addError(
                     __('Something went wrong while checking the service.')
-                    . $e->getMessage());
+                    . " Original error message : ". $e->getMessage());
 //                 $this->messageManager->addError($e->getTraceAsString());
             } catch (\RuntimeException $e) {
                 $this->messageManager->addError(
                     __('Something went wrong while checking the service.')
-                    . $e->getMessage()
+                    . " Original error message : " . $e->getMessage()
                 );
 //                $this->messageManager->addError($e->getTraceAsString());
             } catch (\Exception $e) {
-                $this->messageManager->addException(
-                    $e,
+                $this->messageManager->addError(
+//                    $e,
                     __('Something went wrong while checking the service.')
-                    . $e->getMessage()
+                    . " Original error message : " . $e->getMessage()
                 );
             }
+
 
             $this->_getSession()->setFormData($data);
             return $resultRedirect->setPath('*/*/edit', ['id' => $id]);
