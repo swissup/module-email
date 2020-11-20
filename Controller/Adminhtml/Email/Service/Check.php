@@ -90,9 +90,13 @@ class Check extends Action
             }
 
             // $verifyCode = $this->random->getRandomString(5);
-
             // $verifyCode = $this->random->getRandomNumber(0, 99999) / 100000;
             $verifyCode = (float)rand()/(float)getrandmax();
+            $verifyCode = (string) $verifyCode;
+            $verifyCode = trim($verifyCode);
+            if (substr($verifyCode, 0, 2) === "0.") {
+                $verifyCode = substr($verifyCode, 2);
+            }
             $verifyCode = base_convert($verifyCode, 10, 36);
             // $verifyCode .= '1234567';
             $verifyCode = substr($verifyCode, 2, 11);
