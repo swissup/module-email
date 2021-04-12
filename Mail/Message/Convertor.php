@@ -15,15 +15,18 @@ class Convertor
      */
     public static function fromMessage($message)
     {
-        $isRemoveDublicateHeaders = true;
+        $isRemoveDuplicateHeaders = true;
         if ($message instanceof \Zend_Mail) {
             $message = self::fromZendMail1($message);
         } elseif ($message instanceof \Zend\Mail\Message) {
             $message = $message;
-            $isRemoveDublicateHeaders = false;
+            $isRemoveDuplicateHeaders = false;
         } elseif ($message instanceof \Laminas\Mail\Message) {
             $message = $message;
-            $isRemoveDublicateHeaders = false;
+            $isRemoveDuplicateHeaders = false;
+        } else if ($message instanceof \Swissup\Email\Mail\EmailMessage) {
+            $message = $message->getZendMessage();
+            $isRemoveDuplicateHeaders = false;
         } elseif ($message instanceof \Magento\Framework\Mail\EmailMessageInterface) {
             //fix for desposition https://github.com/magento/magento2/commit/6976aabdfdab91a9d06e412c2ed619538ed034b6
             $message = \Zend\Mail\Message::fromString($message->toString());
@@ -44,7 +47,7 @@ class Convertor
             }
         }, ['to', 'reply-to', 'from']);
 
-        if ($isRemoveDublicateHeaders || $hasInvalidHeader) {
+        if ($isRemoveDuplicateHeaders || $hasInvalidHeader) {
             //Ignore encoding exceptions in headers
             $ignoreException = false;
             try {

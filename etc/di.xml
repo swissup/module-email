@@ -7,6 +7,8 @@
 
     <preference for="Magento\Framework\Mail\Transport" type="Swissup\Email\Mail\Transport"/>
     <preference for="Magento\Framework\Mail\TransportInterface" type="Swissup\Email\Mail\Transport"/>
+
+    <preference for="Magento\Framework\Mail\EmailMessageInterface" type="Swissup\Email\Mail\EmailMessage"/>
 <!--
     <type name="Magento\Framework\Mail\TransportInterface">
         <plugin name="swissup_email_transport" type="Swissup\Email\Mail\TransportPlugin" sortOrder="1" disabled="false"/>
