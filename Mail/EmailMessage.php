@@ -8,7 +8,7 @@ namespace Swissup\Email\Mail;
 
 use Laminas\Mail\Message;
 use Magento\Framework\Mail\EmailMessage as FrameworkEmailMessage;
-use Magento\Framework\Mail\EmailMessageInterface;
+use Swissup\Email\Mail\EmailMessageInterface;
 
 /**
  * Class EmailMessage
@@ -23,5 +23,4 @@ class EmailMessage extends FrameworkEmailMessage implements EmailMessageInterfac
     {
         return $this->zendMessage;
     }
-
 }
