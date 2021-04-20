@@ -46,3 +46,28 @@ bin/magento setup:di:compile
  1. Navigate "Stores → Configurations → Advanced → System → Mail Sending Settings"
  2. "Logging Enable" set Yes
  3. Navigate to "Marketing → Communications → Email Logs"
+
+
+##### [Using MailHog via Docker for testing email](https://akrabat.com/using-mailhog-via-docker-for-testing-email/) 
+
+I recently needed to modify the emails that a client project sends out. It was set up to send via SMTP and so the easiest way to do this for me was to add a local MailHog instance and point the application at it.
+
+Manually running via Docker
+The quickest and easiest way to do this is via Docker.
+
+Manually, we can do:
+
+```
+$ docker run -p 8025:8025 -p 1025:1025 mailhog/mailhog
+```
+This will run MailHog with the SMTP port exposed on localhost port 1025 and the web interface on 8025.
+
+Now you can configure the app’s SMTP config and away you go.
+
+Option    | Value
+----------|-------
+Type      | Smtp
+Host      | 0.0.0.0 or mailhog
+Port      | 1025
+Auth Type | None
+Secure    | None
