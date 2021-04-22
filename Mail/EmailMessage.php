@@ -19,8 +19,42 @@ class EmailMessage extends FrameworkEmailMessage implements EmailMessageInterfac
     /**
      * @return Message
      */
-    public function getZendMessage(): Message
+    public function getZendMessage()
     {
-        return $this->zendMessage;
+        if (property_exists($this, 'zendMessage')) {
+            return $this->zendMessage;
+        }
+        // 2.3 backward compatibility
+        try {
+            $message = $this->getPrivateParentPropertyValue('zendMessage');
+            return $message;
+        } catch (\ReflectionException $e) {
+        }
+        if (property_exists($this, 'message')) {
+            return $this->message;
+        }
+        try {
+            $message = $this->getPrivateParentPropertyValue('message');
+            return $message;
+        } catch (\ReflectionException $e) {
+        }
+
+        throw new \Exception('The "zendMessage" property should exist in instance of EmailMessage');
+    }
+
+    /**
+     * @param string $propertyName
+     * @return mixed
+     * @throws \ReflectionException
+     */
+    private function getPrivateParentPropertyValue($propertyName)
+    {
+        $reflectionClass = new \ReflectionClass($this);
+        $parentReflectionClass = $reflectionClass->getParentClass();
+        $property = $parentReflectionClass->getProperty((string) $propertyName);
+        $property->setAccessible(true);
+        $value = $property->getValue($this);
+
+        return $value;
     }
 }

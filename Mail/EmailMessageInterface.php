@@ -11,5 +11,8 @@ use Laminas\Mail\Message;
  */
 interface EmailMessageInterface extends FrameworkEmailMessageInterface
 {
-    public function getZendMessage(): Message;
+    /**
+     * @return Message
+     */
+    public function getZendMessage();
 }
