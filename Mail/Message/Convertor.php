@@ -16,6 +16,7 @@ class Convertor
     public static function fromMessage($message)
     {
         $isRemoveDuplicateHeaders = true;
+        $checkInvalidHeaders = true;
         if ($message instanceof \Zend_Mail) {
             $message = self::fromZendMail1($message);
         } elseif ($message instanceof \Zend\Mail\Message) {
@@ -26,6 +27,7 @@ class Convertor
             $isRemoveDuplicateHeaders = false;
         } else if ($message instanceof \Swissup\Email\Mail\EmailMessage) {
             $message = $message->getZendMessage();
+            $checkInvalidHeaders = false;
             $isRemoveDuplicateHeaders = false;
         } elseif ($message instanceof \Magento\Framework\Mail\EmailMessageInterface) {
             //fix for desposition https://github.com/magento/magento2/commit/6976aabdfdab91a9d06e412c2ed619538ed034b6
@@ -37,50 +39,52 @@ class Convertor
             $message = \Zend\Mail\Message::fromString($message->toString());
         }
 
-        $hasInvalidHeader = false;
-        array_map(function ($headerName) use ($message, &$hasInvalidHeader) {
-            $header = $message->getHeaders()->get($headerName);
-            if ($header
-                && !\Zend\Mail\Header\HeaderValue::isValid($header->getFieldValue())
-            ) {
-                $hasInvalidHeader = true;
-            }
-        }, ['to', 'reply-to', 'from']);
+        if ($checkInvalidHeaders || $isRemoveDuplicateHeaders = false) {
 
-        if ($isRemoveDuplicateHeaders || $hasInvalidHeader) {
-            //Ignore encoding exceptions in headers
-            $ignoreException = false;
-            try {
-                $headers = $message->getHeaders();
-                $headersArray = $headers->toArray();
-                $validHeadersArray = [];
-                $encoding = 'utf-8';
-                foreach ($headersArray as $headerKey => $headerValue) {
-                    $headerValue = \Zend\Mail\Header\HeaderValue::filter(
-                        $headerValue
-                    );
-                    if (!\Zend\Mail\Header\HeaderValue::isValid($headerValue)
-                        && \Zend\Mail\Header\HeaderWrap::canBeEncoded($headerValue)
-                    ) {
-                        $headerValue = \Zend\Mail\Header\HeaderWrap::mimeEncodeValue(
-                            $headerValue,
-                            $encoding
-                        );
-                    }
-
-                    $validHeadersArray[$headerKey] = $headerValue;
+            $hasInvalidHeader = false;
+            array_map(function ($headerName) use ($message, &$hasInvalidHeader) {
+                $header = $message->getHeaders()->get($headerName);
+                if ($header
+                    && !\Zend\Mail\Header\HeaderValue::isValid($header->getFieldValue())
+                ) {
+                    $hasInvalidHeader = true;
                 }
-                $uniqueHeaders = new \Zend\Mail\Headers();
-                $uniqueHeaders->setEncoding($encoding);
-                $uniqueHeaders->addHeaders($validHeadersArray);
-                $message->setHeaders($uniqueHeaders);
-            } catch (\Exception $e) {
-                if (!$ignoreException) {
-                    throw $e;
+            }, ['to', 'reply-to', 'from']);
+
+            if ($isRemoveDuplicateHeaders || $hasInvalidHeader) {
+                //Ignore encoding exceptions in headers
+                $ignoreException = false;
+                try {
+                    $headers = $message->getHeaders();
+                    $headersArray = $headers->toArray();
+                    $validHeadersArray = [];
+                    $encoding = 'utf-8';
+                    foreach ($headersArray as $headerKey => $headerValue) {
+                        $headerValue = \Zend\Mail\Header\HeaderValue::filter(
+                            $headerValue
+                        );
+                        if (!\Zend\Mail\Header\HeaderValue::isValid($headerValue)
+                            && \Zend\Mail\Header\HeaderWrap::canBeEncoded($headerValue)
+                        ) {
+                            $headerValue = \Zend\Mail\Header\HeaderWrap::mimeEncodeValue(
+                                $headerValue,
+                                $encoding
+                            );
+                        }
+
+                        $validHeadersArray[$headerKey] = $headerValue;
+                    }
+                    $uniqueHeaders = new \Zend\Mail\Headers();
+                    $uniqueHeaders->setEncoding($encoding);
+                    $uniqueHeaders->addHeaders($validHeadersArray);
+                    $message->setHeaders($uniqueHeaders);
+                } catch (\Exception $e) {
+                    if (!$ignoreException) {
+                        throw $e;
+                    }
                 }
             }
         }
-
         return $message;
     }
 
