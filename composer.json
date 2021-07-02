@@ -10,7 +10,7 @@
         "sendmail"
     ],
     "type": "magento2-module",
-    "version": "0.3.19",
+    "version": "0.3.20",
     "license": "OSL-3.0",
     "require": {
         "psr/log": "^1.1",
