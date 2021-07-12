@@ -17,6 +17,14 @@ class TransportPlugin
      */
     protected $transport;
 
+    /**
+     * @var MessageInterface|null
+     */
+    private $message;
+
+    /**
+     * @var bool
+     */
     private $once = false;
 
     /**

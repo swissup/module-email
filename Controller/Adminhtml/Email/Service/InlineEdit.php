@@ -14,6 +14,11 @@ class InlineEdit extends \Magento\Backend\App\Action
     /** @var ServiceRepository  */
     protected $serviceRepository;
 
+    /**
+     * @var ServiceRepository
+     */
+    protected $blockRepository;
+
     /** @var JsonFactory  */
     protected $jsonFactory;
 
