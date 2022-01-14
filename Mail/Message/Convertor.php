@@ -220,4 +220,58 @@ class Convertor
 
         return $zend2MailMessage;
     }
+
+    /**
+     * @param \Magento\Framework\Mail\MimePart $part
+     * @return \Laminas\Mime\Part
+     */
+    public static function convertMimePart(\Magento\Framework\Mail\MimePart $part): \Laminas\Mime\Part
+    {
+//        $propertyName = 'mimePart';
+//        $reflectionClass = new \ReflectionClass($part);
+//        $property = $reflectionClass->getProperty((string) $propertyName);
+//        $property->setAccessible(true);
+//        $value = $property->getValue($part);
+//
+//        return $value;
+
+        $mimePart = new \Laminas\Mime\Part($part->getRawContent());
+        $mimePart->setType($part->getType());
+        $mimePart->setEncoding($part->getEncoding());
+        $mimePart->setFilters($part->getFilters());
+//        $boundary = $part->getBoundary();
+//        if ($boundary) {
+//            $mimePart->setBoundary($boundary);
+//        }
+        $charset = $part->getCharset();
+        if ($charset) {
+            $mimePart->setCharset($charset);
+        }
+//        $disposition = $part->getDisposition();
+//        if ($disposition) {
+//            $mimePart->setDisposition($disposition);
+//        }
+//        $description = $part->getDescription();
+//        if ($description) {
+//            $mimePart->setDescription($description);
+//        }
+//        $fileName = $part->getFileName();
+//        if ($fileName) {
+//            $mimePart->setFileName($fileName);
+//        }
+//        $location = $part->getLocation();
+//        if ($location) {
+//            $mimePart->setLocation($location);
+//        }
+//        $language = $part->getLanguage();
+//        if ($language) {
+//            $mimePart->setLanguage($language);
+//        }
+        $isStream = $part->isStream();
+        if ($isStream) {
+            $mimePart->setIsStream($isStream);
+        }
+
+        return $mimePart;
+    }
 }

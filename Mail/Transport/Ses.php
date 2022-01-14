@@ -61,6 +61,18 @@ class Ses implements TransportInterface
             $message = $this->message;
             $message = Convertor::fromMessage($message);
 
+            $body = $message->getBody();
+            if ($body instanceof \Laminas\Mime\Message) {
+                $parts = [];
+                foreach ($body->getParts() as $part) {
+                    if ($part instanceof \Magento\Framework\Mail\MimePart) {
+                        $parts[] = Convertor::convertMimePart($part);
+                    } elseif ($part instanceof \Laminas\Mime\Part) {
+                        $parts[] = $part;
+                    }
+               }
+               $body->setParts($parts);
+            }
             $this->transport->send($message);
         } catch (\Exception $e) {
             $phrase = new \Magento\Framework\Phrase($e->getMessage());
