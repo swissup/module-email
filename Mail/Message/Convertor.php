@@ -225,7 +225,7 @@ class Convertor
      * @param \Magento\Framework\Mail\MimePart $part
      * @return \Laminas\Mime\Part
      */
-    public static function convertMimePart(\Magento\Framework\Mail\MimePart $part): \Laminas\Mime\Part
+    public static function toMimePart(\Magento\Framework\Mail\MimePart $part): \Laminas\Mime\Part
     {
 //        $propertyName = 'mimePart';
 //        $reflectionClass = new \ReflectionClass($part);
@@ -273,5 +273,27 @@ class Convertor
         }
 
         return $mimePart;
+    }
+
+    /**
+     * @param $message
+     * @return mixed
+     */
+    public static function fixBodyParts($message)
+    {
+        $body = $message->getBody();
+        if ($body instanceof \Laminas\Mime\Message) {
+            $parts = [];
+            foreach ($body->getParts() as $part) {
+                if ($part instanceof \Magento\Framework\Mail\MimePart) {
+                    $parts[] = self::toMimePart($part);
+                } elseif ($part instanceof \Laminas\Mime\Part) {
+                    $parts[] = $part;
+                }
+           }
+           $body->setParts($parts);
+        }
+
+        return $message;
     }
 }
