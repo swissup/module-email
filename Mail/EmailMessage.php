@@ -7,6 +7,7 @@ declare(strict_types=1);
 namespace Swissup\Email\Mail;
 
 use Laminas\Mail\Message;
+use Magento\Framework\Mail\Exception\InvalidArgumentException;
 use Magento\Framework\Mail\EmailMessage as FrameworkEmailMessage;
 use Swissup\Email\Mail\EmailMessageInterface;
 
@@ -39,7 +40,7 @@ class EmailMessage extends FrameworkEmailMessage implements EmailMessageInterfac
         } catch (\ReflectionException $e) {
         }
 
-        throw new \Exception('The "zendMessage" property should exist in instance of EmailMessage');
+        throw new InvalidArgumentException('The "zendMessage" property should exist in instance of EmailMessage');
     }
 
     /**
