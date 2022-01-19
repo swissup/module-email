@@ -1,0 +1,31 @@
+<?xml version="1.0"?>
+<schema xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:framework:Setup/Declaration/Schema/etc/schema.xsd">
+  <table name="swissup_email_service" resource="default" engine="innodb" comment="swissup_email_service">
+    <column xsi:type="int" name="id" padding="10" unsigned="true" nullable="false" identity="true" comment="Id"/>
+    <column xsi:type="varchar" name="name" nullable="true" length="45" comment="Name"/>
+    <column xsi:type="smallint" name="status" padding="6" unsigned="false" nullable="false" identity="false" default="1" comment="Status"/>
+    <column xsi:type="smallint" name="type" padding="6" unsigned="false" nullable="false" identity="false" default="1" comment="Type"/>
+    <column xsi:type="varchar" name="email" nullable="false" length="45" default="" comment="email from"/>
+    <column xsi:type="varchar" name="user" nullable="false" length="45" default="" comment="User"/>
+    <column xsi:type="varchar" name="password" nullable="false" length="45" default="" comment="Password"/>
+    <column xsi:type="varchar" name="host" nullable="false" length="128" default="" comment="Host"/>
+    <column xsi:type="smallint" name="port" padding="5" unsigned="true" nullable="false" identity="false" default="110" comment="Port"/>
+    <column xsi:type="smallint" name="secure" padding="5" unsigned="true" nullable="false" identity="false" default="0" comment="Secure"/>
+    <column xsi:type="varchar" name="auth" nullable="false" length="7" default="" comment="Auth"/>
+    <constraint xsi:type="primary" referenceId="PRIMARY">
+      <column name="id"/>
+    </constraint>
+  </table>
+  <table name="swissup_email_history" resource="default" engine="innodb" comment="Emails History Table">
+    <column xsi:type="bigint" name="entity_id" padding="20" unsigned="true" nullable="false" identity="true" comment="Entity ID"/>
+    <column xsi:type="varchar" name="from" nullable="true" length="128" comment="From"/>
+    <column xsi:type="varchar" name="to" nullable="true" length="128" comment="To"/>
+    <column xsi:type="text" name="subject" nullable="true" comment="Subject"/>
+    <column xsi:type="text" name="body" nullable="true" comment="Body"/>
+    <column xsi:type="int" name="service_id" padding="11" unsigned="false" nullable="true" identity="false" comment="Service Id"/>
+    <column xsi:type="timestamp" name="created_at" on_update="false" nullable="false" default="CURRENT_TIMESTAMP" comment="Created At"/>
+    <constraint xsi:type="primary" referenceId="PRIMARY">
+      <column name="entity_id"/>
+    </constraint>
+  </table>
+</schema>

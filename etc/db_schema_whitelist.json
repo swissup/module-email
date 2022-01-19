@@ -1,0 +1,34 @@
+{
+    "swissup_email_service": {
+        "column": {
+            "id": true,
+            "name": true,
+            "status": true,
+            "type": true,
+            "email": true,
+            "user": true,
+            "password": true,
+            "host": true,
+            "port": true,
+            "secure": true,
+            "auth": true
+        },
+        "constraint": {
+            "PRIMARY": true
+        }
+    },
+    "swissup_email_history": {
+        "column": {
+            "entity_id": true,
+            "from": true,
+            "to": true,
+            "subject": true,
+            "body": true,
+            "service_id": true,
+            "created_at": true
+        },
+        "constraint": {
+            "PRIMARY": true
+        }
+    }
+}
