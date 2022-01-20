@@ -7,9 +7,9 @@ use Magento\Framework\Mail\TransportInterface;
 use Swissup\Email\Api\Data\ServiceInterface;
 use Swissup\Email\Mail\Message\Convertor;
 
-use Zend\Mail\Transport\SmtpOptions;
+use Laminas\Mail\Transport\SmtpOptions;
 
-class Gmail extends \Zend\Mail\Transport\Smtp implements TransportInterface
+class Gmail extends \Laminas\Mail\Transport\Smtp implements TransportInterface
 {
     /**
      * @var MessageInterface

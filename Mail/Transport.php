@@ -32,16 +32,15 @@ class Transport implements \Magento\Framework\Mail\TransportInterface
     protected $serviceFactory;
 
     /**
+     *
+     * @var Service
+     */
+    protected $service;
+
+    /**
      * @var TransportFactory
      */
     protected $transportFactory;
-
-    /**
-     * Config options for sendmail parameters
-     *
-     * @var null
-     */
-    protected $parameters;
 
     /**
      *
@@ -50,10 +49,11 @@ class Transport implements \Magento\Framework\Mail\TransportInterface
     protected $historyFactory;
 
     /**
+     * Config options for sendmail parameters
      *
-     * @var Service
+     * @var null
      */
-    protected $service;
+    protected $parameters;
 
     /**
      *
@@ -101,6 +101,7 @@ class Transport implements \Magento\Framework\Mail\TransportInterface
             $args = [
                 'config'  => $service->getData(),
                 'parameters' => $this->parameters
+                // 'convertor' => $this->convertor
             ];
             $type = $service->getTransportNameByType();
             $transport = $this->transportFactory->create($type, $args);

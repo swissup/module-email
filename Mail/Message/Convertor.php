@@ -8,10 +8,10 @@ use Swissup\Email\Mail\Message\Zend1FakeTransport;
 class Convertor
 {
     /**
-     * \Magento\Mail\Message => \Zend\Mail\Message
+     * \Magento\Mail\Message => \Laminas\Mail\Message
      *
      * @param  MessageInterface $message
-     * @return \Zend\Mail\Message
+     * @return \Laminas\Mail\Message
      */
     public static function fromMessage($message)
     {
@@ -19,10 +19,11 @@ class Convertor
         $checkInvalidHeaders = true;
         if ($message instanceof \Zend_Mail) {
             $message = self::fromZendMail1($message);
-        } elseif ($message instanceof \Zend\Mail\Message) {
-            $message = $message;
-            $isRemoveDuplicateHeaders = false;
         } elseif ($message instanceof \Laminas\Mail\Message) {
+            $message = $message;
+            //@todo $message = self::fixBodyParts($message);
+            $isRemoveDuplicateHeaders = false;
+        } elseif ($message instanceof \Zend\Mail\Message) {
             $message = $message;
             $isRemoveDuplicateHeaders = false;
         } else if ($message instanceof \Swissup\Email\Mail\EmailMessage) {

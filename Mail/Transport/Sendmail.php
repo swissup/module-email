@@ -6,7 +6,7 @@ use Magento\Framework\Mail\TransportInterface;
 
 use Swissup\Email\Mail\Message\Convertor;
 
-class Sendmail extends \Zend\Mail\Transport\Sendmail implements TransportInterface
+class Sendmail extends \Laminas\Mail\Transport\Sendmail implements TransportInterface
 {
     /**
      * @var MessageInterface

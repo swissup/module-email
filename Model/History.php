@@ -207,7 +207,7 @@ class History extends \Magento\Framework\Model\AbstractModel implements HistoryI
 
         $from = $message->getFrom();
         $mailAddresses = $from;
-        if ($mailAddresses instanceof \Zend\Mail\AddressList) {
+        if ($mailAddresses instanceof \Laminas\Mail\AddressList) {
             $_address = [];
             foreach ($mailAddresses as $mailAddress) {
                 $_address[] = $mailAddress->toString();
@@ -219,7 +219,7 @@ class History extends \Magento\Framework\Model\AbstractModel implements HistoryI
 
         $to = $message->getTo();
         $mailAddresses = $to;
-        if ($mailAddresses instanceof \Zend\Mail\AddressList) {
+        if ($mailAddresses instanceof \Laminas\Mail\AddressList) {
             $_address = [];
             foreach ($mailAddresses as $mailAddress) {
                 $_address[] = $mailAddress->toString();
@@ -236,7 +236,7 @@ class History extends \Magento\Framework\Model\AbstractModel implements HistoryI
             $subject : mb_decode_mimeheader($subject);
 
         $body = $message->getBody();
-        if ($body instanceof \Zend\Mime\Message) {
+        if ($body instanceof \Laminas\Mime\Message) {
             if ($body->isMultiPart()) {
                 $body = $body->getPartContent(0);
             } else {
@@ -244,14 +244,14 @@ class History extends \Magento\Framework\Model\AbstractModel implements HistoryI
             }
         }
 
-        if ($message instanceof \Zend\Mail\Message) {
+        if ($message instanceof \Laminas\Mail\Message) {
             $headers = $message->getHeaders();
             if ($headers->has('Content-Transfer-Encoding')) {
                 $transferEncoding = $headers->get('Content-Transfer-Encoding');
                 if ($transferEncoding instanceof \ArrayIterator) {
                     $transferEncoding = current($transferEncoding);
                 }
-                if ($transferEncoding instanceof \Zend\Mail\Header\ContentTransferEncoding) {
+                if ($transferEncoding instanceof \Laminas\Mail\Header\ContentTransferEncoding) {
                     $transferEncoding = $transferEncoding->getFieldValue();
                 }
                 // case '7bit':

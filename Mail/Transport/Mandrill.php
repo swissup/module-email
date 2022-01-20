@@ -28,9 +28,8 @@ class Mandrill implements TransportInterface
      * @param SesClient $client
      * @throws \InvalidArgumentException
      */
-    public function __construct(
-        array $config
-    ) {
+    public function __construct(array $config)
+    {
         $service = new MandrillService($config['password']);
         // \Zend_Debug::dump($service->pingUser()));
 

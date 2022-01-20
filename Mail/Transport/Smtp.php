@@ -8,9 +8,9 @@ use Swissup\Email\Api\Data\ServiceInterface;
 use Swissup\Email\Mail\Message\Convertor;
 use Swissup\Email\Model\Service;
 
-use Zend\Mail\Transport\SmtpOptions;
+use Laminas\Mail\Transport\SmtpOptions;
 
-class Smtp extends \Zend\Mail\Transport\Smtp implements TransportInterface
+class Smtp extends \Laminas\Mail\Transport\Smtp implements TransportInterface
 {
     /**
      * @var MessageInterface

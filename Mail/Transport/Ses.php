@@ -29,9 +29,8 @@ class Ses implements TransportInterface
      * @param array $config
      * @throws \InvalidArgumentException
      */
-    public function __construct(
-        array $config
-    ) {
+    public function __construct(array $config)
+    {
         $credentials = new Credentials($config['user'], $config['password']);
         $client = SesClient::factory([
             'credentials' => $credentials,
@@ -39,7 +38,7 @@ class Ses implements TransportInterface
             'version' => '2010-12-01', //'latest'
             'timeout' => 10,
             // 'debug'   => true
-            // 'http_adapter' => 'Zend\Http\Client\Adapter\Proxy'
+            // 'http_adapter' => 'Laminas\Http\Client\Adapter\Proxy'
         ]);
         $service = new SesService($client);
         // \Zend_Debug::dump(get_class_methods($service));
