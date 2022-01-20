@@ -5,7 +5,6 @@ use Magento\Framework\Mail\MessageInterface;
 use Magento\Framework\Mail\TransportInterface;
 use Laminas\Mail\Transport\SmtpOptions;
 use Swissup\Email\Api\Data\ServiceInterface;
-//use Swissup\Email\Mail\Message\Convertor;
 
 class Gmail extends \Laminas\Mail\Transport\Smtp implements TransportInterface
 {
@@ -55,7 +54,6 @@ class Gmail extends \Laminas\Mail\Transport\Smtp implements TransportInterface
     {
         try {
             $message = $this->message;
-//            $message = Convertor::fromMessage($message);
 
             parent::send($message);
         } catch (\Exception $e) {

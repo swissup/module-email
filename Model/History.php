@@ -4,8 +4,6 @@ namespace Swissup\Email\Model;
 use Swissup\Email\Api\Data\HistoryInterface;
 use Magento\Framework\DataObject\IdentityInterface;
 
-use Swissup\Email\Mail\Message\Convertor;
-
 /* Swissup/Email/Model/History.php */
 
 /**
@@ -203,8 +201,6 @@ class History extends \Magento\Framework\Model\AbstractModel implements HistoryI
      */
     public function saveMessage($message)
     {
-//        $message = Convertor::fromMessage($message);
-
         $from = $message->getFrom();
         $mailAddresses = $from;
         if ($mailAddresses instanceof \Laminas\Mail\AddressList) {

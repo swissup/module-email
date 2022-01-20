@@ -12,7 +12,7 @@ class Zend1FakeTransport extends \Zend_Mail_Transport_Abstract
      * @access public
      * @return void
      */
-    public function _sendMail()
+    public function _sendMail() //phpcs:ignore Magento2.CodeAnalysis.EmptyBlock
     {
     }
 

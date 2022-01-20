@@ -62,9 +62,8 @@ class Collection extends ServiceCollection implements Api\Search\SearchResultInt
      *
      * @return void
      */
-    protected function _construct()
+    protected function _construct() //phpcs:ignore Magento2.CodeAnalysis.EmptyBlock
     {
-        // $this->_init('Swissup\Email\Model\Service', 'Swissup\Email\Model\ResourceModel\Service');
     }
 
     /**

@@ -30,6 +30,7 @@ class EmailMessage extends FrameworkEmailMessage implements EmailMessageInterfac
             $message = $this->getPrivateParentPropertyValue('zendMessage');
             return $message;
         } catch (\ReflectionException $e) {
+            throw new InvalidArgumentException($e->getMessage());
         }
         if (property_exists($this, 'message')) {
             return $this->message;
@@ -38,6 +39,7 @@ class EmailMessage extends FrameworkEmailMessage implements EmailMessageInterfac
             $message = $this->getPrivateParentPropertyValue('message');
             return $message;
         } catch (\ReflectionException $e) {
+            throw new InvalidArgumentException($e->getMessage());
         }
 
         throw new InvalidArgumentException('The "zendMessage" property should exist in instance of EmailMessage');
