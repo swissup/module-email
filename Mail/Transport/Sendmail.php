@@ -4,8 +4,6 @@ namespace Swissup\Email\Mail\Transport;
 use Magento\Framework\Mail\MessageInterface;
 use Magento\Framework\Mail\TransportInterface;
 
-use Swissup\Email\Mail\Message\Convertor;
-
 class Sendmail extends \Laminas\Mail\Transport\Sendmail implements TransportInterface
 {
     /**
@@ -32,7 +30,6 @@ class Sendmail extends \Laminas\Mail\Transport\Sendmail implements TransportInte
     {
         try {
             $message = $this->message;
-            $message = Convertor::fromMessage($message);
 
             parent::send($message);
         } catch (\Exception $e) {

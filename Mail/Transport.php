@@ -22,6 +22,11 @@ class Transport implements \Magento\Framework\Mail\TransportInterface
     protected $message;
 
     /**
+     * @var \Swissup\Email\Mail\Message\Convertor
+     */
+    protected $convertor;
+
+    /**
      * @var ScopeConfigInterface
      */
     protected $scopeConfig;
@@ -58,6 +63,7 @@ class Transport implements \Magento\Framework\Mail\TransportInterface
     /**
      *
      * @param MessageInterface $message
+     * @param \Swissup\Email\Mail\Message\Convertor $convertor
      * @param ScopeConfigInterface $scopeConfig
      * @param ServiceFactory $serviceFactory
      * @param TransportFactory $transportFactory
@@ -67,6 +73,7 @@ class Transport implements \Magento\Framework\Mail\TransportInterface
      */
     public function __construct(
         /*MessageInterface*/ $message, //Magento\Framework\Mail\EmailMessage
+        \Swissup\Email\Mail\Message\Convertor $convertor,
         ScopeConfigInterface $scopeConfig,
         ServiceFactory $serviceFactory,
         TransportFactory $transportFactory,
@@ -79,6 +86,7 @@ class Transport implements \Magento\Framework\Mail\TransportInterface
         //     );
         // }
         $this->message = $message;
+        $this->convertor = $convertor;
         $this->scopeConfig = $scopeConfig;
         $this->serviceFactory = $serviceFactory;
         $this->transportFactory = $transportFactory;
@@ -97,7 +105,7 @@ class Transport implements \Magento\Framework\Mail\TransportInterface
         try {
             $service = $this->getService();
 
-            $message = $this->message;
+            $message = $this->convertor->fromMessage($this->message);
             $args = [
                 'config'  => $service->getData(),
                 'parameters' => $this->parameters

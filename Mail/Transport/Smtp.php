@@ -5,7 +5,7 @@ use Magento\Framework\Mail\MessageInterface;
 use Magento\Framework\Mail\TransportInterface;
 
 use Swissup\Email\Api\Data\ServiceInterface;
-use Swissup\Email\Mail\Message\Convertor;
+//use Swissup\Email\Mail\Message\Convertor;
 use Swissup\Email\Model\Service;
 
 use Laminas\Mail\Transport\SmtpOptions;
@@ -79,7 +79,7 @@ class Smtp extends \Laminas\Mail\Transport\Smtp implements TransportInterface
     {
         try {
             $message = $this->message;
-            $message = Convertor::fromMessage($message);
+//            $message = Convertor::fromMessage($message);
 
             parent::send($message);
         } catch (\Exception $e) {

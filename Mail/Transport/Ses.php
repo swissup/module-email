@@ -3,14 +3,11 @@ namespace Swissup\Email\Mail\Transport;
 
 use Aws\Ses\SesClient;
 use Aws\Credentials\Credentials;
-
 use Magento\Framework\Mail\MessageInterface;
 use Magento\Framework\Mail\TransportInterface;
-
 use SlmMail\Mail\Transport\HttpTransport;
 use SlmMail\Service\SesService;
 
-use Swissup\Email\Mail\Message\Convertor;
 
 class Ses implements TransportInterface
 {
@@ -58,8 +55,6 @@ class Ses implements TransportInterface
     {
         try {
             $message = $this->message;
-            $message = Convertor::fromMessage($message);
-            $message = Convertor::fixBodyParts($message);
 
             $this->transport->send($message);
         } catch (\Exception $e) {

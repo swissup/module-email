@@ -13,18 +13,19 @@ class Convertor
      * @param  MessageInterface $message
      * @return \Laminas\Mail\Message
      */
-    public static function fromMessage($message)
+    public function fromMessage($message)
     {
         $isRemoveDuplicateHeaders = true;
         $checkInvalidHeaders = true;
         if ($message instanceof \Zend_Mail) {
-            $message = self::fromZendMail1($message);
+            $message = $this->fromZendMail1($message);
         } elseif ($message instanceof \Laminas\Mail\Message) {
             $message = $message;
-            //@todo $message = self::fixBodyParts($message);
+            $message = $this->fixBodyParts($message);
             $isRemoveDuplicateHeaders = false;
         } elseif ($message instanceof \Zend\Mail\Message) {
             $message = $message;
+            $message = $this->fixBodyParts($message);
             $isRemoveDuplicateHeaders = false;
         } else if ($message instanceof \Swissup\Email\Mail\EmailMessage) {
             $message = $message->getZendMessage();
@@ -32,12 +33,12 @@ class Convertor
             $isRemoveDuplicateHeaders = false;
         } elseif ($message instanceof \Magento\Framework\Mail\EmailMessageInterface) {
             //fix for desposition https://github.com/magento/magento2/commit/6976aabdfdab91a9d06e412c2ed619538ed034b6
-            $message = \Zend\Mail\Message::fromString($message->toString());
+            $message = \Laminas\Mail\Message::fromString($message->toString());
             // $message = self::fromMagentoEmailMessage($message);
         } elseif ($message instanceof \Magento\Framework\Mail\MailMessageInterface) {
-            $message = \Zend\Mail\Message::fromString($message->getRawMessage());
+            $message = \Laminas\Mail\Message::fromString($message->getRawMessage());
         } else {
-            $message = \Zend\Mail\Message::fromString($message->toString());
+            $message = \Laminas\Mail\Message::fromString($message->toString());
         }
 
         $hasInvalidHeader = false;
@@ -93,7 +94,7 @@ class Convertor
      * @param \Magento\Framework\Mail\EmailMessage $magentoEmailMessage
      * @return \Zend\Mail\Message
      */
-    private static function fromMagentoEmailMessage($magentoEmailMessage)
+    private function fromMagentoEmailMessage($magentoEmailMessage)
     {
         $encoding = $magentoEmailMessage->getEncoding() ?: 'utf-8';
 
@@ -174,7 +175,7 @@ class Convertor
      * @param  \Zend_Mail $zend1MailMessage
      * @return \Zend\Mail\Message
      */
-    public static function fromZendMail1(\Zend_Mail $zend1MailMessage)
+    private function fromZendMail1(\Zend_Mail $zend1MailMessage)
     {
 
         if (!$zend1MailMessage instanceof \Zend_Mail) {
@@ -226,7 +227,7 @@ class Convertor
      * @param \Magento\Framework\Mail\MimePart $part
      * @return \Laminas\Mime\Part
      */
-    public static function toMimePart(\Magento\Framework\Mail\MimePart $part): \Laminas\Mime\Part
+    public function toMimePart(\Magento\Framework\Mail\MimePart $part): \Laminas\Mime\Part
     {
 //        $propertyName = 'mimePart';
 //        $reflectionClass = new \ReflectionClass($part);
@@ -280,7 +281,7 @@ class Convertor
      * @param $message
      * @return mixed
      */
-    public static function fixBodyParts($message)
+    private function fixBodyParts($message)
     {
         $body = $message->getBody();
         if ($body instanceof \Laminas\Mime\Message) {

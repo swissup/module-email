@@ -203,7 +203,7 @@ class History extends \Magento\Framework\Model\AbstractModel implements HistoryI
      */
     public function saveMessage($message)
     {
-        $message = Convertor::fromMessage($message);
+//        $message = Convertor::fromMessage($message);
 
         $from = $message->getFrom();
         $mailAddresses = $from;
