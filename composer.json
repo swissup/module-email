@@ -14,8 +14,8 @@
     "license": "OSL-3.0",
     "require": {
         "psr/log": "^1.1",
-        "magento/framework": "^102.0",
-        "magento/module-backend": "^101.0",
+        "magento/framework": "^102.0|^103.0",
+        "magento/module-backend": "^101.0|^102.0",
         "magento/module-store": "^101.0",
         "magento/module-ui": "^101.1",
         "magento/module-email": "^101.0",
