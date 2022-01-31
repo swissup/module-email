@@ -1,12 +1,11 @@
 <?php
 declare(strict_types=1);
 /**
- * @author        Wilfried Wolf <wilfried.wolf@sandstein.de>
+ * @author Wilfried Wolf <wilfried.wolf@sandstein.de>
  */
 
 namespace Swissup\Email\Mail;
 
-use Laminas\Mail\Message;
 use Magento\Framework\Mail\Exception\InvalidArgumentException;
 use Magento\Framework\Mail\EmailMessage as FrameworkEmailMessage;
 use Swissup\Email\Mail\EmailMessageInterface;
@@ -18,7 +17,7 @@ use Swissup\Email\Mail\EmailMessageInterface;
 class EmailMessage extends FrameworkEmailMessage implements EmailMessageInterface
 {
     /**
-     * @return Message
+     * @return \Laminas\Mail\Message
      */
     public function getZendMessage()
     {
