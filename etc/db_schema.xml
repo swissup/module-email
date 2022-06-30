@@ -27,5 +27,8 @@
     <constraint xsi:type="primary" referenceId="PRIMARY">
       <column name="entity_id"/>
     </constraint>
+    <index referenceId="SWISSUP_EMAIL_HISTORY_CREATED_AT" indexType="btree">
+      <column name="created_at"/>
+    </index>
   </table>
 </schema>
