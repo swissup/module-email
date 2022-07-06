@@ -7,9 +7,9 @@ class Edit extends Action
 {
     /**
      *
-     * @var \Swissup\Email\Model\ServiceFactory
+     * @var \Swissup\Email\Model\ServiceRepository
      */
-    protected $serviceFactory;
+    protected $serviceRepository;
 
     /**
      * Core registry
@@ -32,21 +32,20 @@ class Edit extends Action
     /**
      * @param Action\Context $context
      * @param \Magento\Framework\View\Result\PageFactory $resultPageFactory
-     * @param \Swissup\Email\Model\ServiceFactory $serviceFactory
+     * @param \Swissup\Email\Model\ServiceRepository $serviceRepository
      * @param \Magento\Framework\Registry $registry
      */
     public function __construct(
         Action\Context $context,
         \Magento\Framework\View\Result\PageFactory $resultPageFactory,
-        \Swissup\Email\Model\ServiceFactory $serviceFactory,
+        \Swissup\Email\Model\ServiceRepository $serviceRepository,
         \Magento\Framework\Registry $registry
     ) {
+        parent::__construct($context);
         $this->resultPageFactory = $resultPageFactory;
-        $this->serviceFactory = $serviceFactory;
+        $this->serviceRepository = $serviceRepository;
         $this->coreRegistry = $registry;
         $this->session = $context->getSession();
-
-        parent::__construct($context);
     }
 
     /**
@@ -76,21 +75,20 @@ class Edit extends Action
     /**
      * Edit
      *
-     * @return \Magento\Backend\Model\View\Result\Page|\Magento\Backend\Model\View\Result\Redirect
+     * @return \Magento\Backend\Model\View\Result\Page|\Magento\Framework\Controller\Result\Redirect
      * @SuppressWarnings(PHPMD.NPathComplexity)
      */
     public function execute()
     {
         $id = $this->getRequest()->getParam('id');
-        $model = $this->serviceFactory->create();
+        $model = $this->serviceRepository->create();
 
         if ($id) {
-            $model->load($id);
+            $model = $this->serviceRepository->get($id);
             if (!$model->getId()) {
                 $this->messageManager->addError(__('This item no longer exists.'));
                 /** \Magento\Backend\Model\View\Result\Redirect $resultRedirect */
                 $resultRedirect = $this->resultRedirectFactory->create();
-
                 return $resultRedirect->setPath('*/*/');
             }
         }

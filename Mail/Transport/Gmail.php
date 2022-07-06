@@ -65,7 +65,7 @@ class Gmail extends \Laminas\Mail\Transport\Smtp implements TransportInterface
 
     /**
      *
-     * @return \Magento\Framework\Mail\Message
+     * @return MessageInterface
      */
     public function getMessage()
     {

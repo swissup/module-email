@@ -82,7 +82,6 @@ class Smtp extends \Laminas\Mail\Transport\Smtp implements TransportInterface
             $phrase = new \Magento\Framework\Phrase($e->getMessage());
             throw new \Magento\Framework\Exception\MailException($phrase, $e);
         }
-        return true;
     }
 
     /**

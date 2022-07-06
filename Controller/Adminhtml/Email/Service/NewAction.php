@@ -4,7 +4,7 @@ namespace Swissup\Email\Controller\Adminhtml\Email\Service;
 class NewAction extends \Magento\Backend\App\Action
 {
     /**
-     * @var \Magento\Backend\Model\View\Result\Forward
+     * @var \Magento\Backend\Model\View\Result\ForwardFactory
      */
     protected $resultForwardFactory;
 
@@ -16,8 +16,8 @@ class NewAction extends \Magento\Backend\App\Action
         \Magento\Backend\App\Action\Context $context,
         \Magento\Backend\Model\View\Result\ForwardFactory $resultForwardFactory
     ) {
-        $this->resultForwardFactory = $resultForwardFactory;
         parent::__construct($context);
+        $this->resultForwardFactory = $resultForwardFactory;
     }
 
     /**

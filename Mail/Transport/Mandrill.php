@@ -15,14 +15,14 @@ class Mandrill implements TransportInterface
     protected $message;
 
     /**
-     * @var HttpTransport
+     * @var HttpTransport|null
      */
     protected $transport;
 
     /**
      *
      * @param array $config
-     * @param SesClient $client
+     * @ param SesClient $client
      * @throws \InvalidArgumentException
      */
     public function __construct(array $config)

@@ -56,11 +56,6 @@ class ServiceRepository implements ServiceRepositoryInterface
     protected $dataServiceFactory;
 
     /**
-     * @var \Magento\Store\Model\StoreManagerInterface
-     */
-    private $storeManager;
-
-    /**
      * @param ResourceService $resource
      * @param ServiceFactory $serviceFactory
      * @param Data\ServiceInterfaceFactory $dataServiceFactory
@@ -68,7 +63,6 @@ class ServiceRepository implements ServiceRepositoryInterface
      * @param Data\ServiceSearchResultsInterfaceFactory $searchResultsFactory
      * @param DataObjectHelper $dataObjectHelper
      * @param DataObjectProcessor $dataObjectProcessor
-     * @param StoreManagerInterface $storeManager
      */
     public function __construct(
         ResourceService $resource,
@@ -77,8 +71,7 @@ class ServiceRepository implements ServiceRepositoryInterface
         ServiceCollectionFactory $serviceCollectionFactory,
         Data\ServiceSearchResultsInterfaceFactory $searchResultsFactory,
         DataObjectHelper $dataObjectHelper,
-        DataObjectProcessor $dataObjectProcessor,
-        StoreManagerInterface $storeManager
+        DataObjectProcessor $dataObjectProcessor
     ) {
         $this->resource = $resource;
         $this->serviceFactory = $serviceFactory;
@@ -87,20 +80,17 @@ class ServiceRepository implements ServiceRepositoryInterface
         $this->dataObjectHelper = $dataObjectHelper;
         $this->dataServiceFactory = $dataServiceFactory;
         $this->dataObjectProcessor = $dataObjectProcessor;
-        $this->storeManager = $storeManager;
     }
 
     /**
      * Save data
      *
-     * @param Swissup\Email\Api\Data\ServiceInterface $service
-     * @return Service
+     * @param \Swissup\Email\Api\Data\ServiceInterface $service
+     * @return Service|\Swissup\Email\Api\Data\ServiceInterface
      * @throws CouldNotSaveException
      */
-    public function save(Data\ServiceInterface $service)
+    public function save(\Swissup\Email\Api\Data\ServiceInterface $service)
     {
-        $storeId = $this->storeManager->getStore()->getId();
-        $service->setStoreId($storeId);
         try {
             $this->resource->save($service);
         } catch (\Exception $exception) {
@@ -110,15 +100,36 @@ class ServiceRepository implements ServiceRepositoryInterface
     }
 
     /**
+     * @return Service
+     */
+    public function create()
+    {
+        return $this->serviceFactory->create();
+    }
+
+    /**
      * Load data by given Identity
      *
-     * @param string $serviceId
+     * @param string|int $serviceId
+     * @return Service
+     */
+    public function get($serviceId)
+    {
+        $service = $this->create();
+        $this->resource->load($service, $serviceId);
+        return $service;
+    }
+
+    /**
+     * Load data by given Identity
+     *
+     * @param string|int $serviceId
      * @return Service
      * @throws \Magento\Framework\Exception\NoSuchEntityException
      */
     public function getById($serviceId)
     {
-        $service = $this->serviceFactory->create();
+        $service = $this->create();
         $this->resource->load($service, $serviceId);
         if (!$service->getId()) {
             throw new NoSuchEntityException(__('Item with id "%1" does not exist.', $serviceId));
@@ -132,7 +143,7 @@ class ServiceRepository implements ServiceRepositoryInterface
      * @SuppressWarnings(PHPMD.CyclomaticComplexity)
      * @SuppressWarnings(PHPMD.NPathComplexity)
      * @param \Magento\Framework\Api\SearchCriteriaInterface $criteria
-     * @return \Swissup\Email\Model\ResourceModel\Service\Collection
+     * @return \Swissup\Email\Api\Data\ServiceSearchResultsInterface
      */
     public function getList(\Magento\Framework\Api\SearchCriteriaInterface $criteria)
     {
@@ -142,10 +153,6 @@ class ServiceRepository implements ServiceRepositoryInterface
         $collection = $this->serviceCollectionFactory->create();
         foreach ($criteria->getFilterGroups() as $filterGroup) {
             foreach ($filterGroup->getFilters() as $filter) {
-                if ($filter->getField() === 'store_id') {
-                    $collection->addStoreFilter($filter->getValue(), false);
-                    continue;
-                }
                 $condition = $filter->getConditionType() ?: 'eq';
                 $collection->addFieldToFilter($filter->getField(), [$condition => $filter->getValue()]);
             }
@@ -200,7 +207,7 @@ class ServiceRepository implements ServiceRepositoryInterface
     /**
      * Delete by given Identity
      *
-     * @param string $serviceId
+     * @param string|int $serviceId
      * @return bool
      * @throws CouldNotDeleteException
      * @throws NoSuchEntityException

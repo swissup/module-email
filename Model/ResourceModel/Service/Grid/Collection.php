@@ -18,7 +18,7 @@ class Collection extends ServiceCollection implements Api\Search\SearchResultInt
     protected $aggregations;
 
     /**
-     * @var Api\Search\SearchCriteriaInterface
+     * @var \Magento\Framework\Api\Search\SearchCriteriaInterface
      */
     protected $searchCriteria;
 
@@ -75,12 +75,12 @@ class Collection extends ServiceCollection implements Api\Search\SearchResultInt
     }
 
     /**
-     * @param \Magento\Framework\Api\Search\AggregationInterface $aggregations
-     * @return void
+     * @inherit
      */
     public function setAggregations($aggregations)
     {
         $this->aggregations = $aggregations;
+        return $this;
     }
 
     /**
@@ -98,6 +98,7 @@ class Collection extends ServiceCollection implements Api\Search\SearchResultInt
      */
     public function setSearchCriteria(\Magento\Framework\Api\SearchCriteriaInterface $searchCriteria)
     {
+        /** @var \Magento\Framework\Api\Search\SearchCriteriaInterface $searchCriteria */
         $this->searchCriteria = $searchCriteria;
         return $this;
     }
@@ -127,7 +128,7 @@ class Collection extends ServiceCollection implements Api\Search\SearchResultInt
     /**
      * Set items list.
      *
-     * @param Document[] $items
+     * @param \Magento\Framework\Api\Search\DocumentInterface[] $items
      * @return $this
      */
     public function setItems(array $items = null)

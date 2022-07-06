@@ -8,21 +8,20 @@ class Delete extends \Magento\Backend\App\Action
 {
     /**
      *
-     * @var \Swissup\Email\Model\ServiceFactory
+     * @var \Swissup\Email\Model\ServiceRepository
      */
-    protected $serviceFactory;
+    protected $serviceRepository;
 
     /**
      * @param Action\Context $context
-     * @param \Swissup\Email\Model\ServiceFactory $serviceFactory
+     * @param \Swissup\Email\Model\ServiceRepository $serviceRepository
      */
     public function __construct(
         Action\Context $context,
-        \Swissup\Email\Model\ServiceFactory $serviceFactory
+        \Swissup\Email\Model\ServiceRepository $serviceRepository
     ) {
-        $this->serviceFactory = $serviceFactory;
-
         parent::__construct($context);
+        $this->serviceRepository = $serviceRepository;
     }
 
     /**
@@ -47,10 +46,7 @@ class Delete extends \Magento\Backend\App\Action
         if ($id) {
             try {
                 // init model and delete
-                $model = $this->serviceFactory->create();
-                $model->load($id);
-
-                $model->delete();
+                $this->serviceRepository->deleteById($id);
                 // display success message
                 $this->messageManager->addSuccess(__('The email service has been deleted.'));
                 // go to grid

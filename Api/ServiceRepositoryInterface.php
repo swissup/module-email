@@ -31,7 +31,7 @@ interface ServiceRepositoryInterface
      * Retrieve matching the specified criteria.
      *
      * @param \Magento\Framework\Api\SearchCriteriaInterface $searchCriteria
-     * @return \Swissup\Email\Api\Data\BlockSearchResultsInterface
+     * @return \Swissup\Email\Model\ResourceModel\Service\Collection
      * @throws \Magento\Framework\Exception\LocalizedException
      */
     public function getList(\Magento\Framework\Api\SearchCriteriaInterface $searchCriteria);

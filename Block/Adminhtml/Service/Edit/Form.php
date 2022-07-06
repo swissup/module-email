@@ -25,8 +25,8 @@ class Form extends \Magento\Backend\Block\Widget\Form\Generic
         \Magento\Framework\Serialize\Serializer\Json $serializer,
         array $data = []
     ) {
-        $this->serializer = $serializer;
         parent::__construct($context, $registry, $formFactory, $data);
+        $this->serializer = $serializer;
     }
 
     /**
@@ -89,8 +89,8 @@ class Form extends \Magento\Backend\Block\Widget\Form\Generic
         );
 
         $isNew = $model->getId() == null;
+        $smtpSettings = [];
         if ($isNew) {
-            $smtpSettings = [];
             foreach ($model->getPreDefinedSmtpProviderSettings() as $settings) {
                 $smtpSettings[] = [
                     'label' => $settings['name'],

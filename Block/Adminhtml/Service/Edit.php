@@ -88,16 +88,15 @@ class Edit extends \Magento\Backend\Block\Widget\Form\Container
     /**
      * Retrieve text for header element depending on loaded post
      *
-     * @return \Magento\Framework\Phrase
+     * @inherit
      */
     public function getHeaderText()
     {
         $model = $this->getModel();
         if ($model->getId()) {
             return __("Edit '%1'", $this->escapeHtml($model->getText()));
-        } else {
-            return __('New');
         }
+        return __('New');
     }
 
     /**

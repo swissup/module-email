@@ -177,7 +177,7 @@ class History extends \Magento\Framework\Model\AbstractModel implements HistoryI
      * Set service_id
      *
      * @param int $serviceId
-     * @return \Swissup\Email\Api\Data\HistoryInterface
+     * @return $this
      */
     public function setServiceId($serviceId)
     {
@@ -188,7 +188,7 @@ class History extends \Magento\Framework\Model\AbstractModel implements HistoryI
      * Set created_at
      *
      * @param string $createdAt
-     * @return \Swissup\Email\Api\Data\HistoryInterface
+     * @return $this
      */
     public function setCreatedAt($createdAt)
     {
@@ -201,6 +201,7 @@ class History extends \Magento\Framework\Model\AbstractModel implements HistoryI
      */
     public function saveMessage($message)
     {
+        /** @var \Magento\Framework\Mail\EmailMessage $message */
         $from = $message->getFrom();
         $mailAddresses = $from;
         if ($mailAddresses instanceof \Laminas\Mail\AddressList) {

@@ -10,9 +10,9 @@ class Check extends Action
 {
     /**
      *
-     * @var \Swissup\Email\Model\ServiceFactory
+     * @var \Swissup\Email\Model\ServiceRepository
      */
-    protected $serviceFactory;
+    protected $serviceRepository;
 
     /**
      * @var TransportFactory
@@ -32,19 +32,19 @@ class Check extends Action
 
     /**
      * @param Action\Context $context
-     * @param \Swissup\Email\Model\ServiceFactory $serviceFactory
+     * @param \Swissup\Email\Model\ServiceRepository $serviceRepository
      * @param TransportFactory $transportFactory
      * @param \Magento\Framework\Math\Random $random
      */
     public function __construct(
         Action\Context $context,
-        \Swissup\Email\Model\ServiceFactory $serviceFactory,
+        \Swissup\Email\Model\ServiceRepository $serviceRepository,
         TransportFactory $transportFactory,
         \Magento\Framework\Math\Random $random
     ) {
         parent::__construct($context);
 
-        $this->serviceFactory = $serviceFactory;
+        $this->serviceRepository = $serviceRepository;
         $this->transportFactory = $transportFactory;
         $this->random = $random;
         $this->session = $context->getSession();
@@ -77,9 +77,9 @@ class Check extends Action
         if ($data) {
             $id = $data['id'];
 
-            $service = $this->serviceFactory->create();
+            $service = $this->serviceRepository->create();
             if ($id) {
-                $service->load($id);
+                $service = $this->serviceRepository->getById($id);
             }
 
             $service->addData($data);
@@ -106,13 +106,13 @@ class Check extends Action
             // $mailMessage->setBodyText($messageText);
             try {
                 $mailMessage->setBodyHtml("<p>{$messageText}</p>");
-                $mailMessage->setFrom($email, 'test');
+                $mailMessage->setFrom($email/*, 'test'*/);
 
                 $replacePlaceholder = str_repeat('x', 9);
                 $webTesterPrefix = str_replace($replacePlaceholder, $verifyCode, 'test-' . $replacePlaceholder);
                 $webTesterEmail = $webTesterPrefix . '@srv1.mail-tester.com';
 
-                $mailMessage->addTo($webTesterEmail, 'webtester');
+                $mailMessage->addTo($webTesterEmail/*, 'webtester'*/);
     //            $mailMessage->addTo($email, 'test');
 
                 $mailMessage->setSubject("Test Email Transport ({$verifyCode})");
@@ -156,7 +156,6 @@ class Check extends Action
                     . " Original error message : " . $e->getMessage()
                 );
             }
-
 
             $this->_getSession()->setFormData($data);
             return $resultRedirect->setPath('*/*/edit', ['id' => $id]);

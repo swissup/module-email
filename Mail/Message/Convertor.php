@@ -209,7 +209,6 @@ class Convertor
         if ($mimeMessage->isMultiPart()) {
             $headerName = 'content-type';
             if ($headers->has($headerName)) {
-                /** @var ContentType $header */
                 $headers->removeHeader($headerName);
             }
         }

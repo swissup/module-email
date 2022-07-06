@@ -118,9 +118,10 @@ class Transport implements \Magento\Framework\Mail\TransportInterface
 
             $isLoggingEnabled = $this->scopeConfig->isSetFlag(self::LOG_CONFIG, ScopeInterface::SCOPE_STORE);
             if ($isLoggingEnabled) {
+                /** @var \Swissup\Email\Model\History $historyEntry */
                 $historyEntry = $this->historyFactory->create();
-                $historyEntry->setServiceId($service->getId())
-                    ->saveMessage($message);
+                $historyEntry->setServiceId($service->getId());
+                $historyEntry->saveMessage($message);
             }
         } catch (\Exception $e) {
 //            throw $e;

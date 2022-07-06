@@ -42,7 +42,7 @@ class TransportPlugin
      * @param \Closure $proceed
      * @throws \Exception
      *
-     * @return null
+     * @return void
      */
     public function aroundSendMessage(
         TransportInterface $subject,

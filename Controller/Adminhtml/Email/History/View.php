@@ -49,7 +49,7 @@ class View extends \Magento\Backend\App\Action
     /**
      * View
      *
-     * @return \Magento\Backend\Model\View\Result\Page|\Magento\Backend\Model\View\Result\Redirect
+     * @inherit
      * @SuppressWarnings(PHPMD.NPathComplexity)
      */
     public function execute()
@@ -63,8 +63,9 @@ class View extends \Magento\Backend\App\Action
             $body = $historyEntry->getBody();
             $body = $this->maliciousCode->filter($body);
         }
-
-        $this->getResponse()->setHeader('Content-Security-Policy', "script-src 'none'");
+        /** @var \Magento\Framework\App\Response\Http $response */
+        $response = $this->getResponse();
+        $response->setHeader('Content-Security-Policy', "script-src 'none'");
         $resultRaw = $this->resultRawFactory->create();
         return $resultRaw->setContents($body);
     }

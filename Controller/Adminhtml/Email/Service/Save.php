@@ -8,9 +8,9 @@ class Save extends Action
 {
     /**
      *
-     * @var \Swissup\Email\Model\ServiceFactory
+     * @var \Swissup\Email\Model\ServiceRepository
      */
-    protected $serviceFactory;
+    protected $serviceRepository;
 
     /**
      *
@@ -20,16 +20,15 @@ class Save extends Action
 
     /**
      * @param Action\Context $context
-     * @param \Swissup\Email\Model\ServiceFactory $serviceFactory
+     * @param \Swissup\Email\Model\ServiceRepository $serviceRepository
      */
     public function __construct(
         Action\Context $context,
-        \Swissup\Email\Model\ServiceFactory $serviceFactory
+        \Swissup\Email\Model\ServiceRepository $serviceRepository
     ) {
-        $this->serviceFactory = $serviceFactory;
-        $this->session = $context->getSession();
-
         parent::__construct($context);
+        $this->serviceRepository = $serviceRepository;
+        $this->session = $context->getSession();
     }
 
     /**
@@ -48,6 +47,7 @@ class Save extends Action
      */
     public function execute()
     {
+        /** @var \Magento\Framework\App\Request\Http $request */
         $request = $this->getRequest();
         $data = $request->getPostValue();
 
@@ -55,11 +55,11 @@ class Save extends Action
         $resultRedirect = $this->resultRedirectFactory->create();
 
         if ($data) {
-            $model = $this->serviceFactory->create();
+            $model = $this->serviceRepository->create();
 
             $id = (int) $request->getParam('id');
             if ($id) {
-                $model->load($id);
+                $model = $this->serviceRepository->getById($id);
             } else {
                 unset($data['id']);
             }
@@ -71,7 +71,7 @@ class Save extends Action
             // );
 
             try {
-                $model->save();
+                $this->serviceRepository->save($model);
                 $this->messageManager->addSuccess(__('Service succesfully saved.'));
                 $this->session->setFormData(false);
                 if ($this->getRequest()->getParam('back')) {
