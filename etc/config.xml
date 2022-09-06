@@ -5,6 +5,7 @@
         <email>
             <default>
                 <log>0</log>
+                <sending_host />
             </default>
         </email>
     </default>

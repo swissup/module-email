@@ -19,6 +19,11 @@
                     <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
                     <config_path>email/default/log</config_path>
                 </field>
+                <field id="sending_host"  translate="label" type="text" sortOrder="18" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>EHLO Host</label>
+                    <config_path>email/default/sending_host</config_path>
+                    <comment>If a host name is given here, it will be used in the EHLO/HELO command instead of localhost</comment>
+                </field>
             </group>
         </section>
     </system>
