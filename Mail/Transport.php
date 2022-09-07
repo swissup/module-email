@@ -112,7 +112,8 @@ class Transport implements \Magento\Framework\Mail\TransportInterface
                 'parameters' => $this->parameters
                 // 'convertor' => $this->convertor
             ];
-            if ($sendingHost = $this->scopeConfig->getValue(self::EHLO_CONFIG)) {
+            $sendingHost = (string) $this->scopeConfig->getValue(self::EHLO_CONFIG);
+            if (!empty($sendingHost)) {
                 $args['config']['sending_host'] = $sendingHost;
             }
             $type = $service->getTransportNameByType();

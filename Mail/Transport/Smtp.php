@@ -46,7 +46,7 @@ class Smtp extends \Laminas\Mail\Transport\Smtp implements TransportInterface
             if ($config['auth'] != Service::AUTH_TYPE_NONE) {
                 $options->setConnectionClass($config['auth']);
             }
-            if (!empty($config['sending_host'])) {
+            if (isset($config['sending_host'])) {
                 $options->setName($config['sending_host']);
             }
         }
