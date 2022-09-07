@@ -15,6 +15,7 @@ class Transport implements \Magento\Framework\Mail\TransportInterface
 {
     const SERVICE_CONFIG = 'email/default/service';
     const LOG_CONFIG = 'email/default/log';
+    const EHLO_CONFIG = 'email/default/sending_host';
 
     /**
      * @var MessageInterface
@@ -111,6 +112,9 @@ class Transport implements \Magento\Framework\Mail\TransportInterface
                 'parameters' => $this->parameters
                 // 'convertor' => $this->convertor
             ];
+            if ($sendingHost = $this->scopeConfig->getValue(self::EHLO_CONFIG)) {
+                $args['config']['sending_host'] = $sendingHost;
+            }
             $type = $service->getTransportNameByType();
             $transport = $this->transportFactory->create($type, $args);
             $transport->setMessage($message);
