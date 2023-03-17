@@ -16,6 +16,8 @@ use Swissup\Email\Mail\EmailMessageInterface;
  */
 class EmailMessage extends FrameworkEmailMessage implements EmailMessageInterface
 {
+    public $message;
+
     /**
      * @return \Laminas\Mail\Message
      */
