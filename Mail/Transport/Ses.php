@@ -38,10 +38,6 @@ class Ses implements TransportInterface
             // 'http_adapter' => 'Laminas\Http\Client\Adapter\Proxy'
         ]);
         $service = new SesService($client);
-        // \Zend_Debug::dump(get_class_methods($service));
-        // \Zend_Debug::dump($service->getSendQuota());
-        // \Zend_Debug::dump($service->getSendStatistics());
-        // // die;
         $this->transport = new HttpTransport($service);
     }
 

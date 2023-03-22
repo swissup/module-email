@@ -28,8 +28,6 @@ class Mandrill implements TransportInterface
     public function __construct(array $config)
     {
         $service = new MandrillService($config['password']);
-        // \Zend_Debug::dump($service->pingUser()));
-
         $this->transport = new HttpTransport($service);
     }
 
