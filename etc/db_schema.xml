@@ -7,7 +7,7 @@
     <column xsi:type="smallint" name="type" padding="6" unsigned="false" nullable="false" identity="false" default="1" comment="Type"/>
     <column xsi:type="varchar" name="email" nullable="false" length="45" default="" comment="email from"/>
     <column xsi:type="varchar" name="user" nullable="false" length="45" default="" comment="User"/>
-    <column xsi:type="varchar" name="password" nullable="false" length="45" default="" comment="Password"/>
+    <column xsi:type="varchar" name="password" nullable="false" length="128" default="" comment="Password"/>
     <column xsi:type="varchar" name="host" nullable="false" length="128" default="" comment="Host"/>
     <column xsi:type="smallint" name="port" padding="5" unsigned="true" nullable="false" identity="false" default="110" comment="Port"/>
     <column xsi:type="smallint" name="secure" padding="5" unsigned="true" nullable="false" identity="false" default="0" comment="Secure"/>
