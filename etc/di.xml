@@ -9,6 +9,8 @@
     <preference for="Magento\Framework\Mail\TransportInterface" type="Swissup\Email\Mail\Transport"/>
 
     <preference for="Magento\Framework\Mail\EmailMessageInterface" type="Swissup\Email\Mail\EmailMessage"/>
+    <preference for="Swissup\Email\Api\EncryptorInterface" type="Swissup\Email\Model\Data\Encryptor" />
+    <preference for="Swissup\Email\Api\ServiceEncryptorInterface" type="Swissup\Email\Model\Service\Encryptor" />
 <!--
     <type name="Magento\Framework\Mail\TransportInterface">
         <plugin name="swissup_email_transport" type="Swissup\Email\Mail\TransportPlugin" sortOrder="1" disabled="false"/>
@@ -44,4 +46,8 @@
             <argument name="filterPool" xsi:type="object" shared="false">SwissupEmailServiceGridFilterPool</argument>
         </arguments>
     </virtualType>
+
+    <type name="Swissup\Email\Model\Service">
+        <plugin name="SecureProtectedDataPlugin" type="Swissup\Email\Plugin\Model\ServicePlugin" sortOrder="10"/>
+    </type>
 </config>
