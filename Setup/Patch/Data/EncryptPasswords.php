@@ -48,6 +48,8 @@ class EncryptPasswords implements DataPatchInterface, PatchVersionInterface
         }
 
         $setup->endSetup();
+
+        return  $this;
     }
 
     /**
