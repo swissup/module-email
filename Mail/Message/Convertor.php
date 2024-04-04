@@ -20,10 +20,10 @@ class Convertor
             $message = $message;
             $message = $this->fixBodyParts($message);
             $isRemoveDuplicateHeaders = false;
-        } elseif ($message instanceof \Zend\Mail\Message) {
-            $message = $message;
-            $message = $this->fixBodyParts($message);
-            $isRemoveDuplicateHeaders = false;
+//        } elseif ($message instanceof \Laminas\Mail\Message) {
+//            $message = $message;
+//            $message = $this->fixBodyParts($message);
+//            $isRemoveDuplicateHeaders = false;
         } else if ($message instanceof \Swissup\Email\Mail\EmailMessage) {
             $message = $message->getZendMessage();
             $checkInvalidHeaders = false;
@@ -43,7 +43,7 @@ class Convertor
             array_map(function ($headerName) use ($message, &$hasInvalidHeader) {
                 $header = $message->getHeaders()->get($headerName);
                 if ($header
-                    && !\Zend\Mail\Header\HeaderValue::isValid($header->getFieldValue())
+                    && !\Laminas\Mail\Header\HeaderValue::isValid($header->getFieldValue())
                 ) {
                     $hasInvalidHeader = true;
                 }
@@ -59,13 +59,13 @@ class Convertor
                 $validHeadersArray = [];
                 $encoding = 'utf-8';
                 foreach ($headersArray as $headerKey => $headerValue) {
-                    $headerValue = \Zend\Mail\Header\HeaderValue::filter(
+                    $headerValue = \Laminas\Mail\Header\HeaderValue::filter(
                         $headerValue
                     );
-                    if (!\Zend\Mail\Header\HeaderValue::isValid($headerValue)
-                        && \Zend\Mail\Header\HeaderWrap::canBeEncoded($headerValue)
+                    if (!\Laminas\Mail\Header\HeaderValue::isValid($headerValue)
+                        && \Laminas\Mail\Header\HeaderWrap::canBeEncoded($headerValue)
                     ) {
-                        $headerValue = \Zend\Mail\Header\HeaderWrap::mimeEncodeValue(
+                        $headerValue = \Laminas\Mail\Header\HeaderWrap::mimeEncodeValue(
                             $headerValue,
                             $encoding
                         );
@@ -73,7 +73,7 @@ class Convertor
 
                     $validHeadersArray[$headerKey] = $headerValue;
                 }
-                $uniqueHeaders = new \Zend\Mail\Headers();
+                $uniqueHeaders = new \Laminas\Mail\Headers();
                 $uniqueHeaders->setEncoding($encoding);
                 $uniqueHeaders->addHeaders($validHeadersArray);
                 $message->setHeaders($uniqueHeaders);
@@ -89,29 +89,29 @@ class Convertor
     /**
      *
      * @param \Magento\Framework\Mail\EmailMessage $magentoEmailMessage
-     * @return \Zend\Mail\Message
+     * @return \Laminas\Mail\Message
      */
     private function fromMagentoEmailMessage($magentoEmailMessage)
     {
         $encoding = $magentoEmailMessage->getEncoding() ?: 'utf-8';
 
         if (!in_array(strtolower($encoding), ['utf-8', 'ascii'])) {
-            return \Zend\Mail\Message::fromString(
+            return \Laminas\Mail\Message::fromString(
                 $magentoEmailMessage->toString()
             );
         }
 
         $rawMessage = $magentoEmailMessage->toString(); //dosn't work properly return Mime::encoded body part
 
-        /** @var \Zend\Mail\Message $zend2MailMessage */
-        $zend2MailMessage = new \Zend\Mail\Message();
+        /** @var \Laminas\Mail\Message $zend2MailMessage */
+        $zend2MailMessage = new \Laminas\Mail\Message();
         $zend2MailMessage->setEncoding($encoding);
 
-        // @see \Zend\Mail\Message::fromString($mailString);
-        /** @var \Zend\Mail\Headers $headers */
+        // @see \Laminas\Mail\Message::fromString($mailString);
+        /** @var \Laminas\Mail\Headers $headers */
         $headers = null;
         $content = null;
-        \Zend\Mime\Decode::splitMessage($rawMessage, $headers, $content, \Zend\Mail\Headers::EOL);
+        \Laminas\Mime\Decode::splitMessage($rawMessage, $headers, $content, \Laminas\Mail\Headers::EOL);
 //        if ($headers->has('mime-version')) {
 //            // todo - restore body to mime\message
 //        }
@@ -124,11 +124,11 @@ class Convertor
         // if (isset($headersArray['Subject'])) {
         //     $headersArray['Subject'] =
 
-        //     \Zend\Mail\Header\HeaderWrap::mimeEncodeValue(
+        //     \Laminas\Mail\Header\HeaderWrap::mimeEncodeValue(
         //         iconv("utf-8","ascii//TRANSLIT", $headersArray['Subject']),
         //         $encoding
         //     );
-        //     // \Zend\Mime\Mime::encodeBase64Header(
+        //     // \Laminas\Mime\Mime::encodeBase64Header(
         //     //     $headersArray['Subject'],
         //     //     $encoding
         //     // );
@@ -140,10 +140,10 @@ class Convertor
         $messageBodyPart = reset($messageBodyParts);
         $content = $messageBodyPart->getRawContent(); // instead of getContent()
 
-        $part = new \Zend\Mime\Part($content);
+        $part = new \Laminas\Mime\Part($content);
         $part->setCharset($messageBodyPart->getCharset());
 
-        $partEncoding = $messageBodyPart->getEncoding() ?: \Zend\Mime\Mime::ENCODING_8BIT;
+        $partEncoding = $messageBodyPart->getEncoding() ?: \Laminas\Mime\Mime::ENCODING_8BIT;
         $part->setEncoding($partEncoding);
 
         //https://github.com/magento/magento2/issues/25076#issuecomment-622501468
@@ -158,7 +158,7 @@ class Convertor
             $part->setType($type);
         }
 
-        $mimeMessage = new \Zend\Mime\Message();
+        $mimeMessage = new \Laminas\Mime\Message();
         $mimeMessage->addPart($part);
 
         $zend2MailMessage->setBody($mimeMessage);
