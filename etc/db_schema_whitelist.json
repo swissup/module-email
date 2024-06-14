@@ -11,7 +11,8 @@
             "host": true,
             "port": true,
             "secure": true,
-            "auth": true
+            "auth": true,
+            "token": true
         },
         "constraint": {
             "PRIMARY": true

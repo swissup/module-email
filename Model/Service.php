@@ -87,7 +87,7 @@ class Service extends \Magento\Framework\Model\AbstractModel implements ServiceI
      */
     public function getType()
     {
-        return $this->getData(self::TYPE);
+        return (int) $this->getData(self::TYPE);
     }
 
     /**
@@ -158,6 +158,14 @@ class Service extends \Magento\Framework\Model\AbstractModel implements ServiceI
     public function getAuth()
     {
         return $this->getData(self::AUTH);
+    }
+
+    /**
+     * @return string
+     */
+    public function getToken()
+    {
+        return $this->getData(self::TOKEN);
     }
 
     /**
@@ -301,6 +309,11 @@ class Service extends \Magento\Framework\Model\AbstractModel implements ServiceI
         return $this->setData(self::AUTH, $auth);
     }
 
+    public function setToken($token)
+    {
+        return $this->setData(self::TOKEN, $token);
+    }
+
     /**
      * Set key
      *
@@ -415,6 +428,12 @@ class Service extends \Magento\Framework\Model\AbstractModel implements ServiceI
             'port' => 465,
             'secure' => self::SECURE_SSL,
           ], [
+            'name' => 'Gmail (OAuth 2)',
+            'host' => 'smtp.gmail.com',
+            'auth' => 'xoauth2',
+            'port' => 587,
+            'secure' => self::SECURE_SSL,
+          ], [
             'name' => 'Hotmail',
             'host' => 'smtp-mail.outlook.com',
             'auth' => 'login',
@@ -521,11 +540,12 @@ class Service extends \Magento\Framework\Model\AbstractModel implements ServiceI
     public function getTypes()
     {
         return [
-            self::TYPE_GMAIL    => __('Gmail'),
-            self::TYPE_SMTP     => __('SMTP'),
-            self::TYPE_SES      => __('Amazon SES'),
-            self::TYPE_MANDRILL => __('Mandrill'),
-            self::TYPE_SENDMAIL => __('Sendmail'),
+            self::TYPE_GMAIL       => __('Gmail'),
+            self::TYPE_GMAILOAUTH2 => __('Gmail OAuth 2'),
+            self::TYPE_SMTP        => __('SMTP'),
+            self::TYPE_SES         => __('Amazon SES'),
+            self::TYPE_MANDRILL    => __('Mandrill'),
+            self::TYPE_SENDMAIL    => __('Sendmail'),
         ];
     }
 
@@ -541,6 +561,7 @@ class Service extends \Magento\Framework\Model\AbstractModel implements ServiceI
         }
         $classes = [
             self::TYPE_GMAIL    => 'Gmail',
+            self::TYPE_GMAILOAUTH2 => 'GmailOAuth2',
             self::TYPE_SMTP     => 'Smtp',
             self::TYPE_SES      => 'Ses',
             self::TYPE_MANDRILL => 'Mandrill',
@@ -573,7 +594,8 @@ class Service extends \Magento\Framework\Model\AbstractModel implements ServiceI
             self::AUTH_TYPE_NONE   => __('None'),
             self::AUTH_TYPE_LOGIN   => __('Login'),
             self::AUTH_TYPE_PLAIN   => __('Plain'),
-            self::AUTH_TYPE_CRAMMD5 => __('Crammd5')
+            self::AUTH_TYPE_CRAMMD5 => __('Crammd5'),
+            self::AUTH_TYPE_XOAUTH2 => __('OAuth 2.0'),
         ];
     }
 }

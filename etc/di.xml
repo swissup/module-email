@@ -48,6 +48,8 @@
     </virtualType>
 
     <type name="Swissup\Email\Model\Service">
-        <plugin name="SecureProtectedDataPlugin" type="Swissup\Email\Plugin\Model\ServicePlugin" sortOrder="10"/>
+        <plugin name="ProtectDataPlugin" type="Swissup\Email\Plugin\Model\ServiceProtectDataPlugin" sortOrder="10"/>
+        <plugin name="OAuth2TokenPlugin" type="Swissup\Email\Plugin\Model\ServiceOAuth2TokenPlugin" sortOrder="30"/>
     </type>
+
 </config>

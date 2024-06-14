@@ -94,7 +94,8 @@ class ServiceRepository implements ServiceRepositoryInterface
         try {
             $this->resource->save($service);
         } catch (\Exception $exception) {
-            throw new CouldNotSaveException(__($exception->getMessage()));
+            throw  $exception;
+//            throw new CouldNotSaveException(__($exception->getMessage()));
         }
         return $service;
     }

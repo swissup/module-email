@@ -64,7 +64,7 @@ class Save extends Action
                 unset($data['id']);
             }
 
-            $model->setData($data);
+            $model->addData($data);
             // $this->_eventManager->dispatch(
             //     'swissup_email_service_prepare_save',
             //     ['item' => $model, 'request' => $request]
@@ -74,6 +74,12 @@ class Save extends Action
                 $this->serviceRepository->save($model);
                 $this->messageManager->addSuccess(__('Service succesfully saved.'));
                 $this->session->setFormData(false);
+
+                if ($model->hasData('callback_url')) {
+                     $flowUrl = $model->getData('callback_url');
+                     return $resultRedirect->setUrl($flowUrl);
+                }
+
                 if ($this->getRequest()->getParam('back')) {
                     return $resultRedirect->setPath(
                         '*/*/edit',

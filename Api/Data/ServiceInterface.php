@@ -16,6 +16,7 @@ interface ServiceInterface
     const PORT     = 'port';
     const SECURE   = 'secure';
     const AUTH     = 'auth';
+    const TOKEN    = 'token';
     const KEY      = 'key';
     const REMOVE   = 'remove';
 
@@ -25,6 +26,7 @@ interface ServiceInterface
     const TYPE_SENDMAIL = 0;
     const TYPE_SMTP     = 10;
     const TYPE_GMAIL    = 15;
+    const TYPE_GMAILOAUTH2 = 17;
     const TYPE_SES      = 20;
     const TYPE_MANDRILL = 30;
 
@@ -36,6 +38,7 @@ interface ServiceInterface
     const AUTH_TYPE_LOGIN   = 'login';
     const AUTH_TYPE_PLAIN   = 'plain';
     const AUTH_TYPE_CRAMMD5 = 'crammd5';
+    const AUTH_TYPE_XOAUTH2 = 'xoauth2';
 
     /**
      * Get id
@@ -113,6 +116,11 @@ interface ServiceInterface
      * return string
      */
     public function getAuth();
+
+    /**
+     * @return mixed
+     */
+    public function getToken();
 
     /**
      * Get key
@@ -204,7 +212,7 @@ interface ServiceInterface
      * Set secure
      *
      * @param int $secure
-     * return \Swissup\Email\Api\Data\ServiceInterface
+     * @return \Swissup\Email\Api\Data\ServiceInterface
      */
     public function setSecure($secure);
 
@@ -215,6 +223,12 @@ interface ServiceInterface
      * return \Swissup\Email\Api\Data\ServiceInterface
      */
     public function setAuth($auth);
+
+    /**
+     * @param string $token
+     * @return \Swissup\Email\Api\Data\ServiceInterface
+     */
+    public function setToken($token);
 
     /**
      * Set key

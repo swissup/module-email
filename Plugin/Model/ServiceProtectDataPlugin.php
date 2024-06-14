@@ -6,7 +6,7 @@ namespace Swissup\Email\Plugin\Model;
 use Magento\Framework\DataObject;
 use Swissup\Email\Model\Service;
 
-class ServicePlugin
+class ServiceProtectDataPlugin
 {
     /**
      * @var \Swissup\Email\Api\ServiceEncryptorInterface

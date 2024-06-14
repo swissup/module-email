@@ -2,6 +2,7 @@
 namespace Swissup\Email\Model\Service;
 
 use Swissup\Email\Api\EncryptorInterface;
+use Magento\Framework\Serialize\SerializerInterface;
 use Swissup\Email\Api\ServiceEncryptorInterface;
 use Swissup\Email\Api\Data\ServiceInterface;
 
@@ -13,11 +14,17 @@ class Encryptor implements ServiceEncryptorInterface
     private $encryptor;
 
     /**
+     * @var SerializerInterface
+     */
+    private $serializer;
+
+    /**
      * @param EncryptorInterface $encryptor
      */
-    public function __construct(EncryptorInterface $encryptor)
+    public function __construct(EncryptorInterface $encryptor, SerializerInterface $serializer)
     {
         $this->encryptor = $encryptor;
+        $this->serializer = $serializer;
     }
 
     /**
@@ -25,7 +32,24 @@ class Encryptor implements ServiceEncryptorInterface
      */
     private function getAttributes()
     {
-        return ['password'];
+        return ['password', 'token'];
+    }
+
+    /**
+     * @return string[]
+     */
+    private function getSerializableAttributes()
+    {
+        return ['token'];
+    }
+
+    /**
+     * @param $attribute
+     * @return bool
+     */
+    private function isSerializableAttribute($attribute)
+    {
+        return in_array($attribute, $this->getSerializableAttributes());
     }
 
     /**
@@ -36,6 +60,9 @@ class Encryptor implements ServiceEncryptorInterface
     {
         foreach ($this->getAttributes() as $attributeCode) {
             $value = $object->getData($attributeCode);
+            if ($this->isSerializableAttribute($attributeCode)) {
+                $value = $this->serializer->serialize($value);
+            }
             if ($value) {
                 $object->setData($attributeCode, $this->encryptor->encrypt($value));
             }
@@ -52,7 +79,11 @@ class Encryptor implements ServiceEncryptorInterface
             $value = $object->getData($attributeCode);
             if ($value) {
                 try {
-                    $object->setData($attributeCode, $this->encryptor->decrypt($value));
+                    $value = $this->encryptor->decrypt($value);
+                    if ($this->isSerializableAttribute($attributeCode)) {
+                        $value = $this->serializer->unserialize($value);
+                    }
+                    $object->setData($attributeCode, $value);
                 } catch (\Exception $e) {
                     // value is not encrypted or something wrong with encrypted data
                 }
