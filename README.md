@@ -59,6 +59,7 @@ In the `OAuth consent screen`, you need to enable the `Gmail API` scope. ![Add S
 After setting up your credentials, enter the following fields:
 - `Client ID` in `User (key)`
 - `Client secret` in `Password (secure key)`
+
 In the `Email (from)` field, enter your Gmail email address.
 
 ### Logging
