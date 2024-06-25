@@ -12,7 +12,8 @@
             "port": true,
             "secure": true,
             "auth": true,
-            "token": true
+            "token": true,
+            "token_id": true
         },
         "constraint": {
             "PRIMARY": true
