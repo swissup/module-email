@@ -23,7 +23,7 @@ class GetOAuth2Token extends \Magento\Framework\App\Action\Action
     private $urlDecoder;
 
     /**
-     * @var \Swissup\Email\Model\Data\Token\Validator
+     * @var \Swissup\OAuth2Client\Model\Data\FlowToken
      */
     private $tokenValidator;
 
@@ -32,7 +32,7 @@ class GetOAuth2Token extends \Magento\Framework\App\Action\Action
         \Magento\Framework\Session\SessionManagerInterface $session,
         \Swissup\Email\Model\ServiceRepository $serviceRepository,
         \Magento\Framework\Url\DecoderInterface $urldecoder,
-        \Swissup\Email\Model\Data\Token\Validator $tokenValidator
+        \Swissup\OAuth2Client\Model\Data\FlowToken $tokenValidator
     ) {
         parent::__construct($context);
         $this->session = $session;
@@ -48,7 +48,7 @@ class GetOAuth2Token extends \Magento\Framework\App\Action\Action
         $sessionIdKey = self::SESSION_ID_KEY;
 
         if (!empty($serviceId)) {
-            if ($this->tokenValidator->validate($request)) {
+            if ($this->tokenValidator->validateRequest($request)) {
                 $this->session->setData($sessionIdKey, $serviceId);
             } else {
                 $this->session->setData($sessionIdKey, null);

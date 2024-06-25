@@ -25,20 +25,27 @@ class ServiceOAuth2TokenPlugin
     private $urlEncoder;
 
     /**
-     * @var \Swissup\Email\Model\Data\Token
+     * @var \Swissup\OAuth2Client\Model\Data\FlowToken
      */
-    private $token;
+    private $flowToken;
+
+    /**
+     * @var \Psr\Log\LoggerInterface $logger
+     */
+    private $logger;
 
     public function __construct(
         \Swissup\Email\Model\ServiceRepository $serviceRepository,
         \Magento\Framework\Url $urlBuilder,
         \Magento\Framework\Url\EncoderInterface $urlEncoder,
-        \Swissup\Email\Model\Data\Token $token
+        \Swissup\OAuth2Client\Model\Data\FlowToken $flowToken,
+        \Psr\Log\LoggerInterface $logger
     ) {
         $this->serviceRepository = $serviceRepository;
         $this->urlBuilder = $urlBuilder;
         $this->urlEncoder = $urlEncoder;
-        $this->token = $token;
+        $this->flowToken = $flowToken;
+        $this->logger = $logger;
     }
 
     public function afterAfterCommitCallback(Service $subject): void
@@ -60,7 +67,7 @@ class ServiceOAuth2TokenPlugin
                     '_query' => [
                         'id' => $subject->getId(),
                         'referer' => $refererUrl,
-                        'token' => $this->token->getToken(),
+                        'token' => $this->flowToken->getToken(),
                     ]
                 ]
             );
@@ -94,12 +101,16 @@ class ServiceOAuth2TokenPlugin
                 'scopes' => ['https://mail.google.com/'],
                 'accessType' => 'offline'
             ]);
-            $token = $provider->getAccessToken('refresh_token', [
-                'refresh_token' => $refreshToken
-            ]);
-            $tokenOptions = array_merge($token->jsonSerialize(), ['refresh_token' => $refreshToken]);
-            $subject->setToken($tokenOptions);
-            $this->serviceRepository->save($subject);
+            try {
+                $token = $provider->getAccessToken('refresh_token', [
+                    'refresh_token' => $refreshToken
+                ]);
+                $tokenOptions = array_merge($token->jsonSerialize(), ['refresh_token' => $refreshToken]);
+                $subject->setToken($tokenOptions);
+                $this->serviceRepository->save($subject);
+            } catch (\Exception $e) {
+                $this->logger->critical($e->getMessage());
+            }
         }
     }
 }
