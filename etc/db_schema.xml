@@ -13,10 +13,11 @@
     <column xsi:type="smallint" name="secure" padding="5" unsigned="true" nullable="false" identity="false" default="0" comment="Secure"/>
     <column xsi:type="varchar" name="auth" nullable="false" length="7" default="" comment="Auth"/>
     <column xsi:type="text" name="token" nullable="false" comment="Token (json)"/>
-    <column xsi:type="int" name="token_id" nullable="true" comment="Token Id"/>
+    <column xsi:type="int" name="token_id" padding="10" unsigned="true" nullable="true" comment="Token Id"/>
     <constraint xsi:type="primary" referenceId="PRIMARY">
       <column name="id"/>
     </constraint>
+    <constraint xsi:type="foreign" referenceId="SWISSUP_EMAIL_TOKEN_ID_SWISSUP_OAUTH_CLIENT_ACCESS_TOKEN_ID" table="swissup_email_service" column="token_id" referenceTable="swissup_oauth_client_access_token" referenceColumn="id" onDelete="SET NULL"/>
   </table>
   <table name="swissup_email_history" resource="default" engine="innodb" comment="Emails History Table">
     <column xsi:type="bigint" name="entity_id" padding="20" unsigned="true" nullable="false" identity="true" comment="Entity ID"/>
