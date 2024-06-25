@@ -22,7 +22,7 @@
         "magento/module-config": "^101.1",
         "laminas/laminas-mail": "^2.9.0",
         "laminas/laminas-mime": "^2.5.0",
-        "league/oauth2-google": "^4.0"
+        "swissup/module-oauth2-client": "*"
     },
     "require-dev": {
         "slm/mail": "~1.5",
