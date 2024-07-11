@@ -12,7 +12,6 @@
     <column xsi:type="smallint" name="port" padding="5" unsigned="true" nullable="false" identity="false" default="110" comment="Port"/>
     <column xsi:type="smallint" name="secure" padding="5" unsigned="true" nullable="false" identity="false" default="0" comment="Secure"/>
     <column xsi:type="varchar" name="auth" nullable="false" length="7" default="" comment="Auth"/>
-    <column xsi:type="text" name="token" nullable="false" comment="Token (json)"/>
     <column xsi:type="int" name="token_id" padding="10" unsigned="true" nullable="true" comment="Token Id"/>
     <constraint xsi:type="primary" referenceId="PRIMARY">
       <column name="id"/>

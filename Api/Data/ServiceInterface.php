@@ -16,7 +16,7 @@ interface ServiceInterface
     const PORT     = 'port';
     const SECURE   = 'secure';
     const AUTH     = 'auth';
-    const TOKEN    = 'token';
+    const TOKEN_ID = 'token_id';
     const KEY      = 'key';
     const REMOVE   = 'remove';
 
@@ -120,7 +120,7 @@ interface ServiceInterface
     /**
      * @return mixed
      */
-    public function getToken();
+    public function getTokenId();
 
     /**
      * Get key
@@ -225,10 +225,10 @@ interface ServiceInterface
     public function setAuth($auth);
 
     /**
-     * @param string $token
+     * @param int $tokenId
      * @return \Swissup\Email\Api\Data\ServiceInterface
      */
-    public function setToken($token);
+    public function setTokenId($tokenId);
 
     /**
      * Set key

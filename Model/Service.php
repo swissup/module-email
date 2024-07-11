@@ -161,11 +161,11 @@ class Service extends \Magento\Framework\Model\AbstractModel implements ServiceI
     }
 
     /**
-     * @return string
+     * @return int
      */
-    public function getToken()
+    public function getTokenId()
     {
-        return $this->getData(self::TOKEN);
+        return $this->getData(self::TOKEN_ID);
     }
 
     /**
@@ -309,9 +309,9 @@ class Service extends \Magento\Framework\Model\AbstractModel implements ServiceI
         return $this->setData(self::AUTH, $auth);
     }
 
-    public function setToken($token)
+    public function setTokenId($tokenId)
     {
-        return $this->setData(self::TOKEN, $token);
+        return $this->setData(self::TOKEN_ID, $tokenId);
     }
 
     /**

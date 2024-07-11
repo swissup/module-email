@@ -51,7 +51,7 @@ If `Type` selects `Gmail`. Use an [App Password](https://security.google.com/set
 >
 > - [Transition from less secure apps to OAuth](https://support.google.com/a/answer/14114704?hl=en)
 
-If the `Type` field is set to `Gmail OAuth 2.0`, please follow the [Google instructions](https://developers.google.com/identity/openid-connect/openid-connect#registeringyourapp) to create the required credentials. In your credentials, you need to add `Authorized redirect URIs` with at least one URI, such as `https://localhost/swissup_email/gmail/getOAuth2Token/` (replace `localhost` with your Magento store URL).
+If the `Type` field is set to `Gmail OAuth 2.0`, please follow the [Google instructions](https://developers.google.com/identity/openid-connect/openid-connect#registeringyourapp) to create the required credentials. In your credentials, you need to add `Authorized redirect URIs` with at least one URI, such as `https://localhost/swissup_oauth2client/google/getToken/` (replace `localhost` with your Magento store URL).
 ![Gmail OAuth2 Credential](https://github.com/swissup/module-email/assets/412612/47802486-2725-4642-91e2-8ff8ead58389)
 
 ###### Customize the User Consent Screen

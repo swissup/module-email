@@ -76,8 +76,8 @@ class Save extends Action
                 $this->session->setFormData(false);
 
                 if ($model->hasData('callback_url')) {
-                     $flowUrl = $model->getData('callback_url');
-                     return $resultRedirect->setUrl($flowUrl);
+                     $callbackUrl = $model->getData('callback_url');
+                     return $resultRedirect->setUrl($callbackUrl);
                 }
 
                 if ($this->getRequest()->getParam('back')) {

@@ -24,8 +24,8 @@ class GmailOAuth2 extends \Laminas\Mail\Transport\Smtp implements TransportInter
         SmtpOptions $options = null
     ) {
         if (! $options instanceof SmtpOptions) {
-            $host = 'smtp.gmail.com';
-            $port = 587;
+            $host = isset($config['host']) ? $config['host'] : 'smtp.gmail.com';
+            $port = isset($config['port']) ? (int) $config['port'] : 587;
 
             if (!isset($config['token']) || !isset($config['token']['access_token'])) {
                 $phrase = new \Magento\Framework\Phrase('token is broken');

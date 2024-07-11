@@ -3,8 +3,8 @@ declare(strict_types=1);
 
 namespace Swissup\Email\Plugin\Model;
 
-use Magento\Framework\DataObject;
 use Swissup\Email\Model\Service;
+use Swissup\OAuth2Client\Model\AccessTokenRepository;
 
 class ServiceOAuth2TokenPlugin
 {
@@ -15,19 +15,9 @@ class ServiceOAuth2TokenPlugin
     private $serviceRepository;
 
     /**
-     * @var \Magento\Framework\Url
+     * @var AccessTokenRepository
      */
-    private $urlBuilder;
-
-    /**
-     * @var \Magento\Framework\Url\EncoderInterface
-     */
-    private $urlEncoder;
-
-    /**
-     * @var \Swissup\OAuth2Client\Model\Data\FlowToken
-     */
-    private $flowToken;
+    private $accessTokenRepository;
 
     /**
      * @var \Psr\Log\LoggerInterface $logger
@@ -36,81 +26,78 @@ class ServiceOAuth2TokenPlugin
 
     public function __construct(
         \Swissup\Email\Model\ServiceRepository $serviceRepository,
-        \Magento\Framework\Url $urlBuilder,
-        \Magento\Framework\Url\EncoderInterface $urlEncoder,
-        \Swissup\OAuth2Client\Model\Data\FlowToken $flowToken,
+        \Swissup\OAuth2Client\Model\AccessTokenRepository $accessTokenRepository,
         \Psr\Log\LoggerInterface $logger
     ) {
         $this->serviceRepository = $serviceRepository;
-        $this->urlBuilder = $urlBuilder;
-        $this->urlEncoder = $urlEncoder;
-        $this->flowToken = $flowToken;
+        $this->accessTokenRepository = $accessTokenRepository;
         $this->logger = $logger;
+    }
+
+    private function isGoogleOAuth2(Service $service): bool
+    {
+        return $service->getAuth() === Service::AUTH_TYPE_XOAUTH2 && $service->getType() === Service::TYPE_GMAILOAUTH2;
     }
 
     public function afterAfterCommitCallback(Service $subject): void
     {
-        if ($subject->getAuth() !== Service::AUTH_TYPE_XOAUTH2 ||
-            $subject->getType() !== Service::TYPE_GMAILOAUTH2) {
+        if (!$this->isGoogleOAuth2($subject)) {
             return;
         }
+        $tokenId = $subject->getTokenId();
+        /** @var $accessToken \Swissup\OAuth2Client\Model\AccessToken */
+        $accessToken = $this->accessTokenRepository->getById($tokenId);
 
-        $tokenOptions = $subject->getToken();
-        if (empty($tokenOptions)) {
-            $urlBuilder = $this->urlBuilder;
-            $refererUrl = $urlBuilder->getCurrentUrl();
-            $refererUrl = $this->urlEncoder->encode($refererUrl);
-            $callbackUrl = $urlBuilder->getUrl(
-                'swissup_email/gmail/getOAuth2Token',
-                [
-                    '_nosid' => true,
-                    '_query' => [
-                        'id' => $subject->getId(),
-                        'referer' => $refererUrl,
-                        'token' => $this->flowToken->getToken(),
-                    ]
-                ]
-            );
+        if (!$accessToken->isInitialized()) {
+            $callbackUrl = $accessToken->getCallbackUrl();
             $subject->setData('callback_url', $callbackUrl);
         }
     }
 
     public function afterAfterLoad(Service $subject): void
     {
-        if ($subject->getAuth() !== Service::AUTH_TYPE_XOAUTH2 ||
-            $subject->getType() !== Service::TYPE_GMAILOAUTH2) {
+        if (!$this->isGoogleOAuth2($subject)) {
             return;
         }
 
-        $tokenOptions = $subject->getToken();
-        if (empty($tokenOptions)) {
-            return;
-        }
-        $storedToken = new \League\OAuth2\Client\Token\AccessToken($tokenOptions);
-        $refreshToken = $storedToken->getRefreshToken();
+        // create new access token record
+        $tokenId = $subject->getTokenId();
+        if (empty($tokenId)) {
+            /** @var \Swissup\OAuth2Client\Model\AccessToken $accessToken */
+            $accessToken = $this->accessTokenRepository->create();
+            $accessToken->setHasDataChanges(true);
+            $accessToken = $this->accessTokenRepository->save($accessToken);
+            $tokenId = $accessToken->getId();
 
-        if ($storedToken->hasExpired() && !empty($refreshToken)) {
-            $urlBuilder = $this->urlBuilder;
-            $redirectUri = $urlBuilder->getUrl('swissup_email/gmail/getOAuth2Token');
-            /* @var \League\OAuth2\Client\Provider\Google $provider */
-            $provider = new \League\OAuth2\Client\Provider\Google([
-                'clientId' => $subject->getUser(),
-                'clientSecret' => $subject->getPassword(),
-                'redirectUri'  => $redirectUri,
-//                'hostedDomain' => 'example.com', // optional; used to restrict access to users on your G Suite/Google Apps for Business accounts
-                'scopes' => ['https://mail.google.com/'],
-                'accessType' => 'offline'
-            ]);
-            try {
-                $token = $provider->getAccessToken('refresh_token', [
-                    'refresh_token' => $refreshToken
-                ]);
-                $tokenOptions = array_merge($token->jsonSerialize(), ['refresh_token' => $refreshToken]);
-                $subject->setToken($tokenOptions);
-                $this->serviceRepository->save($subject);
-            } catch (\Exception $e) {
-                $this->logger->critical($e->getMessage());
-            }
+            $subject->setTokenId($tokenId);
+            $this->serviceRepository->save($subject);
         }
+
+        // refresh creadential
+        $tokenId = $subject->getTokenId();
+        /** @var \Swissup\OAuth2Client\Model\AccessToken $accessToken */
+        $accessToken = $this->accessTokenRepository->getById($tokenId);
+        $storedCredentialHash = $accessToken->getCredentialHash();
+        $clientId = $subject->getUser();
+        $clientSecret = $subject->getPassword();
+        $scope = implode(' ', ['https://mail.google.com/']);
+        $credential = $accessToken->getCredential();
+        $credential->setClientId($clientId)
+            ->setClientSecret($clientSecret)
+            ->setScope($scope);
+        $hash = $credential->getHash();
+        if ($storedCredentialHash !== $hash || $credential->isExpired()) {
+            $credential->save();
+            $accessToken->setCredentialHash($hash);
+            $this->accessTokenRepository->save($accessToken);
+        }
+
+        // refresh access_token is expired
+        $accessToken = $accessToken->runRefreshToken();
+        if ($accessToken) {
+            $this->accessTokenRepository->save($accessToken);
+        }
+
+        $subject->setData('token', $accessToken->getData());
     }
 }

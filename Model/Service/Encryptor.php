@@ -14,17 +14,11 @@ class Encryptor implements ServiceEncryptorInterface
     private $encryptor;
 
     /**
-     * @var SerializerInterface
-     */
-    private $serializer;
-
-    /**
      * @param EncryptorInterface $encryptor
      */
-    public function __construct(EncryptorInterface $encryptor, SerializerInterface $serializer)
+    public function __construct(EncryptorInterface $encryptor)
     {
         $this->encryptor = $encryptor;
-        $this->serializer = $serializer;
     }
 
     /**
@@ -32,24 +26,7 @@ class Encryptor implements ServiceEncryptorInterface
      */
     private function getAttributes()
     {
-        return ['password', 'token'];
-    }
-
-    /**
-     * @return string[]
-     */
-    private function getSerializableAttributes()
-    {
-        return ['token'];
-    }
-
-    /**
-     * @param $attribute
-     * @return bool
-     */
-    private function isSerializableAttribute($attribute)
-    {
-        return in_array($attribute, $this->getSerializableAttributes());
+        return ['password'];
     }
 
     /**
@@ -60,9 +37,6 @@ class Encryptor implements ServiceEncryptorInterface
     {
         foreach ($this->getAttributes() as $attributeCode) {
             $value = $object->getData($attributeCode);
-            if ($this->isSerializableAttribute($attributeCode)) {
-                $value = $this->serializer->serialize($value);
-            }
             if ($value) {
                 $object->setData($attributeCode, $this->encryptor->encrypt($value));
             }
@@ -80,9 +54,6 @@ class Encryptor implements ServiceEncryptorInterface
             if ($value) {
                 try {
                     $value = $this->encryptor->decrypt($value);
-                    if ($this->isSerializableAttribute($attributeCode)) {
-                        $value = $this->serializer->unserialize($value);
-                    }
                     $object->setData($attributeCode, $value);
                 } catch (\Exception $e) {
                     // value is not encrypted or something wrong with encrypted data
