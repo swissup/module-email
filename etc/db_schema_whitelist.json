@@ -16,7 +16,8 @@
             "token_id": true
         },
         "constraint": {
-            "PRIMARY": true
+            "PRIMARY": true,
+            "SWISSUP_EMAIL_TOKEN_ID_SWISSUP_OAUTH_CLIENT_ACCESS_TOKEN_ID": true
         }
     },
     "swissup_email_history": {
