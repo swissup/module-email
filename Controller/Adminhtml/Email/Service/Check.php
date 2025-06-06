@@ -106,7 +106,7 @@ class Check extends Action
             // $mailMessage->setBodyText($messageText);
             try {
                 $mailMessage->setBodyHtml("<p>{$messageText}</p>");
-                $mailMessage->setFrom($email/*, 'test'*/);
+                $mailMessage->setFromAddress($email, $email);
 
                 $replacePlaceholder = str_repeat('x', 9);
                 $webTesterPrefix = str_replace($replacePlaceholder, $verifyCode, 'test-' . $replacePlaceholder);
