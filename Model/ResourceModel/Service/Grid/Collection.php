@@ -131,7 +131,7 @@ class Collection extends ServiceCollection implements Api\Search\SearchResultInt
      * @param \Magento\Framework\Api\Search\DocumentInterface[] $items
      * @return $this
      */
-    public function setItems(array $items = null)
+    public function setItems(?array $items = null)
     {
         if ($items) {
             foreach ($items as $item) {
