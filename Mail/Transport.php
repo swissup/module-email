@@ -12,6 +12,8 @@ use Swissup\Email\Model\ServiceFactory;
 use Swissup\Email\Model\HistoryFactory;
 use Swissup\Email\Mail\Transport\Factory as TransportFactory;
 
+use Psr\Log\LoggerInterface;
+
 class Transport implements \Magento\Framework\Mail\TransportInterface
 {
     const SERVICE_CONFIG = 'email/default/service';
