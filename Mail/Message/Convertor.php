@@ -20,14 +20,6 @@ class Convertor
             $message = $message;
             $message = $this->fixBodyParts($message);
             $isRemoveDuplicateHeaders = false;
-//        } elseif ($message instanceof \Laminas\Mail\Message) {
-//            $message = $message;
-//            $message = $this->fixBodyParts($message);
-//            $isRemoveDuplicateHeaders = false;
-//         } else if ($message instanceof \Swissup\Email\Mail\EmailMessage) {
-//            $message = $message->getZendMessage();
-//            $checkInvalidHeaders = false;
-//            $isRemoveDuplicateHeaders = false;
         } elseif ($message instanceof \Magento\Framework\Mail\EmailMessageInterface) {
             //fix for desposition https://github.com/magento/magento2/commit/6976aabdfdab91a9d06e412c2ed619538ed034b6
             $message = \Laminas\Mail\Message::fromString($message->toString());
@@ -165,7 +157,6 @@ class Convertor
 
         return $zend2MailMessage;
     }
-
 
     /**
      * @param \Magento\Framework\Mail\MimePart $part

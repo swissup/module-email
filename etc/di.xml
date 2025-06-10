@@ -8,7 +8,6 @@
     <preference for="Magento\Framework\Mail\Transport" type="Swissup\Email\Mail\Transport"/>
     <preference for="Magento\Framework\Mail\TransportInterface" type="Swissup\Email\Mail\Transport"/>
 
-    <preference for="Magento\Framework\Mail\EmailMessageInterface" type="Swissup\Email\Mail\EmailMessage"/>
     <preference for="Swissup\Email\Api\EncryptorInterface" type="Swissup\Email\Model\Data\Encryptor" />
     <preference for="Swissup\Email\Api\ServiceEncryptorInterface" type="Swissup\Email\Model\Service\Encryptor" />
 <!--
