@@ -22,6 +22,8 @@
         "magento/module-config": "^101.1",
         "laminas/laminas-mail": "^2.9.0",
         "laminas/laminas-mime": "^2.5.0",
+        "symfony/mailer": "^6.4",
+        "symfony/mime": "^6.4",
         "swissup/module-oauth2-client": "^1.0.3"
     },
     "require-dev": {
