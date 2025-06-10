@@ -2,6 +2,7 @@
 namespace Swissup\Email\Mail;
 
 use Magento\Framework\Mail\MessageInterface;
+use Magento\Framework\App\ObjectManager;
 use Magento\Framework\App\Config\ScopeConfigInterface;
 use Magento\Store\Model\ScopeInterface;
 
@@ -62,6 +63,11 @@ class Transport implements \Magento\Framework\Mail\TransportInterface
     protected $parameters;
 
     /**
+     * @var LoggerInterface|null
+     */
+    protected $logger;
+
+    /**
      *
      * @param MessageInterface $message
      * @param \Swissup\Email\Mail\Message\Convertor $convertor
@@ -70,6 +76,7 @@ class Transport implements \Magento\Framework\Mail\TransportInterface
      * @param TransportFactory $transportFactory
      * @param HistoryFactory $historyFactory
      * @param null $parameters
+     * @param LoggerInterface|null $logger
      * @throws \InvalidArgumentException
      */
     public function __construct(
@@ -79,7 +86,8 @@ class Transport implements \Magento\Framework\Mail\TransportInterface
         ServiceFactory $serviceFactory,
         TransportFactory $transportFactory,
         HistoryFactory $historyFactory,
-        $parameters = null
+        $parameters = null,
+        LoggerInterface $logger = null
     ) {
         // if (!$message instanceof MessageInterface) {
         //     throw new \InvalidArgumentException(
@@ -93,6 +101,7 @@ class Transport implements \Magento\Framework\Mail\TransportInterface
         $this->transportFactory = $transportFactory;
         $this->historyFactory = $historyFactory;
         $this->parameters = $parameters;
+        $this->logger = $logger ?: ObjectManager::getInstance()->get(LoggerInterface::class);
     }
 
     /**
@@ -130,6 +139,7 @@ class Transport implements \Magento\Framework\Mail\TransportInterface
             }
         } catch (\Exception $e) {
 //            throw $e;
+            $this->logger->error($e);
             $phrase = new \Magento\Framework\Phrase($e->getMessage());
             throw new \Magento\Framework\Exception\MailException($phrase, $e);
         }
