@@ -67,7 +67,7 @@ class Transport implements \Magento\Framework\Mail\TransportInterface
     /**
      * @var LoggerInterface|null
      */
-    protected $logger;
+    protected ?LoggerInterface $logger;
 
     /**
      *
