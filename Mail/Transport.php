@@ -1,101 +1,53 @@
 <?php
+
+declare(strict_types=1);
+
 namespace Swissup\Email\Mail;
 
-use Magento\Framework\Mail\MessageInterface;
-use Magento\Framework\App\ObjectManager;
+use InvalidArgumentException;
 use Magento\Framework\App\Config\ScopeConfigInterface;
+use Magento\Framework\App\ObjectManager;
+use Magento\Framework\Exception\MailException;
+use Magento\Framework\Mail\MessageInterface;
+use Magento\Framework\Mail\TransportInterface;
+use Magento\Framework\Phrase;
 use Magento\Store\Model\ScopeInterface;
-
-use Swissup\Email\Api\Data\ServiceInterface;
+use Psr\Log\LoggerInterface;
+use Swissup\Email\Mail\Message\Convertor;
+use Swissup\Email\Mail\Transport\Factory as TransportFactory;
+use Swissup\Email\Model\History;
+use Swissup\Email\Model\HistoryFactory;
 use Swissup\Email\Model\Service;
 use Swissup\Email\Model\ServiceFactory;
-use Swissup\Email\Model\HistoryFactory;
-use Swissup\Email\Mail\Transport\Factory as TransportFactory;
 
-use Psr\Log\LoggerInterface;
-
-class Transport implements \Magento\Framework\Mail\TransportInterface
+class Transport implements TransportInterface
 {
-    const SERVICE_CONFIG = 'email/default/service';
-    const LOG_CONFIG = 'email/default/log';
-    const EHLO_CONFIG = 'email/default/sending_host';
+    private const CONFIG = [
+        'SERVICE' => 'email/default/service',
+        'LOG' => 'email/default/log',
+        'EHLO' => 'email/default/sending_host'
+    ];
 
-    /**
-     * @var MessageInterface
-     */
-    protected $message;
+    private MessageInterface $message;
+    private Convertor $convertor;
+    private ScopeConfigInterface $scopeConfig;
+    private ServiceFactory $serviceFactory;
+    private TransportFactory $transportFactory;
+    private HistoryFactory $historyFactory;
+    private ?array $parameters;
+    private LoggerInterface $logger;
+    private ?Service $service = null;
 
-    /**
-     * @var \Swissup\Email\Mail\Message\Convertor
-     */
-    protected $convertor;
-
-    /**
-     * @var ScopeConfigInterface
-     */
-    protected $scopeConfig;
-
-    /**
-     * @var ServiceFactory
-     */
-    protected $serviceFactory;
-
-    /**
-     *
-     * @var Service
-     */
-    protected $service;
-
-    /**
-     * @var TransportFactory
-     */
-    protected $transportFactory;
-
-    /**
-     *
-     * @var HistoryFactory
-     */
-    protected $historyFactory;
-
-    /**
-     * Config options for sendmail parameters
-     *
-     * @var null
-     */
-    protected $parameters;
-
-    /**
-     * @var LoggerInterface|null
-     */
-    protected ?LoggerInterface $logger;
-
-    /**
-     *
-     * @param MessageInterface $message
-     * @param \Swissup\Email\Mail\Message\Convertor $convertor
-     * @param ScopeConfigInterface $scopeConfig
-     * @param ServiceFactory $serviceFactory
-     * @param TransportFactory $transportFactory
-     * @param HistoryFactory $historyFactory
-     * @param null $parameters
-     * @param LoggerInterface|null $logger
-     * @throws \InvalidArgumentException
-     */
     public function __construct(
-        /*MessageInterface*/ $message, //Magento\Framework\Mail\EmailMessage
-        \Swissup\Email\Mail\Message\Convertor $convertor,
+        MessageInterface $message,
+        Convertor $convertor,
         ScopeConfigInterface $scopeConfig,
         ServiceFactory $serviceFactory,
         TransportFactory $transportFactory,
         HistoryFactory $historyFactory,
         $parameters = null,
-        LoggerInterface $logger = null
+        ?LoggerInterface $logger = null
     ) {
-        // if (!$message instanceof MessageInterface) {
-        //     throw new \InvalidArgumentException(
-        //         'The message should be an instance of \Magento\Framework\Mail\MessageInterface'
-        //     );
-        // }
         $this->message = $message;
         $this->convertor = $convertor;
         $this->scopeConfig = $scopeConfig;
@@ -103,59 +55,76 @@ class Transport implements \Magento\Framework\Mail\TransportInterface
         $this->transportFactory = $transportFactory;
         $this->historyFactory = $historyFactory;
         $this->parameters = $parameters;
-        $this->logger = $logger ?: ObjectManager::getInstance()->get(LoggerInterface::class);
+        $this->logger = $logger ?? ObjectManager::getInstance()->get(LoggerInterface::class);
     }
 
     /**
-     * Send a mail using this transport
-     *
-     * @return void
-     * @throws \Magento\Framework\Exception\MailException
+     * @throws MailException
      */
-    public function sendMessage()
+    public function sendMessage(): void
     {
         try {
             $service = $this->getService();
-
             $message = $this->convertor->fromMessage($this->message);
-            $args = [
-                'config'  => $service->getData(),
-                'parameters' => $this->parameters
-                // 'convertor' => $this->convertor
-            ];
-            $sendingHost = (string) $this->scopeConfig->getValue(self::EHLO_CONFIG);
-            if (!empty($sendingHost)) {
-                $args['config']['sending_host'] = $sendingHost;
-            }
-            $type = $service->getTransportNameByType();
-            $transport = $this->transportFactory->create($type, $args);
+
+            $transportConfig = $this->buildTransportConfig($service);
+            $transport = $this->createTransport($service, $transportConfig);
+
             $transport->setMessage($message);
             $transport->sendMessage();
 
-            $isLoggingEnabled = $this->scopeConfig->isSetFlag(self::LOG_CONFIG, ScopeInterface::SCOPE_STORE);
-            if ($isLoggingEnabled) {
-                /** @var \Swissup\Email\Model\History $historyEntry */
-                $historyEntry = $this->historyFactory->create();
-                $historyEntry->setServiceId($service->getId());
-                $historyEntry->saveMessage($message);
-            }
+            $this->logMessageIfEnabled($message, $service);
         } catch (\Exception $e) {
-//            throw $e;
             $this->logger->error($e);
-            $phrase = new \Magento\Framework\Phrase($e->getMessage());
-            throw new \Magento\Framework\Exception\MailException($phrase, $e);
+            throw new MailException(new Phrase($e->getMessage()), $e);
         }
     }
 
-    /**
-     *
-     * @return Service
-     */
-    public function getService()
+    private function buildTransportConfig(Service $service): array
+    {
+        $config = [
+            'config' => $service->getData(),
+            'parameters' => $this->parameters
+        ];
+
+        $sendingHost = (string) $this->scopeConfig->getValue(self::CONFIG['EHLO']);
+        if (!empty($sendingHost)) {
+            $config['config']['sending_host'] = $sendingHost;
+        }
+
+        return $config;
+    }
+
+    private function createTransport(Service $service, array $config)
+    {
+        $type = $service->getTransportNameByType();
+        return $this->transportFactory->create($type, $config);
+    }
+
+    private function logMessageIfEnabled($message, Service $service): void
+    {
+        $isLoggingEnabled = $this->scopeConfig->isSetFlag(
+            self::CONFIG['LOG'],
+            ScopeInterface::SCOPE_STORE
+        );
+
+        if ($isLoggingEnabled) {
+            /** @var History $historyEntry */
+            $historyEntry = $this->historyFactory->create();
+            $historyEntry->setServiceId($service->getId());
+            $historyEntry->saveMessage($message);
+        }
+    }
+
+    public function getService(): Service
     {
         if ($this->service === null) {
             $service = $this->serviceFactory->create();
-            $id = (int) $this->scopeConfig->getValue(self::SERVICE_CONFIG, ScopeInterface::SCOPE_STORE);
+            $id = (int) $this->scopeConfig->getValue(
+                self::CONFIG['SERVICE'],
+                ScopeInterface::SCOPE_STORE
+            );
+
             if ($id) {
                 $service->load($id);
             }
@@ -166,29 +135,18 @@ class Transport implements \Magento\Framework\Mail\TransportInterface
         return $this->service;
     }
 
-    /**
-     *
-     * @param Service $service
-     */
-    public function setService(Service $service)
+    public function setService(Service $service): self
     {
         $this->service = $service;
         return $this;
     }
 
-    /**
-     * @inheritdoc
-     */
-    public function getMessage()
+    public function getMessage(): MessageInterface
     {
         return $this->message;
     }
 
-    /**
-     *
-     * @param  \Magento\Framework\Mail\MessageInterface $message
-     */
-    public function setMessage($message)
+    public function setMessage(MessageInterface $message): self
     {
         $this->message = $message;
         return $this;
