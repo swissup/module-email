@@ -202,83 +202,34 @@ class History extends \Magento\Framework\Model\AbstractModel implements HistoryI
     public function saveMessage($message)
     {
         /** @var \Magento\Framework\Mail\EmailMessage $message */
-        $from = $message->getFrom();
-        $mailAddresses = $from;
-        if ($mailAddresses instanceof \Laminas\Mail\AddressList) {
-            $_address = [];
-            foreach ($mailAddresses as $mailAddress) {
-                $_address[] = $mailAddress->toString();
-            }
-            $from = implode(',', $_address);
-        } else {
-            $from = (string) $from;
-        }
-
-        $to = $message->getTo();
-        $mailAddresses = $to;
-        if ($mailAddresses instanceof \Laminas\Mail\AddressList) {
-            $_address = [];
-            foreach ($mailAddresses as $mailAddress) {
-                $_address[] = $mailAddress->toString();
-            }
-            $to = implode(',', $_address);
-        } else {
-            $to = implode(',', $message->getRecipients());
-        }
-
-        $subject = $message->getSubject();
+        $from = implode(',', $message->getFrom() ?? []);
+        $to = implode(',', $message->getTo() ?? []);
         $encoding = $message->getEncoding();
-
         $subject = in_array($encoding, ['utf-8', 'UTF-8', 'ASCII']) ?
             $subject : mb_decode_mimeheader($subject);
 
-        $body = $message->getBody();
-        if ($body instanceof \Laminas\Mime\Message) {
-            if ($body->isMultiPart()) {
-                $body = $body->getPartContent(0);
-            } else {
-                $body = $body->generateMessage();
-            }
+        $body = (string) $message->getBodyText();
+        if (empty($body)) {
+            $body = (string) $message->getBody();
         }
-
-        if ($message instanceof \Laminas\Mail\Message) {
-            $headers = $message->getHeaders();
-            if ($headers->has('Content-Transfer-Encoding')) {
-                $transferEncoding = $headers->get('Content-Transfer-Encoding');
-                if ($transferEncoding instanceof \ArrayIterator) {
-                    $transferEncoding = current($transferEncoding);
-                }
-                if ($transferEncoding instanceof \Laminas\Mail\Header\ContentTransferEncoding) {
-                    $transferEncoding = $transferEncoding->getFieldValue();
-                }
-                // case '7bit':
-                //      break;
-                //  case '8bit':
-                //      $body = quoted_printable_decode(imap_8bit($body));
-                //      break;
-                //  case 'binary':
-                //      $body = imap_base64(imap_binary($body));
-                //      break;
-                //  case 'quoted-printable':
-                //      $body = quoted_printable_decode($body);
-                //      break;
-                //  case 'base64':
-                //      $body = imap_base64($body);
-                //      break;
-                // Convert to UTF-8 if necessary
-                switch ($transferEncoding) {
-                    case 'quoted-printable':
-                        $body = quoted_printable_decode($body);
-                        break;
-                    case 'base64':
-                        $body = base64_decode($body);
-                        break;
-                    default:
-                        $body = $body;
-                        break;
-                }
-            }
+        if (empty($body)) {
+            $body = (string) $message->getBodyHtml();
         }
+//        $headers = $message->getHeaders();
+//        if (isset($headers['Content-Transfer-Encoding'])) {
+//            $transferEncoding = $headers['Content-Transfer-Encoding'];
+//            switch ($transferEncoding) {
+//                case 'quoted-printable':
+//                    $body = quoted_printable_decode($body);
+//                    break;
+//                case 'base64':
+//                    $body = base64_decode($body);
+//                    break;
+//                default:
+//                    $body = $body;
+//                    break;
+//            }
+//        }
 
         $this->addData([
             'from' => $from,
