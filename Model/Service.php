@@ -8,6 +8,9 @@ use Magento\Store\Model\ScopeInterface;
 use Swissup\Email\Api\Data\ServiceInterface;
 use Magento\Framework\DataObject\IdentityInterface;
 
+use InvalidArgumentException;
+use Swissup\OAuth2Client\Api\Data\AccessTokenInterface; // Для доступу до констант полів токена
+
 /**
  * Class Service implements service interface
  */
@@ -551,28 +554,6 @@ class Service extends \Magento\Framework\Model\AbstractModel implements ServiceI
 
     /**
      *
-     * @param  int $type
-     * @return string
-     */
-    public function getTransportNameByType($type = null)
-    {
-        if (null == $type) {
-            $type = $this->getData(self::TYPE);
-        }
-        $classes = [
-            self::TYPE_GMAIL    => 'Gmail',
-            self::TYPE_GMAILOAUTH2 => 'GmailOAuth2',
-            self::TYPE_SMTP     => 'Smtp',
-            self::TYPE_SES      => 'Ses',
-            self::TYPE_MANDRILL => 'Mandrill',
-            self::TYPE_SENDMAIL => 'Sendmail',
-        ];
-
-        return isset($classes[$type]) ? $classes[$type] : 'Sendmail';
-    }
-
-    /**
-     *
      * @return array
      */
     public function getSecures()
@@ -597,5 +578,226 @@ class Service extends \Magento\Framework\Model\AbstractModel implements ServiceI
             self::AUTH_TYPE_CRAMMD5 => __('Crammd5'),
             self::AUTH_TYPE_XOAUTH2 => __('OAuth 2.0'),
         ];
+    }
+
+    /**
+     *
+     * @param  int $type
+     * @return string
+     */
+    public function getTransportNameByType($type = null)
+    {
+        if (null == $type) {
+            $type = $this->getData(self::TYPE);
+        }
+        $classes = [
+            self::TYPE_GMAIL    => 'Gmail',
+            self::TYPE_GMAILOAUTH2 => 'GmailOAuth2',
+            self::TYPE_SMTP     => 'Smtp',
+            self::TYPE_SES      => 'Ses',
+            self::TYPE_MANDRILL => 'Mandrill',
+            self::TYPE_SENDMAIL => 'Sendmail',
+        ];
+
+        return isset($classes[$type]) ? $classes[$type] : 'Sendmail';
+    }
+
+    /**
+     * Get transport name by type (adapted for Symfony Mailer DSN schemes).
+     * This method will return the scheme part of the DSN (e.g., 'smtp', 'sendmail', 'gmail+smtp').
+     *
+     * @param  int|null $type
+     * @return string (e.g., 'smtp', 'sendmail', 'gmail+smtp')
+     * @throws \InvalidArgumentException
+     */
+    private function getDSNScheme($type = null): string
+    {
+        if (null === $type) {
+            $type = $this->getData(self::TYPE);
+        }
+
+        switch ($type) {
+            case self::TYPE_SMTP:
+                return 'smtp';
+            case self::TYPE_SENDMAIL:
+                return 'sendmail';
+            case self::TYPE_GMAIL:
+            case self::TYPE_GMAILOAUTH2:
+                return 'gmail+smtp'; // Обидва Gmail типи використовують одну схему
+            case self::TYPE_SES:
+                return 'ses+smtp'; // Або 'ses+api' якщо є підтримка API
+            case self::TYPE_MANDRILL:
+                return 'smtp'; // Mandrill використовує звичайний SMTP
+            default:
+                throw new InvalidArgumentException(
+                    sprintf('Unsupported email service type: %s. Please update your configuration or module version.', $type)
+                );
+        }
+    }
+
+    /**
+     * Generates a DSN string for Symfony Mailer based on the service configuration.
+     * Uses getters to ensure plugin-processed data is used.
+     *
+     * @return string The DSN string
+     * @throws \InvalidArgumentException
+     */
+    public function getDsn(): string
+    {
+        $type = $this->getData(self::TYPE);
+        $scheme = $this->getDSNScheme($type);
+
+        $params = [];
+        $dsn = '';
+
+        switch ($type) {
+            case self::TYPE_SMTP:
+            case self::TYPE_MANDRILL:
+            case self::TYPE_SES:
+                $dsn = $this->buildSmtpDsn($scheme);
+                break;
+
+            case self::TYPE_GMAIL:
+                $dsn = $this->buildGmailDsn($scheme);
+                break;
+
+            case self::TYPE_GMAILOAUTH2:
+                $dsn = $this->buildGmailOAuth2Dsn($scheme);
+                break;
+
+            case self::TYPE_SENDMAIL:
+                $dsn = $this->buildSendmailDsn();
+                break;
+
+            default:
+                throw new InvalidArgumentException(
+                    sprintf('Unhandled email service type: %s', $type)
+                );
+        }
+
+        return $dsn;
+    }
+
+    /**
+     * Build SMTP DSN string
+     *
+     * @param string $scheme
+     * @return string
+     * @throws InvalidArgumentException
+     */
+    private function buildSmtpDsn(string $scheme): string
+    {
+        $host = $this->getHost();
+        $port = $this->getPort();
+        $username = $this->getUser();
+        $password = $this->getPassword();
+        $secure = $this->getSecure();
+
+        if (!$host || !$port) {
+            throw new InvalidArgumentException(
+                'Host and port are required for SMTP-based transports.'
+            );
+        }
+
+        $userPass = '';
+        if ($username && $password) {
+            $userPass = urlencode($username) . ':' . urlencode($password) . '@';
+        } elseif ($username) {
+            $userPass = urlencode($username) . '@';
+        }
+
+        $params = [];
+
+        // Додаємо параметри шифрування
+        if ($secure == self::SECURE_SSL) {
+            $params['encryption'] = 'ssl';
+        } elseif ($secure == self::SECURE_TLS) {
+            $params['encryption'] = 'tls';
+        }
+
+        $dsn = sprintf('%s://%s%s:%s', $scheme, $userPass, $host, $port);
+
+        if (!empty($params)) {
+            $dsn .= '?' . http_build_query($params);
+        }
+
+        return $dsn;
+    }
+
+    /**
+     * Build Gmail DSN string
+     *
+     * @param string $scheme
+     * @return string
+     * @throws InvalidArgumentException
+     */
+    private function buildGmailDsn(string $scheme): string
+    {
+        $username = $this->getUser();
+        $password = $this->getPassword();
+
+        if (!$username || !$password) {
+            throw new InvalidArgumentException(
+                'Username and password are required for Gmail.'
+            );
+        }
+
+        return sprintf(
+            '%s://%s:%s@default',
+            $scheme,
+            urlencode($username),
+            urlencode($password)
+        );
+    }
+
+    /**
+     * Build Gmail OAuth2 DSN string
+     *
+     * @param string $scheme
+     * @return string
+     * @throws InvalidArgumentException
+     */
+    private function buildGmailOAuth2Dsn(string $scheme): string
+    {
+        $clientId = $this->getUser(); // Client ID зберігається в полі user
+        $clientSecret = $this->getPassword(); // Client Secret зберігається в полі password
+
+        // Отримуємо дані токена (встановлені OAuth2TokenPlugin)
+        $tokenData = $this->getData('token');
+        if (!$tokenData || !is_array($tokenData)) {
+            throw new InvalidArgumentException(
+                'OAuth2 token data is required for Gmail OAuth2. Please authenticate first.'
+            );
+        }
+
+        $refreshToken = $tokenData[AccessTokenInterface::REFRESH_TOKEN] ?? null;
+
+        if (!$clientId || !$clientSecret || !$refreshToken) {
+            throw new InvalidArgumentException(
+                'Client ID, Client Secret, and Refresh Token are required for Gmail OAuth2.'
+            );
+        }
+
+        $params = [
+            'client_id' => $clientId,
+            'client_secret' => $clientSecret,
+            'refresh_token' => $refreshToken
+        ];
+
+        return sprintf('%s://default?%s', $scheme, http_build_query($params));
+    }
+
+    /**
+     * Build Sendmail DSN string
+     *
+     * @return string
+     */
+    private function buildSendmailDsn(): string
+    {
+        // Якщо у вас є поле для custom sendmail path, додайте getter
+        // $path = $this->getSendmailPath();
+        // return $path ? 'sendmail://' . urlencode($path) : 'sendmail://default';
+
+        return 'sendmail://default';
     }
 }
