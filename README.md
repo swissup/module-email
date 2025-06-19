@@ -6,11 +6,10 @@ Magento2 module for email providers integration.
 
 Following email services are supported:
 
- -  Amazon SES
  -  Gmail
- -  Mandrill
- -  Sendmail
  -  Manual SMTP settings
+ -  Gmail OAuth 2.0
+ -  Sendmail
 
 ### Installation
 
