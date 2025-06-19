@@ -20,20 +20,15 @@
         "magento/module-ui": "^101.1",
         "magento/module-email": "^101.0",
         "magento/module-config": "^101.1",
-        "laminas/laminas-mail": "^2.9.0",
-        "laminas/laminas-mime": "^2.5.0",
         "symfony/mailer": "^6.4|^7.0",
         "symfony/mime": "^6.4|^7.0",
         "symfony/google-mailer": "^6.4|^7.0",
-        "swissup/module-oauth2-client": "^1.0.3"
+        "swissup/module-oauth2-client": "^1.0.3",
+        "zbateson/mail-mime-parser": "^3.0",
     },
     "require-dev": {
         "slm/mail": "~1.5",
         "aws/aws-sdk-php-zf2": ">=1.0.1"
-    },
-    "suggest": {
-        "slm/mail": "If you need to use Mandrill or Amazon SES (composer require slm/mail:~1.5)",
-        "aws/aws-sdk-php-zf2": "If you need to use Amazon SES (composer require aws/aws-sdk-php-zf2:>=1.0.1)"
     },
     "autoload": {
         "files": [ "registration.php" ],

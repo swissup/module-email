@@ -14,11 +14,13 @@ use Magento\Framework\Phrase;
 use Magento\Store\Model\ScopeInterface;
 use Psr\Log\LoggerInterface;
 use Swissup\Email\Mail\Message\Convertor;
-use Swissup\Email\Mail\Transport\Factory as TransportFactory;
 use Swissup\Email\Model\History;
 use Swissup\Email\Model\HistoryFactory;
 use Swissup\Email\Model\Service;
 use Swissup\Email\Model\ServiceFactory;
+use Symfony\Component\Mailer\Mailer;
+use Symfony\Component\Mailer\Transport as SymfonyTransport;
+use Throwable;
 
 class Transport implements TransportInterface
 {
@@ -32,18 +34,17 @@ class Transport implements TransportInterface
     private Convertor $convertor;
     private ScopeConfigInterface $scopeConfig;
     private ServiceFactory $serviceFactory;
-    private TransportFactory $transportFactory;
     private HistoryFactory $historyFactory;
     private ?array $parameters;
     private LoggerInterface $logger;
     private ?Service $service = null;
+    private ?Mailer $symfonyMailer = null;
 
     public function __construct(
         MessageInterface $message,
         Convertor $convertor,
         ScopeConfigInterface $scopeConfig,
         ServiceFactory $serviceFactory,
-        TransportFactory $transportFactory,
         HistoryFactory $historyFactory,
         $parameters = null,
         ?LoggerInterface $logger = null
@@ -52,100 +53,199 @@ class Transport implements TransportInterface
         $this->convertor = $convertor;
         $this->scopeConfig = $scopeConfig;
         $this->serviceFactory = $serviceFactory;
-        $this->transportFactory = $transportFactory;
         $this->historyFactory = $historyFactory;
         $this->parameters = $parameters;
         $this->logger = $logger ?? ObjectManager::getInstance()->get(LoggerInterface::class);
     }
 
     /**
+     * Send email message
+     *
      * @throws MailException
      */
     public function sendMessage(): void
     {
         try {
             $service = $this->getService();
-            $message = $this->convertor->fromMessage($this->message);
+            $symfonyEmailMessage = $this->getSymfonyEmailMessage();
+            $mailer = $this->getSymfonyMailer($service);
 
-            $transportConfig = $this->buildTransportConfig($service);
-            $transport = $this->createTransport($service, $transportConfig);
+            $mailer->send($symfonyEmailMessage);
+            $this->logMessage($this->message, $service);
 
-            $transport->setMessage($message);
-            $transport->sendMessage();
-
-            $this->logMessageIfEnabled($message, $service);
-        } catch (\Exception $e) {
-            $this->logger->error($e);
-            throw new MailException(new Phrase($e->getMessage()), $e);
+        } catch (MailException $e) {
+            // Re-throw MailException as-is
+            throw $e;
+        } catch (Throwable $e) {
+            $this->logger->error('Email sending failed', [
+                'exception' => $e->getMessage(),
+                'trace' => $e->getTraceAsString()
+            ]);
+            throw new MailException(
+                new Phrase('Failed to send email: %1', [$e->getMessage()]),
+                $e
+            );
         }
     }
 
-    private function buildTransportConfig(Service $service): array
+    /**
+     * Get Symfony email message from Magento message
+     */
+    private function getSymfonyEmailMessage()
     {
-        $config = [
-            'config' => $service->getData(),
-            'parameters' => $this->parameters
-        ];
-
-        $sendingHost = (string) $this->scopeConfig->getValue(self::CONFIG['EHLO']);
-        if (!empty($sendingHost)) {
-            $config['config']['sending_host'] = $sendingHost;
+        if (method_exists($this->message, 'getSymfonyMessage')) {
+            return $this->message->getSymfonyMessage();
         }
 
-        return $config;
+        return $this->convertor->getSymfonyEmailMessage($this->message);
     }
 
-    private function createTransport(Service $service, array $config)
+    /**
+     * Gets or creates the Symfony Mailer instance and its underlying transport.
+     * Caches the Mailer instance for subsequent calls.
+     *
+     * @param Service $service
+     * @return Mailer
+     * @throws MailException
+     */
+    private function getSymfonyMailer(Service $service): Mailer
     {
-        $type = $service->getTransportNameByType();
-        return $this->transportFactory->create($type, $config);
+        if ($this->symfonyMailer !== null) {
+            return $this->symfonyMailer;
+        }
+
+        try {
+            $dsnString = $this->buildDsnString($service);
+            $symfonyTransport = SymfonyTransport::fromDsn($dsnString);
+            $this->symfonyMailer = new Mailer($symfonyTransport);
+
+        } catch (InvalidArgumentException $e) {
+            throw new MailException(
+                new Phrase('Invalid email service configuration: %1', [$e->getMessage()]),
+                $e
+            );
+        } catch (Throwable $e) {
+            throw new MailException(
+                new Phrase('Could not create email transport: %1', [$e->getMessage()]),
+                $e
+            );
+        }
+
+        return $this->symfonyMailer;
     }
 
-    private function logMessageIfEnabled($message, Service $service): void
+    /**
+     * Build DSN string with optional sending host
+     *
+     * @param Service $service
+     * @return string
+     */
+    private function buildDsnString(Service $service): string
+    {
+        $dsnString = $service->getDsn();
+        $sendingHost = trim((string) $this->scopeConfig->getValue(self::CONFIG['EHLO']));
+
+        if (empty($sendingHost)) {
+            return $dsnString;
+        }
+
+        $separator = str_contains($dsnString, '?') ? '&' : '?';
+        return $dsnString . $separator . 'local_domain=' . urlencode($sendingHost);
+    }
+
+    /**
+     * Log message if logging is enabled
+     *
+     * @param MessageInterface $message
+     * @param Service $service
+     */
+    private function logMessage(MessageInterface $message, Service $service): void
     {
         $isLoggingEnabled = $this->scopeConfig->isSetFlag(
             self::CONFIG['LOG'],
             ScopeInterface::SCOPE_STORE
         );
 
-        if ($isLoggingEnabled) {
+        if (!$isLoggingEnabled) {
+            return;
+        }
+
+        try {
             /** @var History $historyEntry */
             $historyEntry = $this->historyFactory->create();
             $historyEntry->setServiceId($service->getId());
             $historyEntry->saveMessage($message);
+        } catch (Throwable $e) {
+            // Log the error but don't fail the email sending process
+            $this->logger->warning('Failed to log email message', [
+                'exception' => $e->getMessage()
+            ]);
         }
     }
 
+    /**
+     * Get email service
+     *
+     * @return Service
+     * @throws MailException
+     */
     public function getService(): Service
     {
-        if ($this->service === null) {
-            $service = $this->serviceFactory->create();
-            $id = (int) $this->scopeConfig->getValue(
-                self::CONFIG['SERVICE'],
-                ScopeInterface::SCOPE_STORE
-            );
-
-            if ($id) {
-                $service->load($id);
-            }
-
-            $this->service = $service;
+        if ($this->service !== null) {
+            return $this->service;
         }
 
+        $service = $this->serviceFactory->create();
+        $serviceId = (int) $this->scopeConfig->getValue(
+            self::CONFIG['SERVICE'],
+            ScopeInterface::SCOPE_STORE
+        );
+
+        if ($serviceId > 0) {
+            $service->load($serviceId);
+
+            // Validate that service was loaded successfully
+            if (!$service->getId()) {
+                throw new MailException(
+                    new Phrase('Email service with ID %1 not found', [$serviceId])
+                );
+            }
+        }
+
+        $this->service = $service;
         return $this->service;
     }
 
+    /**
+     * Set email service
+     *
+     * @param Service $service
+     * @return self
+     */
     public function setService(Service $service): self
     {
         $this->service = $service;
+        // Reset mailer when service changes
+        $this->symfonyMailer = null;
         return $this;
     }
 
+    /**
+     * Get message
+     *
+     * @return MessageInterface
+     */
     public function getMessage(): MessageInterface
     {
         return $this->message;
     }
 
+    /**
+     * Set message
+     *
+     * @param MessageInterface $message
+     * @return self
+     */
     public function setMessage(MessageInterface $message): self
     {
         $this->message = $message;
