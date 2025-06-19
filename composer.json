@@ -26,10 +26,6 @@
         "swissup/module-oauth2-client": "^1.0.3",
         "zbateson/mail-mime-parser": "^3.0"
     },
-    "require-dev": {
-        "slm/mail": "~1.5",
-        "aws/aws-sdk-php-zf2": ">=1.0.1"
-    },
     "autoload": {
         "files": [ "registration.php" ],
         "psr-4": {
