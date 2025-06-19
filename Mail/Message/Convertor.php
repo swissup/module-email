@@ -44,7 +44,7 @@ class Convertor
      * @throws InvalidArgumentException If the message cannot be converted or is malformed.
      * @throws RuntimeException If required dependencies are missing.
      */
-    public function getSymfonyEmailMessage(MessageInterface $message): SymfonyMimeEmail
+    public function getSymfonyEmailMessage(MessageInterface $message)
     {
         // Check if the message is Magento's modern EmailMessageInterface.
         // This is the most common scenario in Magento 2.4.4+ and the most efficient path.
@@ -63,7 +63,7 @@ class Convertor
      * @return SymfonyMimeEmail
      * @throws InvalidArgumentException
      */
-    private function handleEmailMessageInterface(EmailMessageInterface $message): SymfonyMimeEmail
+    private function handleEmailMessageInterface(EmailMessageInterface $message)
     {
         // Check if getSymfonyMessage method exists (not guaranteed in all Magento versions)
         if (method_exists($message, 'getSymfonyMessage')) {
@@ -90,7 +90,7 @@ class Convertor
      * @throws InvalidArgumentException
      * @throws RuntimeException
      */
-    private function convertLegacyMessage(MessageInterface $message): SymfonyMimeEmail
+    private function convertLegacyMessage(MessageInterface $message)
     {
         $rawEmailString = $this->getRawEmailString($message);
 
@@ -109,7 +109,7 @@ class Convertor
      * @throws RuntimeException
      * @throws InvalidArgumentException
      */
-    private function parseRawEmailString(string $rawEmailString): SymfonyMimeEmail
+    private function parseRawEmailString(string $rawEmailString)
     {
         $parser = $this->createMimeParser();
 
@@ -139,7 +139,7 @@ class Convertor
      * @param ParsedMessage $parsed
      * @return SymfonyMimeEmail
      */
-    private function buildSymfonyEmailFromParsed(ParsedMessage $parsed): SymfonyMimeEmail
+    private function buildSymfonyEmailFromParsed(ParsedMessage $parsed)
     {
         $email = new SymfonyMimeEmail();
 
@@ -502,13 +502,13 @@ class Convertor
             $name = trim($matches[1]);
             $email = trim($matches[2]);
 
-            if (filter_var($email, FILTER_VALIDATE_EMAIL)) {
+            if (filter_var($email, FILTER_VALIDATE_EMAIL) && class_exists(Address::class)) {
                 return new Address($email, $name);
             }
         }
 
         // Pattern: just email address
-        if (filter_var($trimmed, FILTER_VALIDATE_EMAIL)) {
+        if (filter_var($trimmed, FILTER_VALIDATE_EMAIL) && class_exists(Address::class)) {
             return new Address($trimmed);
         }
 

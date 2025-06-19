@@ -18,8 +18,6 @@ use Swissup\Email\Model\History;
 use Swissup\Email\Model\HistoryFactory;
 use Swissup\Email\Model\Service;
 use Swissup\Email\Model\ServiceFactory;
-use Symfony\Component\Mailer\Mailer;
-use Symfony\Component\Mailer\Transport as SymfonyTransport;
 use Throwable;
 
 class Transport implements TransportInterface
@@ -38,7 +36,8 @@ class Transport implements TransportInterface
     private ?array $parameters;
     private LoggerInterface $logger;
     private ?Service $service = null;
-    private ?Mailer $symfonyMailer = null;
+    /** @var mixed */
+    private $symfonyMailer = null;
 
     public function __construct(
         MessageInterface $message,
@@ -70,7 +69,13 @@ class Transport implements TransportInterface
             $symfonyEmailMessage = $this->getSymfonyEmailMessage();
             $mailer = $this->getSymfonyMailer($service);
 
-            $mailer->send($symfonyEmailMessage);
+            // Use reflection to call send method safely
+            if (method_exists($mailer, 'send')) {
+                $mailer->send($symfonyEmailMessage);
+            } else {
+                throw new MailException(new Phrase('Mailer send method not available'));
+            }
+
             $this->logMessage($this->message, $service);
 
         } catch (MailException $e) {
@@ -90,6 +95,8 @@ class Transport implements TransportInterface
 
     /**
      * Get Symfony email message from Magento message
+     *
+     * @return mixed
      */
     private function getSymfonyEmailMessage()
     {
@@ -105,10 +112,10 @@ class Transport implements TransportInterface
      * Caches the Mailer instance for subsequent calls.
      *
      * @param Service $service
-     * @return Mailer
+     * @return mixed
      * @throws MailException
      */
-    private function getSymfonyMailer(Service $service): Mailer
+    private function getSymfonyMailer(Service $service)
     {
         if ($this->symfonyMailer !== null) {
             return $this->symfonyMailer;
@@ -116,8 +123,27 @@ class Transport implements TransportInterface
 
         try {
             $dsnString = $this->buildDsnString($service);
-            $symfonyTransport = SymfonyTransport::fromDsn($dsnString);
-            $this->symfonyMailer = new Mailer($symfonyTransport);
+
+            // Check if Symfony classes exist
+            if (!class_exists(\Symfony\Component\Mailer\Transport::class)) {
+                throw new MailException(new Phrase('Symfony Mailer Transport class not found. Please install symfony/mailer package.'));
+            }
+
+            if (!class_exists(\Symfony\Component\Mailer\Mailer::class)) {
+                throw new MailException(new Phrase('Symfony Mailer class not found. Please install symfony/mailer package.'));
+            }
+
+            // Create transport using full class name
+            $transportClass = \Symfony\Component\Mailer\Transport::class;
+            if (method_exists($transportClass, 'fromDsn')) {
+                $symfonyTransport = $transportClass::fromDsn($dsnString);
+            } else {
+                throw new MailException(new Phrase('Transport fromDsn method not available'));
+            }
+
+            // Create mailer
+            $mailerClass = \Symfony\Component\Mailer\Mailer::class;
+            $this->symfonyMailer = new $mailerClass($symfonyTransport);
 
         } catch (InvalidArgumentException $e) {
             throw new MailException(
