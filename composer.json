@@ -24,7 +24,7 @@
         "symfony/mime": "^6.4|^7.0",
         "symfony/google-mailer": "^6.4|^7.0",
         "swissup/module-oauth2-client": "^1.0.3",
-        "zbateson/mail-mime-parser": "^3.0",
+        "zbateson/mail-mime-parser": "^3.0"
     },
     "require-dev": {
         "slm/mail": "~1.5",
