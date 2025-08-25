@@ -24,7 +24,7 @@ require([
             0:  '0010000',//sendmail
             10: '1111111',//smtp
             15: '1100000',//gmail
-            17: '1110000',//gmail oauth2
+            17: '1110001',//gmail oauth2
             20: '1110000',//ses
             30: '1100000' //mandrill
         },depend,
