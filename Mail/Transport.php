@@ -86,9 +86,11 @@ class Transport implements TransportInterface
                 'exception' => $e->getMessage(),
                 'trace' => $e->getTraceAsString()
             ]);
+            $cause = $e instanceof Exception ? $e : new \Exception($e->getMessage(), $e->getCode(), $e);
+
             throw new MailException(
                 new Phrase('Failed to send email: %1', [$e->getMessage()]),
-                $e
+                $cause
             );
         }
     }
