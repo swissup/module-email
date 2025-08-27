@@ -9,7 +9,7 @@ use Swissup\Email\Api\Data\ServiceInterface;
 use Magento\Framework\DataObject\IdentityInterface;
 
 use InvalidArgumentException;
-use Swissup\OAuth2Client\Api\Data\AccessTokenInterface; // Для доступу до констант полів токена
+use Swissup\OAuth2Client\Api\Data\AccessTokenInterface;
 
 /**
  * Class Service implements service interface
@@ -17,7 +17,7 @@ use Swissup\OAuth2Client\Api\Data\AccessTokenInterface; // Для доступу
 class Service extends \Magento\Framework\Model\AbstractModel implements ServiceInterface, IdentityInterface
 {
     /**
-     * cache tag
+     * Cache tag
      */
     const CACHE_TAG = 'email_service';
 
@@ -622,12 +622,13 @@ class Service extends \Magento\Framework\Model\AbstractModel implements ServiceI
             case self::TYPE_SENDMAIL:
                 return 'sendmail';
             case self::TYPE_GMAIL:
+                return 'gmail+smtp'; // Both Gmail types use the same scheme
             case self::TYPE_GMAILOAUTH2:
-                return 'gmail+smtp'; // Обидва Gmail типи використовують одну схему
+                return 'gmail+oauth2'; // For our custom transport
             case self::TYPE_SES:
-                return 'ses+smtp'; // Або 'ses+api' якщо є підтримка API
+                return 'ses+smtp'; // Or 'ses+api' if API support is available
             case self::TYPE_MANDRILL:
-                return 'smtp'; // Mandrill використовує звичайний SMTP
+                return 'smtp'; // Mandrill uses regular SMTP
             default:
                 throw new InvalidArgumentException(
                     sprintf('Unsupported email service type: %s. Please update your configuration or module version.', $type)
@@ -708,7 +709,7 @@ class Service extends \Magento\Framework\Model\AbstractModel implements ServiceI
 
         $params = [];
 
-        // Додаємо параметри шифрування
+        // Add encryption parameters
         if ($secure == self::SECURE_SSL) {
             $params['encryption'] = 'ssl';
         } elseif ($secure == self::SECURE_TLS) {
@@ -751,7 +752,7 @@ class Service extends \Magento\Framework\Model\AbstractModel implements ServiceI
     }
 
     /**
-     * Build Gmail OAuth2 DSN string
+     * Build DSN string for Gmail OAuth2
      *
      * @param string $scheme
      * @return string
@@ -759,10 +760,7 @@ class Service extends \Magento\Framework\Model\AbstractModel implements ServiceI
      */
     private function buildGmailOAuth2Dsn(string $scheme): string
     {
-        $clientId = $this->getUser(); // Client ID зберігається в полі user
-        $clientSecret = $this->getPassword(); // Client Secret зберігається в полі password
-
-        // Отримуємо дані токена (встановлені OAuth2TokenPlugin)
+        // Get token data
         $tokenData = $this->getData('token');
         if (!$tokenData || !is_array($tokenData)) {
             throw new InvalidArgumentException(
@@ -770,31 +768,31 @@ class Service extends \Magento\Framework\Model\AbstractModel implements ServiceI
             );
         }
 
-        $refreshToken = $tokenData[AccessTokenInterface::REFRESH_TOKEN] ?? null;
+        $accessToken = $tokenData['access_token'] ?? null;
+        $expires = $tokenData['expires'] ?? null;
 
-        if (!$clientId || !$clientSecret || !$refreshToken) {
-            throw new InvalidArgumentException(
-                'Client ID, Client Secret, and Refresh Token are required for Gmail OAuth2.'
-            );
+        if (!$accessToken) {
+            throw new InvalidArgumentException('Access token is required for Gmail OAuth2.');
         }
 
+        // ✅ Correct DSN format: scheme://user@host?params
+        $username = urlencode($this->getEmail());
         $params = [
-            'client_id' => $clientId,
-            'client_secret' => $clientSecret,
-            'refresh_token' => $refreshToken
+            'access_token' => urlencode($accessToken),
+            'expires' => $expires ?: (time() + 3600), // default 1 hour if not set
         ];
 
-        return sprintf('%s://default?%s', $scheme, http_build_query($params));
+        return sprintf('%s://%s@default?%s', $scheme, $username, http_build_query($params));
     }
 
     /**
-     * Build Sendmail DSN string
+     * Build DSN string for Sendmail
      *
      * @return string
      */
     private function buildSendmailDsn(): string
     {
-        // Якщо у вас є поле для custom sendmail path, додайте getter
+        // If you have a field for custom sendmail path, add a getter
         // $path = $this->getSendmailPath();
         // return $path ? 'sendmail://' . urlencode($path) : 'sendmail://default';
 

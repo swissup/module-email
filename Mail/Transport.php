@@ -14,10 +14,13 @@ use Magento\Framework\Phrase;
 use Magento\Store\Model\ScopeInterface;
 use Psr\Log\LoggerInterface;
 use Swissup\Email\Mail\Message\Convertor;
+use Swissup\Email\Mail\Transport\GmailOAuth2;
 use Swissup\Email\Model\History;
 use Swissup\Email\Model\HistoryFactory;
 use Swissup\Email\Model\Service;
 use Swissup\Email\Model\ServiceFactory;
+use Symfony\Component\Mailer\Transport as SymfonyTransport;
+use Symfony\Component\Mailer\Transport\Dsn;
 use Throwable;
 
 class Transport implements TransportInterface
@@ -68,6 +71,10 @@ class Transport implements TransportInterface
             $service = $this->getService();
             $symfonyEmailMessage = $this->getSymfonyEmailMessage();
             $mailer = $this->getSymfonyMailer($service);
+
+            if (!$mailer || !is_object($mailer)) {
+                throw new MailException(new Phrase('Mailer instance is not available or invalid.'));
+            }
 
             // Use reflection to call send method safely
             if (method_exists($mailer, 'send')) {
@@ -127,7 +134,7 @@ class Transport implements TransportInterface
             $dsnString = $this->buildDsnString($service);
 
             // Check if Symfony classes exist
-            if (!class_exists(\Symfony\Component\Mailer\Transport::class)) {
+            if (!class_exists(SymfonyTransport::class)) {
                 throw new MailException(new Phrase('Symfony Mailer Transport class not found. Please install symfony/mailer package.'));
             }
 
@@ -135,13 +142,8 @@ class Transport implements TransportInterface
                 throw new MailException(new Phrase('Symfony Mailer class not found. Please install symfony/mailer package.'));
             }
 
-            // Create transport using full class name
-            $transportClass = \Symfony\Component\Mailer\Transport::class;
-            if (method_exists($transportClass, 'fromDsn')) {
-                $symfonyTransport = $transportClass::fromDsn($dsnString);
-            } else {
-                throw new MailException(new Phrase('Transport fromDsn method not available'));
-            }
+            // Створюємо транспорт з підтримкою кастомних транспортів
+            $symfonyTransport = $this->createTransportFromDsn($dsnString);
 
             // Create mailer
             $mailerClass = \Symfony\Component\Mailer\Mailer::class;
@@ -160,6 +162,32 @@ class Transport implements TransportInterface
         }
 
         return $this->symfonyMailer;
+    }
+
+    /**
+     * Creates a transport with support for custom schemes
+     *
+     * @param string $dsnString
+     * @return mixed
+     * @throws InvalidArgumentException
+     */
+    private function createTransportFromDsn(string $dsnString)
+    {
+        $this->logger->info('Creating transport from DSN', ['scheme' => parse_url($dsnString, PHP_URL_SCHEME)]);
+
+        // Check if this is our custom Gmail OAuth2 DSN
+        if (str_starts_with($dsnString, 'gmail+oauth2://')) {
+            // Create Symfony DSN object
+            $dsn = Dsn::fromString($dsnString);
+            return GmailOAuth2::fromDsn($dsn);
+        }
+
+        // For all other DSNs use the standard Symfony Transport
+        if (method_exists(SymfonyTransport::class, 'fromDsn')) {
+            return SymfonyTransport::fromDsn($dsnString);
+        }
+
+        throw new InvalidArgumentException('Transport fromDsn method not available');
     }
 
     /**
