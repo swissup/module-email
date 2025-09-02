@@ -775,14 +775,18 @@ class Service extends \Magento\Framework\Model\AbstractModel implements ServiceI
             throw new InvalidArgumentException('Access token is required for Gmail OAuth2.');
         }
 
-        // ✅ Correct DSN format: scheme://user@host?params
-        $username = urlencode($this->getEmail());
+        $email = $this->getEmail();
+        if (!$email) {
+            throw new InvalidArgumentException('Email is required for Gmail OAuth2.');
+        }
+
         $params = [
+            'username' => urlencode($email),
             'access_token' => urlencode($accessToken),
-            'expires' => $expires ?: (time() + 3600), // default 1 hour if not set
+            'expires' => $expires ?: (time() + 3600),
         ];
 
-        return sprintf('%s://%s@default?%s', $scheme, $username, http_build_query($params));
+        return sprintf('%s://default?%s', $scheme, http_build_query($params));
     }
 
     /**
