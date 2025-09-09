@@ -41,6 +41,7 @@ class GmailOAuth2 extends EsmtpTransport
         parent::__construct($host, $port, $tls, $dispatcher, $logger);
         $this->config = $config;
 
+        $this->setAuthenticators([]);
         $this->addAuthenticator(new XOAuth2Authenticator());
     }
 
@@ -89,7 +90,12 @@ class GmailOAuth2 extends EsmtpTransport
     public function start(): void
     {
         $this->setUsername($this->config['username']);
-        $this->setPassword($this->config['access_token']);
+        $oauthString = sprintf(
+            "user=%s\x01auth=Bearer %s\x01\x01",
+            $this->config['username'],
+            $this->config['access_token']
+        );
+        $this->setPassword($oauthString);
 
         parent::start();
     }
