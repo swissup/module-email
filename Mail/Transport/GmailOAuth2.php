@@ -67,7 +67,8 @@ class GmailOAuth2 extends EsmtpTransport
             );
         }
 
-        if ($expires > 0 && time() > $expires) {
+        $bufferTime = 300;
+        if ($expires > 0 && time() > ($expires + $bufferTime)) {
             throw new \InvalidArgumentException('Access token is expired.');
         }
 
