@@ -90,12 +90,7 @@ class GmailOAuth2 extends EsmtpTransport
     public function start(): void
     {
         $this->setUsername($this->config['username']);
-        $oauthString = sprintf(
-            "user=%s\x01auth=Bearer %s\x01\x01",
-            $this->config['username'],
-            $this->config['access_token']
-        );
-        $this->setPassword($oauthString);
+        $this->setPassword($this->config['access_token']);
 
         parent::start();
     }
