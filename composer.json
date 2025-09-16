@@ -10,7 +10,7 @@
         "sendmail"
     ],
     "type": "magento2-module",
-    "version": "0.7.4",
+    "version": "0.7.5",
     "license": "OSL-3.0",
     "require": {
         "psr/log": "*",
@@ -23,7 +23,7 @@
         "symfony/mailer": "^6.4|^7.0",
         "symfony/mime": "^6.4|^7.0",
         "symfony/google-mailer": "^6.4|^7.0",
-        "swissup/module-oauth2-client": "^1.0.3",
+        "swissup/module-oauth2-client": "^1.0.4",
         "zbateson/mail-mime-parser": "^3.0"
     },
     "autoload": {
