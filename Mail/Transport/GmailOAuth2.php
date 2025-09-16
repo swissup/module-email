@@ -60,7 +60,7 @@ class GmailOAuth2 extends EsmtpTransport
     {
         $accessToken = $dsn->getOption('access_token');
         $expires = (int) $dsn->getOption('expires', 0);
-        $username = $dsn->getOption('username');
+        $username = $dsn->getUser();
 
         if (empty($accessToken) || empty($username)) {
             throw new \InvalidArgumentException(
@@ -68,8 +68,8 @@ class GmailOAuth2 extends EsmtpTransport
             );
         }
 
-        $bufferTime = 300;
-        if ($expires > 0 && time() > ($expires + $bufferTime)) {
+        $bufferTime = 30;
+        if ($expires > 0 && time() > ($expires - $bufferTime)) {
             throw new \InvalidArgumentException('Access token is expired.');
         }
 
@@ -79,7 +79,7 @@ class GmailOAuth2 extends EsmtpTransport
             'expires' => $expires
         ];
 
-        return new self('smtp.gmail.com', 587, true, $dispatcher, $logger, $config);
+        return new self($dsn->getHost(), $dsn->getPort(), false, $dispatcher, $logger, $config);
     }
 
     /**
@@ -102,6 +102,10 @@ class GmailOAuth2 extends EsmtpTransport
      */
     public function __toString(): string
     {
-        return sprintf('gmail+oauth2://%s@smtp.gmail.com:587', $this->config['username'] ?? 'unknown');
+        return sprintf('gmail+oauth2://%s@smtp.gmail.com:587?access_token=%s&expires=%d',
+            $this->config['username'],
+            $this->config['access_token'],
+            $this->config['expires']
+        );
     }
 }

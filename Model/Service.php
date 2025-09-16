@@ -435,7 +435,7 @@ class Service extends \Magento\Framework\Model\AbstractModel implements ServiceI
             'host' => 'smtp.gmail.com',
             'auth' => 'xoauth2',
             'port' => 587,
-            'secure' => self::SECURE_SSL,
+            'secure' => self::SECURE_TLS,
           ], [
             'name' => 'Hotmail',
             'host' => 'smtp-mail.outlook.com',
@@ -769,7 +769,7 @@ class Service extends \Magento\Framework\Model\AbstractModel implements ServiceI
         }
 
         $accessToken = $tokenData['access_token'] ?? null;
-        $expires = $tokenData['expires'] ?? null;
+        $expires = $tokenData['expires'] ? $this->getTimestamp($tokenData['expires']) : (time() + 3600);
 
         if (!$accessToken) {
             throw new InvalidArgumentException('Access token is required for Gmail OAuth2.');
@@ -780,13 +780,28 @@ class Service extends \Magento\Framework\Model\AbstractModel implements ServiceI
             throw new InvalidArgumentException('Email is required for Gmail OAuth2.');
         }
 
-        $params = [
-            'username' => urlencode($email),
-            'access_token' => urlencode($accessToken),
-            'expires' => $expires ?: (time() + 3600),
-        ];
+        return sprintf('%s://%s@smtp.gmail.com:587?access_token=%s&expires=%d',
+            $scheme,
+            urlencode($email),
+            urlencode($accessToken),
+            $expires
+        );
+    }
 
-        return sprintf('%s://default?%s', $scheme, http_build_query($params));
+    /**
+     * @param string $dateString
+     * @return int
+     * @throws RuntimeException
+     */
+    private function getTimestamp(string $dateString): int
+    {
+        try {
+            $timezone = new \DateTimeZone('UTC');
+            $datetime = new \DateTime($dateString, $timezone);
+            return $datetime->getTimestamp();
+        } catch (\Exception $e) {
+            throw new RuntimeException('Failed to get timestamp: ' . $e->getMessage());
+        }
     }
 
     /**
