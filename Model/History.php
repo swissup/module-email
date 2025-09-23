@@ -196,50 +196,129 @@ class History extends \Magento\Framework\Model\AbstractModel implements HistoryI
     }
 
     /**
-     *
-     * @param  \Magento\Framework\Mail\MessageInterface $message
+     * @param \Magento\Framework\Mail\MessageInterface $message
      */
     public function saveMessage($message)
     {
         /** @var \Magento\Framework\Mail\EmailMessage $message */
-        $from = implode(',', $message->getFrom() ?? []);
-        $to = implode(',', $message->getTo() ?? []);
-        $encoding = $message->getEncoding();
-        $subject = (string) $message->getSubject();
-        $subject = in_array($encoding, ['utf-8', 'UTF-8', 'ASCII']) ?
-            $subject : mb_decode_mimeheader($subject);
 
-        $body = (string) $message->getBodyText();
-        if (empty($body)) {
-            $body = (string) $message->getBody();
-        }
-        if (empty($body)) {
-            $body = (string) $message->getBodyHtml();
-        }
-//        $headers = $message->getHeaders();
-//        if (isset($headers['Content-Transfer-Encoding'])) {
-//            $transferEncoding = $headers['Content-Transfer-Encoding'];
-//            switch ($transferEncoding) {
-//                case 'quoted-printable':
-//                    $body = quoted_printable_decode($body);
-//                    break;
-//                case 'base64':
-//                    $body = base64_decode($body);
-//                    break;
-//                default:
-//                    $body = $body;
-//                    break;
-//            }
-//        }
+        // normalize addresses
+        $from = $this->formatAddresses($message->getFrom());
+        $to   = $this->formatAddresses($message->getTo());
+
+        // subject
+        $encoding = $this->extractEncoding($message);
+        $subject  = (string) $message->getSubject();
+        $subject  = in_array($encoding, ['utf-8', 'UTF-8', 'ASCII'], true)
+            ? $subject
+            : mb_decode_mimeheader($subject);
+
+        // body
+        $body = $this->extractBody($message);
 
         $this->addData([
-            'from' => $from,
-            'to' => $to,
-            'subject' => $subject,
-            'body' => $body,
-            'created_at' => date('c')
+            'from'       => $from,
+            'to'         => $to,
+            'subject'    => $subject,
+            'body'       => $body,
+            'created_at' => date('c'),
         ]);
 
         return $this->save();
+    }
+
+    /**
+     * extarct Format addresses
+     * @param $addresses
+     * @return string
+     */
+    private function formatAddresses($addresses): string
+    {
+        if (empty($addresses)) {
+            return '';
+        }
+
+        $result = [];
+        foreach ($addresses as $addr) {
+            if ($addr instanceof \Magento\Framework\Mail\Address) {
+                $result[] = $addr->getName()
+                    ? sprintf('%s <%s>', $addr->getName(), $addr->getEmail())
+                    : $addr->getEmail();
+            } elseif (is_string($addr)) {
+                $result[] = $addr;
+            } elseif ($addr instanceof \Symfony\Component\Mime\Address) {
+                $result[] = $addr->getName()
+                    ? sprintf('%s <%s>', $addr->getName(), $addr->getAddress())
+                    : $addr->getAddress();
+            }
+        }
+
+        return implode(',', $result);
+    }
+
+    /**
+     * Extracts the encoding from the given email message.
+     * @param \Magento\Framework\Mail\EmailMessage $message
+     * @return string
+     */
+    private function extractEncoding(\Magento\Framework\Mail\EmailMessage $message): string
+    {
+        $encoding = null;
+        try {
+            $encoding = $message->getEncoding();
+        } catch (\Throwable $e) {
+            $encoding = null;
+        }
+        return $encoding ?: 'utf-8';
+    }
+
+    /**
+     * Extracts the body content from the given email message.
+     *
+     * @param \Magento\Framework\Mail\EmailMessage $message The email message from which to extract the body content.
+     * @return string The extracted body content as a string. If the body cannot be extracted, returns an empty string or an error message.
+     */
+    private function extractBody(\Magento\Framework\Mail\EmailMessage $message): string
+    {
+        try {
+            $body = $message->getBody();
+
+            if ($body instanceof \Symfony\Component\Mime\Part\TextPart) {
+                return $body->getBody(); // або $body->getContent()
+            }
+
+            if ($body instanceof \Symfony\Component\Mime\Part\AbstractMultipartPart) {
+                $content = '';
+                foreach ($body->getParts() as $part) {
+                    if ($part instanceof \Symfony\Component\Mime\Part\TextPart) {
+                        $content .= "\n" . $part->getBody();
+                    }
+                }
+                return trim($content);
+            }
+
+            if (is_string($body)) {
+                return $body;
+            }
+
+            // fallback
+            if (method_exists($message, 'getBodyText')) {
+                $text = $message->getBodyText();
+                if (!empty($text)) {
+                    return $text;
+                }
+            }
+            if (method_exists($message, 'getBodyHtml')) {
+                $html = $message->getBodyHtml();
+                if (!empty($html)) {
+                    return $html;
+                }
+            }
+
+        } catch (\Throwable $e) {
+            return '[Body extraction failed: ' . $e->getMessage() . ']';
+        }
+
+        return '';
     }
 }
