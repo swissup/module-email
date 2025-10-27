@@ -34,8 +34,8 @@ class GmailOAuth2 extends EsmtpTransport
         string $host,
         int $port,
         bool $tls,
-        EventDispatcherInterface $dispatcher = null,
-        LoggerInterface $logger = null,
+        ?EventDispatcherInterface $dispatcher = null,
+        ?LoggerInterface $logger = null,
         array $config = []
     ) {
         parent::__construct($host, $port, $tls, $dispatcher, $logger);
