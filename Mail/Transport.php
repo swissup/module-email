@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Swissup\Email\Mail;
 
 use InvalidArgumentException;
+use Exception;
 use Magento\Framework\App\Config\ScopeConfigInterface;
 use Magento\Framework\App\ObjectManager;
 use Magento\Framework\Exception\MailException;
@@ -155,9 +156,10 @@ class Transport implements TransportInterface
                 $e
             );
         } catch (Throwable $e) {
+            $cause = $e instanceof Exception ? $e : new \Exception($e->getMessage(), $e->getCode(), $e);
             throw new MailException(
                 new Phrase('Could not create email transport: %1', [$e->getMessage()]),
-                $e
+                $cause
             );
         }
 
