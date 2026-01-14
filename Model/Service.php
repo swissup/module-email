@@ -791,7 +791,7 @@ class Service extends \Magento\Framework\Model\AbstractModel implements ServiceI
     /**
      * @param string $dateString
      * @return int
-     * @throws RuntimeException
+     * @throws \RuntimeException
      */
     private function getTimestamp(string $dateString): int
     {
@@ -800,7 +800,7 @@ class Service extends \Magento\Framework\Model\AbstractModel implements ServiceI
             $datetime = new \DateTime($dateString, $timezone);
             return $datetime->getTimestamp();
         } catch (\Exception $e) {
-            throw new RuntimeException('Failed to get timestamp: ' . $e->getMessage());
+            throw new \RuntimeException('Failed to get timestamp: ' . $e->getMessage());
         }
     }
 
