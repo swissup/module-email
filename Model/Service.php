@@ -795,6 +795,11 @@ class Service extends \Magento\Framework\Model\AbstractModel implements ServiceI
      */
     private function getTimestamp(string $dateString): int
     {
+        // If it's already a Unix timestamp (numeric string), return it directly
+        if (is_numeric($dateString)) {
+            return (int) $dateString;
+        }
+
         try {
             $timezone = new \DateTimeZone('UTC');
             $datetime = new \DateTime($dateString, $timezone);
