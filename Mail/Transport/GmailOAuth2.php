@@ -56,7 +56,7 @@ class GmailOAuth2 extends EsmtpTransport
      *
      * @throws \InvalidArgumentException If the DSN is missing required options or if the access token is expired.
      */
-    public static function fromDsn(Dsn $dsn, EventDispatcherInterface $dispatcher = null, LoggerInterface $logger = null): self
+    public static function fromDsn(Dsn $dsn, ?EventDispatcherInterface $dispatcher = null, ?LoggerInterface $logger = null): self
     {
         $accessToken = $dsn->getOption('access_token');
         $expires = (int) $dsn->getOption('expires', 0);
