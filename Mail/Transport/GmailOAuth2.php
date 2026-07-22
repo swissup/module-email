@@ -31,8 +31,8 @@ class GmailOAuth2 extends EsmtpTransport
      * @return void
      */
     public function __construct(
-        string $host,
-        int $port,
+        ?string $host,
+        ?int $port,
         bool $tls,
         ?EventDispatcherInterface $dispatcher = null,
         ?LoggerInterface $logger = null,

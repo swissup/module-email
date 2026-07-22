@@ -289,7 +289,10 @@ class History extends \Magento\Framework\Model\AbstractModel implements HistoryI
 
             if ($body instanceof \Symfony\Component\Mime\Part\AbstractMultipartPart) {
                 $content = '';
-                foreach ($body->getParts() as $part) {
+                $parts = method_exists($body, 'getMediaParts')
+                    ? $body->getMediaParts()
+                    : $body->getParts();
+                foreach ($parts as $part) {
                     if ($part instanceof \Symfony\Component\Mime\Part\TextPart) {
                         $content .= "\n" . $part->getBody();
                     }

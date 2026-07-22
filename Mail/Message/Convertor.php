@@ -7,12 +7,13 @@ namespace Swissup\Email\Mail\Message;
 use InvalidArgumentException;
 use RuntimeException;
 use Throwable;
+use Psr\Log\LoggerInterface;
 use Magento\Framework\Mail\EmailMessageInterface;
 use Magento\Framework\Mail\MailMessageInterface;
 use Magento\Framework\Mail\MessageInterface;
 use Symfony\Component\Mime\Email as SymfonyMimeEmail;
 use Symfony\Component\Mime\Address;
-use Symfony\Component\Mime\Part\DataPart;
+use Symfony\Component\Mime\Exception\InvalidArgumentException as MimeInvalidArgumentException;
 use ZBateson\MailMimeParser\MailMimeParser;
 use ZBateson\MailMimeParser\Header\HeaderConsts;
 use ZBateson\MailMimeParser\Message as ParsedMessage;
@@ -31,6 +32,21 @@ class Convertor
         HeaderConsts::REPLY_TO => 'replyTo',
     ];
 
+    private const ADDRESS_HEADERS = ['from', 'to', 'cc', 'bcc', 'reply-to'];
+
+    /**
+     * @var LoggerInterface|null
+     */
+    private $logger;
+
+    /**
+     * @param LoggerInterface|null $logger
+     */
+    public function __construct(LoggerInterface $logger = null)
+    {
+        $this->logger = $logger;
+    }
+
     /**
      * Converts a Magento Mail Message object to a Symfony\Component\Mime\Email object.
      *
@@ -44,7 +60,7 @@ class Convertor
      * @throws InvalidArgumentException If the message cannot be converted or is malformed.
      * @throws RuntimeException If required dependencies are missing.
      */
-    public function getSymfonyEmailMessage(MessageInterface $message)
+    public function getSymfonyEmailMessage(MessageInterface $message): SymfonyMimeEmail
     {
         // Check if the message is Magento's modern EmailMessageInterface.
         // This is the most common scenario in Magento 2.4.4+ and the most efficient path.
@@ -63,7 +79,7 @@ class Convertor
      * @return SymfonyMimeEmail
      * @throws InvalidArgumentException
      */
-    private function handleEmailMessageInterface(EmailMessageInterface $message)
+    private function handleEmailMessageInterface(EmailMessageInterface $message): SymfonyMimeEmail
     {
         // Check if getSymfonyMessage method exists (not guaranteed in all Magento versions)
         if (method_exists($message, 'getSymfonyMessage')) {
@@ -74,7 +90,10 @@ class Convertor
                     return $symfonyEmailMessage;
                 }
             } catch (Throwable $e) {
-                // If getSymfonyMessage() throws an exception, fall back to legacy conversion
+                $this->logWarning('Failed to extract Symfony message, falling back to legacy conversion', [
+                    'error' => $e->getMessage(),
+                    'message_class' => get_class($message)
+                ]);
             }
         }
 
@@ -90,11 +109,14 @@ class Convertor
      * @throws InvalidArgumentException
      * @throws RuntimeException
      */
-    private function convertLegacyMessage(MessageInterface $message)
+    private function convertLegacyMessage(MessageInterface $message): SymfonyMimeEmail
     {
         $rawEmailString = $this->getRawEmailString($message);
 
         if (empty($rawEmailString)) {
+            $this->logError('Could not retrieve raw email string from MessageInterface', [
+                'message_class' => get_class($message)
+            ]);
             throw new InvalidArgumentException('Could not retrieve raw email string from MessageInterface.');
         }
 
@@ -109,11 +131,14 @@ class Convertor
      * @throws RuntimeException
      * @throws InvalidArgumentException
      */
-    private function parseRawEmailString(string $rawEmailString)
+    private function parseRawEmailString(string $rawEmailString): SymfonyMimeEmail
     {
         $parser = $this->createMimeParser();
 
         if ($parser === null) {
+            $this->logCritical('MIME parser library not available', [
+                'required_class' => MailMimeParser::class
+            ]);
             throw new RuntimeException(
                 'Could not instantiate a suitable MIME parser. Ensure "zbateson/mail-mime-parser" library is installed and compatible.'
             );
@@ -125,6 +150,10 @@ class Convertor
             return $this->buildSymfonyEmailFromParsed($parsed);
 
         } catch (Throwable $e) {
+            $this->logError('Error parsing email string with MailMimeParser', [
+                'error' => $e->getMessage(),
+                'trace' => $e->getTraceAsString()
+            ]);
             throw new InvalidArgumentException(
                 sprintf('Error parsing email string with MailMimeParser: %s', $e->getMessage()),
                 0,
@@ -139,16 +168,16 @@ class Convertor
      * @param ParsedMessage $parsed
      * @return SymfonyMimeEmail
      */
-    private function buildSymfonyEmailFromParsed(ParsedMessage $parsed)
+    private function buildSymfonyEmailFromParsed(ParsedMessage $parsed): SymfonyMimeEmail
     {
         $email = new SymfonyMimeEmail();
 
         // Set addresses
         $this->setEmailAddresses($email, $parsed);
 
-        // Set subject
-        $subject = $parsed->getHeaderValue('Subject');
-        $email->subject($subject ?? '');
+        // Set subject with proper UTF-8 handling
+        $subject = $this->extractAndDecodeSubject($parsed);
+        $email->subject($subject);
 
         // Set body content
         $this->setEmailBody($email, $parsed);
@@ -157,6 +186,32 @@ class Convertor
         $this->addEmailAttachments($email, $parsed);
 
         return $email;
+    }
+
+    /**
+     * Extract and decode subject header with proper UTF-8 handling
+     *
+     * @param ParsedMessage $parsed
+     * @return string
+     */
+    private function extractAndDecodeSubject(ParsedMessage $parsed): string
+    {
+        $subject = $parsed->getHeaderValue('Subject');
+
+        if ($subject === null) {
+            return '';
+        }
+
+        // Subject is already decoded by MailMimeParser
+        // Ensure it's valid UTF-8
+        if (!mb_check_encoding($subject, 'UTF-8')) {
+            $subject = mb_convert_encoding($subject, 'UTF-8', 'UTF-8');
+            $this->logWarning('Subject header contained invalid UTF-8, converted', [
+                'subject_preview' => mb_substr($subject, 0, 50)
+            ]);
+        }
+
+        return $subject;
     }
 
     /**
@@ -170,9 +225,18 @@ class Convertor
         foreach (self::HEADER_MAPPINGS as $header => $method) {
             $headerVal = $parsed->getHeaderValue($header);
             if (!empty($headerVal)) {
-                $addresses = $this->convertHeaderAddresses($headerVal);
-                if (!empty($addresses)) {
-                    $email->$method(...$addresses);
+                try {
+                    $addresses = $this->convertHeaderAddresses($headerVal, $header);
+                    if (!empty($addresses)) {
+                        $email->$method(...$addresses);
+                    }
+                } catch (MimeInvalidArgumentException $e) {
+                    // Log but continue - Symfony will validate addresses
+                    $this->logWarning("Invalid address in {$header} header", [
+                        'header' => $header,
+                        'value' => $headerVal,
+                        'error' => $e->getMessage()
+                    ]);
                 }
             }
         }
@@ -202,6 +266,8 @@ class Convertor
             $body = $parsed->getContent();
             if (!empty($body)) {
                 $email->text($body);
+            } else {
+                $this->logWarning('Email has no body content (text, HTML, or raw)');
             }
         }
     }
@@ -216,6 +282,13 @@ class Convertor
     {
         $attachments = $parsed->getAllAttachmentParts();
 
+        if (empty($attachments)) {
+            return;
+        }
+
+        $attachmentCount = 0;
+        $failedCount = 0;
+
         foreach ($attachments as $attachment) {
             try {
                 $stream = $attachment->getContentStream();
@@ -223,13 +296,26 @@ class Convertor
                 $mimeType = $attachment->getContentType() ?: 'application/octet-stream';
 
                 if ($stream !== null) {
-                    $email->attach($stream, $filename, $mimeType);
+                    $content = is_resource($stream) ? stream_get_contents($stream) : (string) $stream;
+                    $email->attach($content, $filename, $mimeType);
+                    $attachmentCount++;
+                } else {
+                    $failedCount++;
+                    $this->logWarning('Attachment has no content stream', [
+                        'filename' => $filename
+                    ]);
                 }
             } catch (Throwable $e) {
-                // Log attachment error but continue processing
-                // Could add logging here if logger is available
-                continue;
+                $failedCount++;
+                $this->logWarning('Failed to attach file', [
+                    'filename' => $attachment->getFilename() ?? 'unknown',
+                    'error' => $e->getMessage()
+                ]);
             }
+        }
+
+        if ($failedCount > 0) {
+            $this->logWarning("Processed attachments: {$attachmentCount} succeeded, {$failedCount} failed");
         }
     }
 
@@ -260,13 +346,23 @@ class Convertor
 
         // Try generic toString method
         if (method_exists($message, 'toString')) {
-            $rawString = $message->toString();
-            if (!empty($rawString)) {
-                return $rawString;
+            try {
+                $rawString = $message->toString();
+                if (!empty($rawString)) {
+                    return $rawString;
+                }
+            } catch (Throwable $e) {
+                $this->logWarning('toString() method failed', [
+                    'error' => $e->getMessage()
+                ]);
             }
         }
 
         // Last resort - construct manually
+        $this->logWarning('Using manual email construction as last resort', [
+            'message_class' => get_class($message)
+        ]);
+
         return $this->constructRawEmailString($message);
     }
 
@@ -278,8 +374,6 @@ class Convertor
      */
     private function tryExtractFromEmailMessage(EmailMessageInterface $message): string
     {
-        $methods = ['toString', 'getRawMessage', '__toString'];
-
         // First try getSymfonyMessage if available
         if (method_exists($message, 'getSymfonyMessage')) {
             try {
@@ -291,11 +385,15 @@ class Convertor
                     }
                 }
             } catch (Throwable $e) {
-                // Continue to other methods
+                $this->logDebug('getSymfonyMessage()->toString() failed', [
+                    'error' => $e->getMessage()
+                ]);
             }
         }
 
         // Try other methods
+        $methods = ['toString', 'getRawMessage', '__toString'];
+
         foreach ($methods as $method) {
             if (method_exists($message, $method)) {
                 try {
@@ -304,8 +402,9 @@ class Convertor
                         return $result;
                     }
                 } catch (Throwable $e) {
-                    // Continue to next method
-                    continue;
+                    $this->logDebug("Method {$method}() failed", [
+                        'error' => $e->getMessage()
+                    ]);
                 }
             }
         }
@@ -331,8 +430,9 @@ class Convertor
                         return $result;
                     }
                 } catch (Throwable $e) {
-                    // Continue to next method
-                    continue;
+                    $this->logDebug("Method {$method}() failed", [
+                        'error' => $e->getMessage()
+                    ]);
                 }
             }
         }
@@ -351,23 +451,41 @@ class Convertor
         $headers = [];
         $body = '';
 
-        // Extract headers safely
+        // Extract headers safely with UTF-8 encoding
         $headers[] = $this->extractHeader($message, 'getFrom', 'From');
         $headers[] = $this->extractHeader($message, 'getTo', 'To');
         $headers[] = $this->extractHeader($message, 'getCc', 'Cc');
         $headers[] = $this->extractHeader($message, 'getBcc', 'Bcc');
-        $headers[] = $this->extractHeader($message, 'getSubject', 'Subject');
+        $headers[] = $this->extractHeader($message, 'getSubject', 'Subject', true);
 
         // Add standard headers
         $headers[] = 'Date: ' . date('r');
         $headers[] = 'Content-Type: ' . self::CONTENT_TYPE_TEXT . '; charset=' . self::DEFAULT_CHARSET;
+        $headers[] = 'Content-Transfer-Encoding: 8bit';
         $headers[] = 'MIME-Version: 1.0';
 
         // Extract body
         if (method_exists($message, 'getBody')) {
             try {
-                $body = (string) $message->getBody();
+                $bodyContent = $message->getBody();
+
+                // Handle different body types
+                if (is_object($bodyContent) && method_exists($bodyContent, '__toString')) {
+                    $body = (string) $bodyContent;
+                } elseif (is_string($bodyContent)) {
+                    $body = $bodyContent;
+                } else {
+                    $body = '';
+                }
+
+                // Ensure UTF-8
+                if (!empty($body) && !mb_check_encoding($body, 'UTF-8')) {
+                    $body = mb_convert_encoding($body, 'UTF-8', 'UTF-8');
+                }
             } catch (Throwable $e) {
+                $this->logWarning('Failed to extract body', [
+                    'error' => $e->getMessage()
+                ]);
                 $body = '';
             }
         }
@@ -381,15 +499,20 @@ class Convertor
     }
 
     /**
-     * Safely extract header from message
+     * Safely extract header from message with optional MIME encoding for non-ASCII
      *
      * @param MessageInterface $message
      * @param string $method
      * @param string $headerName
+     * @param bool $mimeEncodeIfNeeded Whether to MIME-encode non-ASCII values (for Subject)
      * @return string
      */
-    private function extractHeader(MessageInterface $message, string $method, string $headerName): string
-    {
+    private function extractHeader(
+        MessageInterface $message,
+        string $method,
+        string $headerName,
+        bool $mimeEncodeIfNeeded = false
+    ): string {
         if (!method_exists($message, $method)) {
             return '';
         }
@@ -402,11 +525,91 @@ class Convertor
             }
 
             $value = (string) $value;
-            return !empty($value) ? "{$headerName}: {$value}" : '';
+
+            if (empty($value)) {
+                return '';
+            }
+
+            // Sanitize line breaks (security)
+            $value = str_replace(["\r", "\n"], '', $value);
+
+            // Handle non-ASCII characters
+            $headerNameLower = strtolower($headerName);
+
+            if (!$this->isAscii($value)) {
+                if ($mimeEncodeIfNeeded && $headerNameLower === 'subject') {
+                    // MIME-encode subject to preserve special characters
+                    $value = $this->mimeEncodeHeaderValue($value);
+                } elseif (in_array($headerNameLower, self::ADDRESS_HEADERS)) {
+                    // For address headers, only strip non-ASCII from email addresses,
+                    // but preserve display names via MIME encoding
+                    $value = $this->sanitizeAddressHeader($value);
+                }
+            }
+
+            return "{$headerName}: {$value}";
 
         } catch (Throwable $e) {
+            $this->logWarning("Failed to extract header {$headerName}", [
+                'method' => $method,
+                'error' => $e->getMessage()
+            ]);
             return '';
         }
+    }
+
+    /**
+     * Check if string contains only ASCII characters
+     *
+     * @param string $value
+     * @return bool
+     */
+    private function isAscii(string $value): bool
+    {
+        return mb_check_encoding($value, 'ASCII');
+    }
+
+    /**
+     * MIME-encode header value for non-ASCII characters
+     *
+     * @param string $value
+     * @return string
+     */
+    private function mimeEncodeHeaderValue(string $value): string
+    {
+        // RFC 2047 MIME encoding for header values
+        // Format: =?charset?encoding?encoded-text?=
+        // Using Q-encoding (Quoted-Printable)
+
+        return mb_encode_mimeheader($value, self::DEFAULT_CHARSET, 'Q');
+    }
+
+    /**
+     * Sanitize address header while preserving display names
+     *
+     * @param string $value
+     * @return string
+     */
+    private function sanitizeAddressHeader(string $value): string
+    {
+        // Pattern: "Display Name" <email@domain.com>
+        if (preg_match('/"?([^"<]+?)"?\s*<([^>]+)>/', $value, $matches)) {
+            $displayName = trim($matches[1]);
+            $email = trim($matches[2]);
+
+            // MIME-encode display name if it contains non-ASCII
+            if (!$this->isAscii($displayName)) {
+                $displayName = $this->mimeEncodeHeaderValue($displayName);
+            }
+
+            // Ensure email is ASCII-only (strip non-ASCII as fallback)
+            $email = preg_replace('/[^\x20-\x7E]/', '', $email);
+
+            return "\"{$displayName}\" <{$email}>";
+        }
+
+        // Just email address - strip non-ASCII
+        return preg_replace('/[^\x20-\x7E]/', '', $value);
     }
 
     /**
@@ -427,17 +630,25 @@ class Convertor
      * Convert header addresses string to Symfony Address objects
      *
      * @param string $rawHeader
+     * @param string $headerType For logging purposes
      * @return Address[]
      */
-    private function convertHeaderAddresses(string $rawHeader): array
+    private function convertHeaderAddresses(string $rawHeader, string $headerType = 'unknown'): array
     {
         $addresses = [];
         $parts = $this->parseAddressHeader($rawHeader);
 
         foreach ($parts as $part) {
-            $address = $this->createAddressFromString($part);
-            if ($address !== null) {
-                $addresses[] = $address;
+            try {
+                $address = $this->createAddressFromString($part);
+                if ($address !== null) {
+                    $addresses[] = $address;
+                }
+            } catch (MimeInvalidArgumentException $e) {
+                $this->logWarning("Invalid address in {$headerType} header", [
+                    'raw_address' => $part,
+                    'error' => $e->getMessage()
+                ]);
             }
         }
 
@@ -457,26 +668,31 @@ class Convertor
         $current = '';
         $inQuotes = false;
         $inAngleBrackets = false;
+        $length = strlen($rawHeader);
 
-        for ($i = 0; $i < strlen($rawHeader); $i++) {
+        for ($i = 0; $i < $length; $i++) {
             $char = $rawHeader[$i];
 
             if ($char === '"' && ($i === 0 || $rawHeader[$i-1] !== '\\')) {
                 $inQuotes = !$inQuotes;
+                $current .= $char;
             } elseif ($char === '<' && !$inQuotes) {
                 $inAngleBrackets = true;
+                $current .= $char;
             } elseif ($char === '>' && !$inQuotes) {
                 $inAngleBrackets = false;
+                $current .= $char;
             } elseif ($char === ',' && !$inQuotes && !$inAngleBrackets) {
-                $parts[] = trim($current);
+                if (!empty(trim($current))) {
+                    $parts[] = trim($current);
+                }
                 $current = '';
-                continue;
+            } else {
+                $current .= $char;
             }
-
-            $current .= $char;
         }
 
-        if (!empty($current)) {
+        if (!empty(trim($current))) {
             $parts[] = trim($current);
         }
 
@@ -484,10 +700,11 @@ class Convertor
     }
 
     /**
-     * Create Address object from string
+     * Create Address object from string with UTF-8 display name support
      *
      * @param string $addressString
      * @return Address|null
+     * @throws MimeInvalidArgumentException
      */
     private function createAddressFromString(string $addressString): ?Address
     {
@@ -502,16 +719,91 @@ class Convertor
             $name = trim($matches[1]);
             $email = trim($matches[2]);
 
-            if (filter_var($email, FILTER_VALIDATE_EMAIL) && class_exists(Address::class)) {
-                return new Address($email, $name);
+            // Validate email
+            if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
+                $this->logWarning('Invalid email address format', [
+                    'email' => $email,
+                    'raw' => $addressString
+                ]);
+                return null;
             }
+
+            if (!class_exists(Address::class)) {
+                $this->logCritical('Symfony Address class not available');
+                return null;
+            }
+
+            // Address class handles UTF-8 display names properly
+            return new Address($email, $name);
         }
 
         // Pattern: just email address
-        if (filter_var($trimmed, FILTER_VALIDATE_EMAIL) && class_exists(Address::class)) {
+        if (filter_var($trimmed, FILTER_VALIDATE_EMAIL)) {
+            if (!class_exists(Address::class)) {
+                $this->logCritical('Symfony Address class not available');
+                return null;
+            }
             return new Address($trimmed);
         }
 
+        $this->logWarning('Could not parse address string', [
+            'raw' => $addressString
+        ]);
+
         return null;
+    }
+
+    // ========== Logging Helper Methods ==========
+
+    /**
+     * Log debug message
+     *
+     * @param string $message
+     * @param array $context
+     */
+    private function logDebug(string $message, array $context = []): void
+    {
+        if ($this->logger) {
+            $this->logger->debug('[EmailConvertor] ' . $message, $context);
+        }
+    }
+
+    /**
+     * Log warning message
+     *
+     * @param string $message
+     * @param array $context
+     */
+    private function logWarning(string $message, array $context = []): void
+    {
+        if ($this->logger) {
+            $this->logger->warning('[EmailConvertor] ' . $message, $context);
+        }
+    }
+
+    /**
+     * Log error message
+     *
+     * @param string $message
+     * @param array $context
+     */
+    private function logError(string $message, array $context = []): void
+    {
+        if ($this->logger) {
+            $this->logger->error('[EmailConvertor] ' . $message, $context);
+        }
+    }
+
+    /**
+     * Log critical message
+     *
+     * @param string $message
+     * @param array $context
+     */
+    private function logCritical(string $message, array $context = []): void
+    {
+        if ($this->logger) {
+            $this->logger->critical('[EmailConvertor] ' . $message, $context);
+        }
     }
 }
