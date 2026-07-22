@@ -23,7 +23,7 @@ class Collection extends ServiceCollection implements Api\Search\SearchResultInt
     protected $searchCriteria;
 
     /**
-     * @var int
+     * @var int|null
      */
     protected $totalCount;
 
@@ -137,7 +137,7 @@ class Collection extends ServiceCollection implements Api\Search\SearchResultInt
             foreach ($items as $item) {
                 $this->addItem($item);
             }
-            unset($this->totalCount);
+            $this->totalCount = null;
         }
         return $this;
     }
