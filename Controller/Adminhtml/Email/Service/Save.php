@@ -19,15 +19,22 @@ class Save extends Action
     private $session;
 
     /**
+     * @var \Swissup\Email\Model\Service\PasswordGuard
+     */
+    private $passwordGuard;
+
+    /**
      * @param Action\Context $context
      * @param \Swissup\Email\Model\ServiceRepository $serviceRepository
      */
     public function __construct(
         Action\Context $context,
-        \Swissup\Email\Model\ServiceRepository $serviceRepository
+        \Swissup\Email\Model\ServiceRepository $serviceRepository,
+        ?\Swissup\Email\Model\Service\PasswordGuard $passwordGuard = null
     ) {
         parent::__construct($context);
         $this->serviceRepository = $serviceRepository;
+        $this->passwordGuard = $passwordGuard ?? new \Swissup\Email\Model\Service\PasswordGuard();
         $this->session = $context->getSession();
     }
 
@@ -62,6 +69,13 @@ class Save extends Action
                 $model = $this->serviceRepository->getById($id);
             } else {
                 unset($data['id']);
+            }
+
+            try {
+                $data = $this->passwordGuard->apply($model, $data);
+            } catch (\Magento\Framework\Exception\LocalizedException $e) {
+                $this->messageManager->addError($e->getMessage());
+                return $resultRedirect->setPath('*/*/edit', ['id' => $id]);
             }
 
             $model->addData($data);

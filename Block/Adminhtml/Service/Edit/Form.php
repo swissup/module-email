@@ -176,6 +176,7 @@ class Form extends \Magento\Backend\Block\Widget\Form\Generic
                 'name'     => 'password',
                 'label'    => __('Password (secure key)'),
                 'title'    => __('Password (secure key)'),
+                'note'     => $isNew ? '' : __('Leave empty to keep the current password.'),
                 // 'required' => true,
                 'disabled' => $isElementDisabled
             ]
@@ -217,7 +218,10 @@ class Form extends \Magento\Backend\Block\Widget\Form\Generic
         );
 
         $this->setForm($form);
-        $form->setValues($model->getData());
+        $values = $model->getData();
+        // never send the stored password back to the browser
+        unset($values['password']);
+        $form->setValues($values);
         $form->setUseContainer(true);
 
         return parent::_prepareForm();
