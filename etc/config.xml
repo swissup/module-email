@@ -5,6 +5,7 @@
         <email>
             <default>
                 <log>0</log>
+                <log_retention_days>30</log_retention_days>
                 <sending_host />
             </default>
         </email>
