@@ -19,6 +19,12 @@
                     <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
                     <config_path>email/default/log</config_path>
                 </field>
+                <field id="log_retention_days" translate="label comment" type="text" sortOrder="19" showInDefault="1" showInWebsite="0" showInStore="0">
+                    <label>Keep Logs (days)</label>
+                    <config_path>email/default/log_retention_days</config_path>
+                    <validate>validate-digits</validate>
+                    <comment>Logged emails older than this are deleted daily. Set 0 to keep them forever.</comment>
+                </field>
                 <field id="sending_host"  translate="label" type="text" sortOrder="18" showInDefault="1" showInWebsite="1" showInStore="1">
                     <label>EHLO Host</label>
                     <config_path>email/default/sending_host</config_path>
