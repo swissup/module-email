@@ -16,6 +16,7 @@ use Magento\Store\Model\ScopeInterface;
 use Psr\Log\LoggerInterface;
 use Swissup\Email\Mail\Message\Convertor;
 use Swissup\Email\Mail\Transport\GmailOAuth2;
+use Swissup\Email\Mail\Transport\RequireTlsSmtp;
 use Swissup\Email\Model\History;
 use Swissup\Email\Model\HistoryFactory;
 use Swissup\Email\Model\Service;
@@ -184,6 +185,14 @@ class Transport implements TransportInterface
             return GmailOAuth2::fromDsn($dsn);
         }
 
+        // STARTTLS must not be optional when the service is configured with TLS
+        if (str_starts_with($dsnString, 'smtp://')) {
+            $dsn = Dsn::fromString($dsnString);
+            if ($dsn->getOption('encryption') === 'tls') {
+                return $this->createRequireTlsTransport($dsn);
+            }
+        }
+
         // For all other DSNs use the standard Symfony Transport
         if (method_exists(SymfonyTransport::class, 'fromDsn')) {
             return SymfonyTransport::fromDsn($dsnString);
@@ -198,6 +207,22 @@ class Transport implements TransportInterface
      * @param Service $service
      * @return string
      */
+    private function createRequireTlsTransport(Dsn $dsn): RequireTlsSmtp
+    {
+        $transport = new RequireTlsSmtp($dsn->getHost(), $dsn->getPort(0));
+        if ($dsn->getUser()) {
+            $transport->setUsername($dsn->getUser());
+        }
+        if ($dsn->getPassword()) {
+            $transport->setPassword($dsn->getPassword());
+        }
+        if ($dsn->getOption('local_domain')) {
+            $transport->setLocalDomain($dsn->getOption('local_domain'));
+        }
+
+        return $transport;
+    }
+
     private function buildDsnString(Service $service): string
     {
         $dsnString = $service->getDsn();
