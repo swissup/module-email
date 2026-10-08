@@ -55,10 +55,9 @@ class Edit extends \Magento\Backend\Block\Widget\Form\Container
 
 //            $model = $this->getModel();
 //            if ($model->getId()) {
-                $onClick = "var params = jQuery('#edit_form').serialize(); "
-                    . "if (jQuery('#edit_form').validation('isValid') === false){return false;}"
-                    . "uenc = Base64.encode(params); "
-                    . 'return setLocation(\'' . $this->getCheckUrl() . '\'.replace(\'ruenc\', uenc))';
+                $onClick = "var form = jQuery('#edit_form'); "
+                    . "if (form.validation('isValid') === false){return false;} "
+                    . "form.attr('action', '" . $this->getCheckUrl() . "').submit(); return false;";
                 $this->buttonList->add(
                     'check',
                     [
@@ -125,7 +124,7 @@ class Edit extends \Magento\Backend\Block\Widget\Form\Container
     {
         return $this->getUrl(
             '*/*/check',
-            ['_current' => true, 'back' => 'edit', 'active_tab' => '', 'uenc' => 'ruenc']
+            ['_current' => true, 'back' => 'edit', 'active_tab' => '']
         );
     }
 

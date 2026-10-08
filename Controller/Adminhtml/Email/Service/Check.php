@@ -2,8 +2,9 @@
 namespace Swissup\Email\Controller\Adminhtml\Email\Service;
 
 use Magento\Backend\App\Action;
+use Magento\Framework\App\Action\HttpPostActionInterface;
 
-class Check extends Action
+class Check extends Action implements HttpPostActionInterface
 {
     /**
      * @var \Swissup\Email\Model\ServiceRepository
@@ -21,6 +22,11 @@ class Check extends Action
     private $session;
 
     /**
+     * @var \Swissup\Email\Model\Service\PasswordGuard
+     */
+    private $passwordGuard;
+
+    /**
      * @param Action\Context $context
      * @param \Swissup\Email\Model\ServiceRepository $serviceRepository
      * @param \Swissup\Email\Service\EmailTestService $emailTestService
@@ -29,12 +35,14 @@ class Check extends Action
     public function __construct(
         Action\Context $context,
         \Swissup\Email\Model\ServiceRepository $serviceRepository,
-        \Swissup\Email\Service\EmailTestService $emailTestService
+        \Swissup\Email\Service\EmailTestService $emailTestService,
+        ?\Swissup\Email\Model\Service\PasswordGuard $passwordGuard = null
     ) {
         parent::__construct($context);
 
         $this->serviceRepository = $serviceRepository;
         $this->emailTestService = $emailTestService;
+        $this->passwordGuard = $passwordGuard ?? new \Swissup\Email\Model\Service\PasswordGuard();
         $this->session = $context->getSession();
     }
 
@@ -55,26 +63,30 @@ class Check extends Action
     public function execute()
     {
         $request = $this->getRequest();
-        $uenc = $request->getParam('uenc');
-        $uenc = base64_decode($uenc, true);
-        $data = [];
-        parse_str($uenc, $data);
-        /** @var \Magento\Backend\Model\View\Result\Redirect $resultRedirect */
+        $data = $request->getPostValue();
+
         $resultRedirect = $this->resultRedirectFactory->create();
 
         if ($data) {
-            $id = $data['id'];
+            $id = $data['id'] ?? null;
 
             $service = $this->serviceRepository->create();
             if ($id) {
                 $service = $this->serviceRepository->getById($id);
             }
 
+            try {
+                $data = $this->passwordGuard->apply($service, $data);
+            } catch (\Magento\Framework\Exception\LocalizedException $e) {
+                $this->messageManager->addError($e->getMessage());
+                return $resultRedirect->setPath('*/*/edit', ['id' => $id]);
+            }
+
             $service->addData($data);
 
-            $email = $data['email'];
+            $email = $data['email'] ?? '';
             if (empty($email)) {
-                $email = $data['user'];
+                $email = $data['user'] ?? '';
             }
             try {
                 $this->emailTestService
