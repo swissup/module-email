@@ -11,6 +11,8 @@ use Swissup\Email\Model\ResourceModel\Service\CollectionFactory;
  */
 class MassDelete extends \Magento\Backend\App\Action
 {
+    const ADMIN_RESOURCE = 'Swissup_Email::service_delete';
+
     /**
      * @var Filter
      */

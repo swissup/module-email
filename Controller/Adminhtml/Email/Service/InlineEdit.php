@@ -11,6 +11,8 @@ use Magento\Framework\Controller\Result\JsonFactory;
 
 class InlineEdit extends \Magento\Backend\App\Action
 {
+    const ADMIN_RESOURCE = 'Swissup_Email::service_save';
+
     /** @var ServiceRepository  */
     protected $serviceRepository;
 

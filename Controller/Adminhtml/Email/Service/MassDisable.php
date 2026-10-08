@@ -11,6 +11,8 @@ use Swissup\Email\Model\ResourceModel\Service\CollectionFactory;
  */
 class MassDisable extends \Magento\Backend\App\Action
 {
+    const ADMIN_RESOURCE = 'Swissup_Email::service_save';
+
     /**
      * @var Filter
      */
