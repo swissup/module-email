@@ -43,7 +43,7 @@ class View extends \Magento\Backend\App\Action
      */
     protected function _isAllowed()
     {
-        return $this->_authorization->isAllowed('Swissup_Email::history_save');
+        return $this->_authorization->isAllowed('Swissup_Email::history');
     }
 
     /**

@@ -78,6 +78,9 @@ class Save extends Action
                 return $resultRedirect->setPath('*/*/edit', ['id' => $id]);
             }
 
+            // these are set by the module itself and must not come from the request
+            unset($data['callback_url'], $data['token'], $data['token_id']);
+
             $model->addData($data);
             // $this->_eventManager->dispatch(
             //     'swissup_email_service_prepare_save',
