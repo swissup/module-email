@@ -709,9 +709,9 @@ class Service extends \Magento\Framework\Model\AbstractModel implements ServiceI
 
         $params = [];
 
-        // Add encryption parameters
+        // SSL means implicit TLS (smtps), TLS means mandatory STARTTLS (enforced by the transport)
         if ($secure == self::SECURE_SSL) {
-            $params['encryption'] = 'ssl';
+            $scheme .= 's';
         } elseif ($secure == self::SECURE_TLS) {
             $params['encryption'] = 'tls';
         }
