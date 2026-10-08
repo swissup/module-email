@@ -141,4 +141,19 @@ class Collection extends ServiceCollection implements Api\Search\SearchResultInt
         }
         return $this;
     }
+
+    /**
+     * Never expose the stored (encrypted) password through the grid data.
+     *
+     * @return $this
+     */
+    protected function _afterLoad()
+    {
+        parent::_afterLoad();
+        foreach ($this->_items as $item) {
+            $item->unsetData('password');
+        }
+
+        return $this;
+    }
 }
