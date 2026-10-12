@@ -31,17 +31,13 @@ class RequireTlsSmtp extends EsmtpTransport
     {
         $this->startTlsAccepted = false;
 
-        parent::start();
-    }
-
-    /**
-     * @inheritdoc
-     */
-    public function stop(): void
-    {
-        parent::stop();
-
-        $this->startTlsAccepted = false;
+        try {
+            parent::start();
+        } catch (\Throwable $e) {
+            // e.g. the server accepted STARTTLS but the handshake failed: the socket is still plain
+            $this->startTlsAccepted = false;
+            throw $e;
+        }
     }
 
     /**
